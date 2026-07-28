@@ -33,10 +33,7 @@ const Login = () => {
     // Quick Demo Auto-fill Helper
     const fillDemoCredentials = (demoRole) => {
         setRole(demoRole);
-        if (demoRole === 'admin') {
-            setEmail('admin@omnifit.com');
-            setPassword('AdminPass123!');
-        } else if (demoRole === 'trainer') {
+        if (demoRole === 'trainer') {
             setEmail('trainer@omnifit.com');
             setPassword('TrainerPass123!');
         } else {
@@ -215,13 +212,6 @@ const Login = () => {
                                     onClick={() => fillDemoCredentials('trainer')}
                                 >
                                     <i className="bi bi-lightning-charge-fill me-1"></i> Trainer
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`role-pill ${role === 'admin' ? 'active' : ''}`}
-                                    onClick={() => fillDemoCredentials('admin')}
-                                >
-                                    <i className="bi bi-shield-lock-fill me-1"></i> Admin
                                 </button>
                             </div>
 
