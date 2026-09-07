@@ -36,6 +36,9 @@ const Login = () => {
         if (demoRole === 'trainer') {
             setEmail('trainer@omnifit.com');
             setPassword('TrainerPass123!');
+        } else if (demoRole === 'admin') {
+            setEmail('admin@omnifit.com');
+            setPassword('AdminPass123!');
         } else {
             setEmail('member@omnifit.com');
             setPassword('MemberPass123!');
@@ -66,11 +69,19 @@ const Login = () => {
                 setCurrentUser(user);
                 setToast({
                     show: true,
-                    message: result.isMock
-                        ? `Welcome to OMNIFIT! Access granted as ${role.toUpperCase()}.`
-                        : `Authentication successful! Logged in as ${role.toUpperCase()}.`,
+                    message: `Authentication successful! Accessing ${role.toUpperCase()} Dashboard...`,
                     type: 'success'
                 });
+
+                setTimeout(() => {
+                    if (role === 'admin') {
+                        navigate('/admin-dashboard');
+                    } else if (role === 'trainer') {
+                        navigate('/trainer-dashboard');
+                    } else {
+                        navigate('/member-dashboard');
+                    }
+                }, 800);
             }
         } catch (err) {
             setToast({
@@ -82,6 +93,7 @@ const Login = () => {
             setIsLoading(false);
         }
     };
+
 
     // Logout Handler
     const handleLogout = () => {
@@ -136,12 +148,6 @@ const Login = () => {
                     >
                         <i className="bi bi-house-door-fill me-1"></i> HOME
                     </button>
-                    <div className="navbar-avatar">
-                        <img
-                            src={currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"}
-                            alt="User Avatar"
-                        />
-                    </div>
                 </div>
             </header>
 
@@ -177,9 +183,14 @@ const Login = () => {
                                 <button
                                     type="button"
                                     className="btn-initialize-session mb-2"
-                                    onClick={() => navigate('/')}
+                                    onClick={() => {
+                                        const userRole = (currentUser?.role || 'member').toLowerCase();
+                                        if (userRole === 'admin') navigate('/admin-dashboard');
+                                        else if (userRole === 'trainer') navigate('/trainer-dashboard');
+                                        else navigate('/member-dashboard');
+                                    }}
                                 >
-                                    RETURN TO HOMEPAGE <i className="bi bi-arrow-right ms-2"></i>
+                                    GO TO DASHBOARD <i className="bi bi-speedometer2 ms-2"></i>
                                 </button>
                                 <button
                                     type="button"
@@ -213,6 +224,13 @@ const Login = () => {
                                 >
                                     <i className="bi bi-lightning-charge-fill me-1"></i> Trainer
                                 </button>
+                                <button
+                                    type="button"
+                                    className={`role-pill ${role === 'admin' ? 'active' : ''}`}
+                                    onClick={() => fillDemoCredentials('admin')}
+                                >
+                                    <i className="bi bi-shield-lock-fill me-1"></i> Admin
+                                </button>
                             </div>
 
                             {/* LOGIN FORM */}
@@ -224,9 +242,9 @@ const Login = () => {
                                     <div className="custom-input-box">
                                         <span className="input-icon">@</span>
                                         <input
-                                            type="email"
+                                            type="text"
                                             className="custom-input"
-                                            placeholder="Email Address"
+                                            placeholder="Name or Email Address"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
@@ -279,11 +297,11 @@ const Login = () => {
                                     {isLoading ? (
                                         <>
                                             <span className="spinner-border spinner-border-sm me-2"></span>
-                                            AUTHENTICATING...
+                                            LOGGING IN...
                                         </>
                                     ) : (
                                         <>
-                                            INITIALIZE SESSION <i className="bi bi-arrow-right ms-2"></i>
+                                            LOG IN <i className="bi bi-arrow-right ms-2"></i>
                                         </>
                                     )}
                                 </button>
@@ -310,10 +328,10 @@ const Login = () => {
                             <div className="login-card-footer mt-4">
                                 <span>New to OMNIFIT? </span>
                                 <a
-                                    href="#signup"
+                                    href="/register"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        setToast({ show: true, message: 'Select your role above to initialize your session.', type: 'info' });
+                                        navigate('/register');
                                     }}
                                     className="signup-link"
                                 >

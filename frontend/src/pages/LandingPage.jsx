@@ -28,8 +28,14 @@ const LandingPage = () => {
                     <span className="nav-brand-text">OMNIFIT</span>
                 </div>
                 <div className="d-flex align-items-center gap-2">
-                    <button className="btn-nav-get-started" onClick={handleGetStarted}>
-                        LOGIN / GET STARTED
+                    <button
+                        className="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold me-1"
+                        onClick={() => navigate('/login')}
+                    >
+                        LOGIN
+                    </button>
+                    <button className="btn-nav-get-started" onClick={() => navigate('/register')}>
+                        REGISTER
                     </button>
                 </div>
             </header>
@@ -53,7 +59,7 @@ const LandingPage = () => {
                     {/* CALL TO ACTIONS */}
                     <div className="hero-actions">
                         <button className="btn-start-protocol" onClick={handleGetStarted}>
-                            START PROTOCOL <i className="bi bi-arrow-right ms-2"></i>
+                            GET STARTED <i className="bi bi-arrow-right ms-2"></i>
                         </button>
                         <button className="btn-explore-engine" onClick={scrollToFeatures}>
                             EXPLORE ENGINE

@@ -5,8 +5,8 @@
 .simple-login-container {
     min-height: 100vh;
     width: 100%;
-    background-color: #f6f9f8;
-    background-image: radial-gradient(at 50% 0%, rgba(0, 255, 135, 0.04) 0px, transparent 60%);
+    background-color: #ffffff !important;
+    background-image: none !important;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -297,7 +297,7 @@
 .simple-login-footer {
     text-align: center;
     padding: 24px 16px;
-    background: #f1f5f9;
+    background: #ffffff;
     border-top: 1px solid #e2e8f0;
 }
 

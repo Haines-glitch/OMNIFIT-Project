@@ -1,79 +1,136 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import LoginService from '../Login/LoginService';
+import React, { useState } from 'react';
+import NotificationCenter from '../Notifications/NotificationCenter';
 
-const Navbar = ({ title }) => {
-    const navigate = useNavigate();
-    const user = LoginService.getCurrentUser();
-    const role = LoginService.getUserRole();
+const Navbar = ({ title, user, isCollapsed, theme = 'dark', onNavigateTab, searchPlaceholder }) => {
+    const [showNotifications, setShowNotifications] = useState(false);
+    const isLight = theme === 'light';
 
-    const handleLogout = () => {
-        LoginService.logout();
-        navigate('/');
+    const toggleNotifications = () => {
+        setShowNotifications(!showNotifications);
     };
 
-    const getRoleBadge = () => {
-        switch (role) {
-            case 'admin':
-                return { bg: '#ef4444', color: '#ffffff', label: 'SYSTEM ADMIN' };
-            case 'trainer':
-                return { bg: '#f59e0b', color: '#000000', label: 'AI TRAINER' };
-            default:
-                return { bg: '#FFFFFF', color: '#000000', label: 'HEALTH MEMBER' };
-        }
-    };
+    const placeholderText = searchPlaceholder || (user?.role === 'MEMBER' ? "Search routines, meal plans, metrics..." : "Search workouts, members, ...");
 
-    const badge = getRoleBadge();
-
-    return (
-        <nav className="navbar navbar-dark sticky-top glass-panel rounded-0 border-top-0 border-start-0 border-end-0 px-4 py-2 mb-4" style={{ background: 'rgba(17, 24, 39, 0.85)' }}>
-            <div className="container-fluid d-flex align-items-center justify-content-between">
-
-                {/* Brand */}
-                <div className="d-flex align-items-center gap-3">
-                    <div
-                        className="rounded-3 d-flex align-items-center justify-content-center text-dark fw-bold"
-                        style={{ width: '38px', height: '38px', background: 'var(--mono-gradient)' }}
-                    >
-                        <i className="bi bi-bounding-box-circles fs-5"></i>
-                    </div>
+    if (isLight) {
+        return (
+            <header className="sticky top-0 z-20 px-6 py-4 mb-6 flex items-center justify-between bg-white border-b border-slate-200 shadow-sm transition-all duration-300 rounded-b-2xl">
+                <div className="flex items-center gap-6">
                     <div>
-                        <h5 className="fw-bold mb-0 text-white me-2 d-inline-block">OMNIFIT</h5>
-                        <span className="badge rounded-pill" style={{ backgroundColor: badge.bg, color: badge.color, fontSize: '0.65rem' }}>
-                            {badge.label}
-                        </span>
-                        <span className="text-muted d-none d-md-inline-block ms-3 small">| {title}</span>
+                        <h4 className="text-xl font-bold text-slate-900 tracking-tight">{title || 'Dashboard'}</h4>
+                        <span className="text-xs text-slate-500 font-medium">OMNIFIT AI Health Club Ecosystem</span>
+                    </div>
+
+                    <div className="hidden md:flex items-center rounded-full px-4 py-2 bg-slate-50 border border-slate-200 w-72">
+                        <i className="bi bi-search text-slate-400 mr-2 text-sm"></i>
+                        <input
+                            type="text"
+                            className="bg-transparent border-none outline-none text-xs text-slate-800 placeholder-slate-400 w-full"
+                            placeholder={placeholderText}
+                        />
                     </div>
                 </div>
 
-                {/* User Info & Actions */}
-                <div className="d-flex align-items-center gap-3">
-                    <div className="d-none d-sm-flex align-items-center gap-2">
-                        <img
-                            src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"}
-                            alt="Profile"
-                            className="rounded-circle border border-white"
-                            style={{ width: '36px', height: '36px', objectFit: 'cover' }}
-                        />
-                        <div>
-                            <div className="fw-semibold text-white small leading-tight">{user?.name || 'OMNIFIT User'}</div>
-                            <div className="text-muted" style={{ fontSize: '0.72rem' }}>{user?.email || 'user@omnifit.com'}</div>
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <button
+                            onClick={toggleNotifications}
+                            className="w-10 h-10 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-all cursor-pointer"
+                        >
+                            <i className="bi bi-bell-fill text-sm"></i>
+                        </button>
+                        <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-[#10B981] border-2 border-white"></span>
+
+                        {showNotifications && (
+                            <div className="absolute right-0 top-12 z-50">
+                                <NotificationCenter
+                                    variant="dropdown"
+                                    onClose={() => setShowNotifications(false)}
+                                    onNavigateTab={onNavigateTab}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200">
+                        {user?.avatar ? (
+                            <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-slate-200" />
+                        ) : (
+                            <div className="w-8 h-8 rounded-full bg-[#10B981] text-slate-950 flex items-center justify-center font-bold text-xs">
+                                <i className="bi bi-person-fill"></i>
+                            </div>
+                        )}
+                        <div className="hidden sm:block text-left">
+                            <div className="text-xs font-bold text-slate-900 leading-snug">{user?.name || "Sarah Jenkins"}</div>
+                            <span className="text-[10px] font-extrabold tracking-wider text-[#10B981] uppercase block">{user?.role || "MEMBER"}</span>
                         </div>
                     </div>
+                </div>
+            </header>
+        );
+    }
 
-                    <button
-                        onClick={handleLogout}
-                        className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1 px-3"
-                        style={{ borderRadius: '8px' }}
-                    >
-                        <i className="bi bi-box-arrow-right"></i>
-                        <span className="d-none d-sm-inline">Logout</span>
-                    </button>
+    return (
+        <header className="sticky top-0 z-20 px-6 py-4 mb-6 flex items-center justify-between bg-slate-900/85 backdrop-blur-xl border-b border-slate-800/80 shadow-xl shadow-black/30 transition-all duration-300 rounded-b-2xl">
+            {/* Title & Search Bar */}
+            <div className="flex items-center gap-6">
+                <div>
+                    <h4 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+                        {title || 'Dashboard'}
+                    </h4>
+                    <span className="text-xs text-slate-400 font-medium tracking-wide">OMNIFIT AI Health Club Ecosystem</span>
                 </div>
 
+                <div className="hidden md:flex items-center rounded-full px-4 py-2 bg-slate-950/80 border border-slate-800 focus-within:border-[#00F29D]/60 focus-within:ring-1 focus-within:ring-[#00F29D]/40 transition-all w-72">
+                    <i className="bi bi-search text-slate-400 mr-2.5 text-xs"></i>
+                    <input
+                        type="text"
+                        className="bg-transparent border-none outline-none text-xs text-white placeholder-slate-500 w-full"
+                        placeholder={placeholderText}
+                    />
+                </div>
             </div>
-        </nav>
+
+            {/* Right Controls & Profile */}
+            <div className="flex items-center gap-4">
+                {/* Quick Action Notification */}
+                <div className="relative">
+                    <button
+                        onClick={toggleNotifications}
+                        className="w-10 h-10 rounded-full bg-slate-950/80 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-[#00F29D] hover:border-[#00F29D]/40 transition-all shadow-md cursor-pointer"
+                    >
+                        <i className="bi bi-bell-fill text-sm"></i>
+                    </button>
+                    <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-[#00F29D] border-2 border-slate-900 shadow-[0_0_8px_#00F29D]"></span>
+
+                    {showNotifications && (
+                        <div className="absolute right-0 top-12 z-50">
+                            <NotificationCenter
+                                variant="dropdown"
+                                onClose={() => setShowNotifications(false)}
+                                onNavigateTab={onNavigateTab}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* User Profile Chip */}
+                <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-slate-950/80 border border-slate-800 hover:border-[#00F29D]/40 transition-all shadow-md">
+                    {user?.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-[#00F29D]/50 shadow-[0_0_10px_rgba(0,242,157,0.3)]" />
+                    ) : (
+                        <div className="w-8 h-8 rounded-full bg-[#00F29D] text-slate-950 flex items-center justify-center font-bold text-xs shadow-[0_0_10px_rgba(0,242,157,0.4)]">
+                            <i className="bi bi-person-fill"></i>
+                        </div>
+                    )}
+                    <div className="hidden sm:block text-left">
+                        <div className="text-xs font-bold text-white leading-snug">{user?.name || "Sarah Jenkins"}</div>
+                        <span className="text-[10px] font-black tracking-widest text-[#00F29D] uppercase block">{user?.role || "MEMBER"}</span>
+                    </div>
+                </div>
+            </div>
+        </header>
     );
 };
 
 export default Navbar;
+
