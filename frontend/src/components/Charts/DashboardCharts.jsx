@@ -27,7 +27,7 @@ ChartJS.register(
     Filler
 );
 
-export const WeeklyCaloriesChart = ({ data, theme = 'dark' }) => {
+export const WeeklyCaloriesChart = ({ data, theme = 'light' }) => {
     const isLight = theme === 'light';
     const chartData = {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -62,7 +62,7 @@ export const WeeklyCaloriesChart = ({ data, theme = 'dark' }) => {
     return <Line data={chartData} options={options} />;
 };
 
-export const WeightProgressChart = ({ data, theme = 'dark' }) => {
+export const WeightProgressChart = ({ data, theme = 'light' }) => {
     const isLight = theme === 'light';
     const chartData = {
         labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
@@ -93,7 +93,7 @@ export const WeightProgressChart = ({ data, theme = 'dark' }) => {
     return <Line data={chartData} options={options} />;
 };
 
-export const RevenueGrowthChart = ({ data, theme = 'dark' }) => {
+export const RevenueGrowthChart = ({ data, theme = 'light' }) => {
     const isLight = theme === 'light';
     const chartData = {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -123,7 +123,7 @@ export const RevenueGrowthChart = ({ data, theme = 'dark' }) => {
     return <Bar data={chartData} options={options} />;
 };
 
-export const AttendanceDoughnutChart = ({ percent = 94.5, theme = 'dark' }) => {
+export const AttendanceDoughnutChart = ({ percent = 94.5, theme = 'light' }) => {
     const isLight = theme === 'light';
     const chartData = {
         labels: ['Present', 'Absences'],

@@ -9,7 +9,7 @@ const AttendanceModule = () => {
     const attendanceData = [
         { date: '2026-08-05', checkIn: '08:30 AM', checkOut: '10:15 AM', status: 'Present', confidence: '99.8%' },
         { date: '2026-08-04', checkIn: '08:45 AM', checkOut: '10:30 AM', status: 'Present', confidence: '99.5%' },
-        { date: '2026-08-03', checkIn: '09:10 AM', checkOut: '11:00 AM', status: 'Late', confidence: '98.9%' },
+        { date: '2026-08-03', checkIn: '-', checkOut: '-', status: 'Absent', confidence: 'N/A' },
         { date: '2026-08-02', checkIn: '08:30 AM', checkOut: '10:15 AM', status: 'Present', confidence: '99.9%' },
         { date: '2026-08-01', checkIn: '-', checkOut: '-', status: 'Absent', confidence: 'N/A' },
     ];
@@ -22,7 +22,7 @@ const AttendanceModule = () => {
             key: 'status',
             label: 'Status',
             render: (val) => (
-                <span className={`badge ${val === 'Present' ? 'bg-success' : val === 'Late' ? 'bg-warning text-dark' : 'bg-danger'}`}>
+                <span className={`badge ${val === 'Present' ? 'bg-success' : 'bg-danger'}`}>
                     {val}
                 </span>
             )

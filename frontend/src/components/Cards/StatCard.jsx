@@ -1,6 +1,6 @@
 import React from 'react';
 
-const StatCard = ({ title, value, subtext, icon, trend, theme = 'dark' }) => {
+const StatCard = ({ title, value, subtext, icon, trend, theme = 'light' }) => {
     const isPositive = trend && (trend.startsWith('+') || trend.includes('up'));
     const isLight = theme === 'light';
 
@@ -49,8 +49,8 @@ const StatCard = ({ title, value, subtext, icon, trend, theme = 'dark' }) => {
                 <span className="text-xs text-slate-400 font-medium">{subtext}</span>
                 {trend && (
                     <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold border ${isPositive
-                            ? 'bg-[#00F29D]/15 text-[#00F29D] border-[#00F29D]/40 shadow-[0_0_10px_rgba(0,242,157,0.2)]'
-                            : 'bg-red-500/15 text-red-400 border-red-500/30'
+                        ? 'bg-[#00F29D]/15 text-[#00F29D] border-[#00F29D]/40 shadow-[0_0_10px_rgba(0,242,157,0.2)]'
+                        : 'bg-red-500/15 text-red-400 border-red-500/30'
                         }`}>
                         {trend}
                     </span>

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import LoginService from '../Login/LoginService';
 
-const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
+const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
     const isLight = theme === 'light';
     const [isEditing, setIsEditing] = useState(false);
     const [showCurrentPass, setShowCurrentPass] = useState(false);
     const [showNewPass, setShowNewPass] = useState(false);
     const [showConfirmPass, setShowConfirmPass] = useState(false);
+    const fileInputRef = useRef(null);
 
     const defaultAvatar = 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=300&auto=format&fit=crop&q=80';
 
@@ -14,7 +15,6 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
         name: user?.name || 'Marcus Vance',
         email: user?.email || 'abhilash.kk@omnifit.com',
         phone: user?.phone || '+91 98765 43210',
-        age: user?.age || 26,
         gender: user?.gender || 'Male',
         dob: user?.dob || '1998-04-12',
         height: user?.height || '182 cm',
@@ -34,7 +34,6 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                 name: user.name || 'Marcus Vance',
                 email: user.email || 'abhilash.kk@omnifit.com',
                 phone: user.phone || '+91 98765 43210',
-                age: user.age || 26,
                 gender: user.gender || 'Male',
                 dob: user.dob || '1998-04-12',
                 height: user.height || '182 cm',
@@ -73,13 +72,21 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
 
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
+
+        // Strict email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(tempData.email)) {
+            setSavedMessage('Invalid email format provided. Please fix it.');
+            setTimeout(() => setSavedMessage(''), 5000);
+            return;
+        }
+
         setProfileData({ ...tempData });
 
         const updatedUser = await LoginService.updateCurrentUser({
             name: tempData.name,
             email: tempData.email,
             phone: tempData.phone,
-            age: tempData.age,
             gender: tempData.gender,
             dob: tempData.dob,
             height: tempData.height,
@@ -115,6 +122,27 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
         setTimeout(() => setPasswordMessage(null), 4000);
     };
 
+    const handleAvatarClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result;
+                setProfileData({ ...profileData, avatar: base64String });
+                setTempData({ ...tempData, avatar: base64String });
+                setSavedMessage('Avatar updated successfully!');
+                setTimeout(() => setSavedMessage(''), 4000);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <div className="space-y-6 animate-fade-in font-sans antialiased">
             {/* System Status Banner */}
@@ -134,14 +162,15 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
             )}
 
             {/* SECTION 1: PROFILE HEADER HERO CARD */}
-            <div className="relative overflow-hidden p-6 sm:p-8 bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-xl shadow-black/40 transition-all">
+            <div className="relative overflow-hidden p-6 sm:p-8 bg-white border border-[#00F29D]/20 rounded-[28px] shadow-[0_20px_40px_rgba(0,0,0,0.03)] transition-all">
                 {/* Ambient glow decoration */}
                 <div className="absolute -right-16 -top-16 w-72 h-72 bg-[#00F29D]/10 rounded-full blur-3xl pointer-events-none"></div>
 
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
                         {/* Modern Profile Avatar */}
-                        <div className="relative group cursor-pointer">
+                        <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
+                            <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
                             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-[#00F29D] p-1 shadow-[0_0_25px_rgba(0,242,157,0.35)] transition-transform duration-300 group-hover:scale-105">
                                 <img
                                     src={profileData.avatar}
@@ -163,7 +192,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                         {/* Trainer Meta Info */}
                         <div className="space-y-2">
                             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                                <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                                     {profileData.name}
                                 </h2>
                                 <span className="px-3 py-1 rounded-full text-[10px] font-black bg-[#00F29D]/15 text-[#00F29D] border border-[#00F29D]/40 shadow-[0_0_10px_rgba(0,242,157,0.2)] tracking-widest uppercase">
@@ -188,13 +217,13 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                 <span className="px-3 py-1 rounded-xl text-xs font-bold bg-[#00F29D] text-slate-950 shadow-md shadow-[#00F29D]/20">
                                     {profileData.fitnessGoal}
                                 </span>
-                                <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-950/80 text-cyan-400 border border-slate-800">
+                                <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-[#f8fafc] text-cyan-600 border border-slate-200">
                                     BMI: {profileData.bmi}
                                 </span>
-                                <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-950/80 text-amber-400 border border-slate-800">
+                                <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-[#f8fafc] text-amber-600 border border-slate-200">
                                     Height: {profileData.height}
                                 </span>
-                                <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-slate-950/80 text-slate-300 border border-slate-800">
+                                <span className="px-3 py-1 rounded-xl text-xs font-semibold bg-[#f8fafc] text-slate-600 border border-slate-200">
                                     Contact: {profileData.phone}
                                 </span>
                             </div>
@@ -215,9 +244,10 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
             </div>
 
             {/* SECTION 2: PERSONAL & MEDICAL BIO CARD */}
-            <div className="p-6 sm:p-8 bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-xl shadow-black/40 transition-all">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800/80">
-                    <h4 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2.5">
+            <div className="p-6 sm:p-8 bg-white border border-[#00F29D]/20 rounded-[28px] shadow-[0_20px_40px_rgba(0,0,0,0.03)] transition-all relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#00F29D]/5 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 relative z-10">
+                    <h4 className="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-lg bg-[#00F29D]/15 border border-[#00F29D]/40 text-[#00F29D] flex items-center justify-center">
                             <i className="bi bi-person-badge-fill text-sm"></i>
                         </div>
@@ -241,8 +271,8 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                 <input
                                     type="text"
                                     value={tempData.name}
-                                    onChange={(e) => setTempData({ ...tempData, name: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
+                                    onChange={(e) => setTempData({ ...tempData, name: e.target.value.replace(/[^a-zA-Z\s'-]/g, '') })}
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
                                     required
                                 />
                             </div>
@@ -253,7 +283,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     type="email"
                                     value={tempData.email}
                                     onChange={(e) => setTempData({ ...tempData, email: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
                                     required
                                 />
                             </div>
@@ -276,26 +306,17 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Age</label>
-                                <input
-                                    type="number"
-                                    value={tempData.age}
-                                    onChange={(e) => setTempData({ ...tempData, age: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
-                                />
-                            </div>
 
                             <div>
                                 <label className="block text-xs font-semibold text-slate-400 mb-1.5">Gender</label>
                                 <select
                                     value={tempData.gender}
                                     onChange={(e) => setTempData({ ...tempData, gender: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 >
-                                    <option value="Male" className="bg-slate-900 text-white">Male</option>
-                                    <option value="Female" className="bg-slate-900 text-white">Female</option>
-                                    <option value="Other" className="bg-slate-900 text-white">Other</option>
+                                    <option value="Male" className="bg-white text-slate-900">Male</option>
+                                    <option value="Female" className="bg-white text-slate-900">Female</option>
+                                    <option value="Other" className="bg-white text-slate-900">Other</option>
                                 </select>
                             </div>
 
@@ -305,7 +326,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     type="date"
                                     value={tempData.dob}
                                     onChange={(e) => setTempData({ ...tempData, dob: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>
 
@@ -315,7 +336,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     type="text"
                                     value={tempData.height}
                                     onChange={(e) => setTempData({ ...tempData, height: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>
 
@@ -325,7 +346,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     type="text"
                                     value={tempData.weight}
                                     onChange={(e) => setTempData({ ...tempData, weight: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>
 
@@ -335,7 +356,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     type="text"
                                     value={tempData.fitnessGoal}
                                     onChange={(e) => setTempData({ ...tempData, fitnessGoal: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>
 
@@ -345,7 +366,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     type="text"
                                     value={tempData.emergencyContact}
                                     onChange={(e) => setTempData({ ...tempData, emergencyContact: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>
 
@@ -355,7 +376,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     rows="2"
                                     value={tempData.medicalHistory}
                                     onChange={(e) => setTempData({ ...tempData, medicalHistory: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs outline-none focus:border-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>
                         </div>
@@ -365,7 +386,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                             <button
                                 type="button"
                                 onClick={handleCancelEdit}
-                                className="px-4 py-2 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-semibold rounded-xl transition-all"
+                                className="px-4 py-2 bg-[#f8fafc] border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 text-xs font-semibold rounded-xl transition-all"
                             >
                                 <i className="bi bi-x-circle me-1.5"></i>
                                 Cancel
@@ -382,69 +403,65 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                 ) : (
                     /* VIEW MODE DETAILS DISPLAY GRID */
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Full Name</span>
-                            <span className="text-sm font-bold text-white block">{profileData.name}</span>
+                            <span className="text-sm font-bold text-slate-900 block">{profileData.name}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Email Address</span>
-                            <span className="text-sm font-bold text-white block">{profileData.email}</span>
+                            <span className="text-sm font-bold text-slate-900 block">{profileData.email}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Contact Number (Indian +91)</span>
                             <span className="text-sm font-bold text-[#00F29D] block flex items-center gap-1.5">
                                 <span>🇮🇳</span> {profileData.phone}
                             </span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Age</span>
-                            <span className="text-sm font-bold text-white block">{profileData.age} Years</span>
-                        </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Gender</span>
-                            <span className="text-sm font-bold text-white block">{profileData.gender}</span>
+                            <span className="text-sm font-bold text-slate-900 block">{profileData.gender}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Date of Birth</span>
-                            <span className="text-sm font-bold text-white block">{profileData.dob}</span>
+                            <span className="text-sm font-bold text-slate-900 block">{profileData.dob}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Height</span>
-                            <span className="text-sm font-bold text-white block">{profileData.height}</span>
+                            <span className="text-sm font-bold text-slate-900 block">{profileData.height}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Current Weight</span>
-                            <span className="text-sm font-bold text-white block">{profileData.weight}</span>
+                            <span className="text-sm font-bold text-slate-900 block">{profileData.weight}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Fitness Goal / Specialization</span>
                             <span className="text-sm font-bold text-[#00F29D] block">{profileData.fitnessGoal}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all md:col-span-2 lg:col-span-3">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all md:col-span-2 lg:col-span-3 relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Emergency Contact</span>
-                            <span className="text-sm font-bold text-white block">{profileData.emergencyContact}</span>
+                            <span className="text-sm font-bold text-slate-900 block">{profileData.emergencyContact}</span>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700/80 transition-all md:col-span-2 lg:col-span-3">
+                        <div className="p-4 rounded-xl bg-[#f8fafc] border border-slate-200 hover:border-[#00F29D]/50 hover:bg-white hover:shadow-sm transition-all md:col-span-2 lg:col-span-3 relative z-10">
                             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Medical History / Health Clearance</span>
-                            <span className="text-sm font-bold text-slate-200 block">{profileData.medicalHistory}</span>
+                            <span className="text-sm font-bold text-slate-600 block">{profileData.medicalHistory}</span>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* SECTION 3: CHANGE SECURITY PASSWORD CARD */}
-            <div className="p-6 sm:p-8 bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-xl shadow-black/40 transition-all">
-                <h4 className="text-base sm:text-lg font-extrabold text-white mb-6 flex items-center gap-2.5 pb-4 border-b border-slate-800/80">
+            <div className="p-6 sm:p-8 bg-white border border-[#00F29D]/20 rounded-[28px] shadow-[0_20px_40px_rgba(0,0,0,0.03)] transition-all">
+                <h4 className="text-base sm:text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-2.5 pb-4 border-b border-slate-200">
                     <div className="w-8 h-8 rounded-lg bg-[#00F29D]/15 border border-[#00F29D]/40 text-[#00F29D] flex items-center justify-center">
                         <i className="bi bi-shield-lock-fill text-sm"></i>
                     </div>
@@ -453,8 +470,8 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
 
                 {passwordMessage && (
                     <div className={`p-4 rounded-xl mb-4 text-xs font-bold flex items-center gap-2 ${passwordMessage.type === 'success'
-                            ? 'bg-[#00F29D]/15 border border-[#00F29D]/40 text-[#00F29D]'
-                            : 'bg-red-500/15 border border-red-500/40 text-red-400'
+                        ? 'bg-[#00F29D]/15 border border-[#00F29D]/40 text-[#00F29D]'
+                        : 'bg-red-500/15 border border-red-500/40 text-red-400'
                         }`}>
                         <i className={`bi ${passwordMessage.type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'}`}></i>
                         <span>{passwordMessage.text}</span>
@@ -473,7 +490,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     value={passwordData.currentPassword}
                                     onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                                     placeholder="Current Password"
-                                    className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs placeholder-slate-500 outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
+                                    className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs placeholder-slate-500 outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
                                     required
                                 />
                                 <button
@@ -496,7 +513,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     value={passwordData.newPassword}
                                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                                     placeholder="New Password"
-                                    className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs placeholder-slate-500 outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
+                                    className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs placeholder-slate-500 outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
                                     required
                                 />
                                 <button
@@ -519,7 +536,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                                     value={passwordData.confirmPassword}
                                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                                     placeholder="Confirm New Password"
-                                    className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs placeholder-slate-500 outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
+                                    className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs placeholder-slate-500 outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
                                     required
                                 />
                                 <button
@@ -536,7 +553,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
                     <div className="flex justify-end pt-3">
                         <button
                             type="submit"
-                            className="px-5 py-2.5 bg-slate-950/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md"
+                            className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md"
                         >
                             <i className="bi bi-key-fill text-[#00F29D]"></i>
                             Update Password

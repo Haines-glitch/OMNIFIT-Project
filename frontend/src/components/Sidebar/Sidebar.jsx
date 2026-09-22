@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../services/authService';
 import LoginService from '../Login/LoginService';
 
-const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, theme = 'dark' }) => {
+const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, theme = 'light' }) => {
     const navigate = useNavigate();
     const isLight = theme === 'light';
 
@@ -57,10 +57,10 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
     if (isLight) {
         return (
             <aside
-                className="h-screen fixed top-0 left-0 z-30 p-4 flex flex-col justify-between bg-white border-r border-slate-200 shadow-sm transition-all duration-300"
+                className="h-screen fixed top-0 left-0 z-30 p-4 flex flex-col bg-white border-r border-slate-200 shadow-sm transition-all duration-300"
                 style={{ width: isCollapsed ? '80px' : '260px' }}
             >
-                <div>
+                <div className="flex-shrink-0">
                     <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
                         <div className="flex items-center gap-3 overflow-hidden">
                             <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-500/20 text-[#10B981] flex items-center justify-center font-bold text-lg">
@@ -87,28 +87,28 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
                             </span>
                         </div>
                     )}
-
-                    <nav className="flex flex-col gap-1 overflow-y-auto max-h-[calc(100vh-210px)]">
-                        {items.map((item) => {
-                            const isActive = activeTab === item.id;
-                            return (
-                                <button
-                                    key={item.id}
-                                    onClick={() => setActiveTab(item.id)}
-                                    className={`w-full text-left rounded-xl px-3.5 py-2.5 flex items-center gap-3 transition-all duration-200 text-xs font-semibold ${isActive
-                                        ? 'bg-emerald-50 text-[#10B981] font-bold border border-emerald-500/30'
-                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
-                                        }`}
-                                >
-                                    <i className={`bi ${item.icon} text-base ${isActive ? 'text-[#10B981]' : ''}`}></i>
-                                    {!isCollapsed && <span className="truncate">{item.label}</span>}
-                                </button>
-                            );
-                        })}
-                    </nav>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100">
+                <nav className="flex-1 overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar">
+                    {items.map((item) => {
+                        const isActive = activeTab === item.id;
+                        return (
+                            <button
+                                key={item.id}
+                                onClick={() => setActiveTab(item.id)}
+                                className={`w-full text-left rounded-xl px-3.5 py-2.5 flex items-center gap-3 transition-all duration-200 text-xs font-semibold ${isActive
+                                    ? 'bg-emerald-50 text-[#10B981] font-bold border border-emerald-500/30'
+                                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
+                                    }`}
+                            >
+                                <i className={`bi ${item.icon} text-base ${isActive ? 'text-[#10B981]' : ''}`}></i>
+                                {!isCollapsed && <span className="truncate">{item.label}</span>}
+                            </button>
+                        );
+                    })}
+                </nav>
+
+                <div className="flex-shrink-0 pt-3 mt-1 border-t border-slate-100">
                     <button
                         onClick={handleLogout}
                         className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-200"
@@ -123,10 +123,10 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
 
     return (
         <aside
-            className="h-screen fixed top-0 left-0 z-30 p-4 flex flex-col justify-between bg-slate-950/95 backdrop-blur-2xl border-r border-slate-800/80 shadow-2xl shadow-black/80 transition-all duration-300"
+            className="h-screen fixed top-0 left-0 z-30 p-4 flex flex-col bg-slate-950/95 backdrop-blur-2xl border-r border-slate-800/80 shadow-2xl shadow-black/80 transition-all duration-300"
             style={{ width: isCollapsed ? '80px' : '260px' }}
         >
-            <div>
+            <div className="flex-shrink-0">
                 {/* Brand & Toggle */}
                 <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800/80">
                     <div className="flex items-center gap-3 overflow-hidden">
@@ -155,30 +155,30 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
                         </span>
                     </div>
                 )}
-
-                {/* Navigation Items */}
-                <nav className="flex flex-col gap-1.5 overflow-y-auto max-h-[calc(100vh-210px)] pr-1">
-                    {items.map((item) => {
-                        const isActive = activeTab === item.id;
-                        return (
-                            <button
-                                key={item.id}
-                                onClick={() => setActiveTab(item.id)}
-                                className={`w-full text-left rounded-xl px-3.5 py-2.5 flex items-center gap-3 transition-all duration-200 text-xs ${isActive
-                                    ? 'bg-[#00F29D]/15 text-[#00F29D] font-bold border border-[#00F29D]/40 shadow-[0_0_12px_rgba(0,242,157,0.25)]'
-                                    : 'text-slate-400 hover:bg-slate-900/90 hover:text-white border border-transparent hover:border-slate-800'
-                                    }`}
-                            >
-                                <i className={`bi ${item.icon} text-base ${isActive ? 'text-[#00F29D]' : 'text-slate-400'}`}></i>
-                                {!isCollapsed && <span className="truncate tracking-wide">{item.label}</span>}
-                            </button>
-                        );
-                    })}
-                </nav>
             </div>
 
+            {/* Navigation Items */}
+            <nav className="flex-1 overflow-y-auto flex flex-col gap-1.5 pr-1 custom-scrollbar">
+                {items.map((item) => {
+                    const isActive = activeTab === item.id;
+                    return (
+                        <button
+                            key={item.id}
+                            onClick={() => setActiveTab(item.id)}
+                            className={`w-full text-left rounded-xl px-3.5 py-2.5 flex items-center gap-3 transition-all duration-200 text-xs ${isActive
+                                ? 'bg-[#00F29D]/15 text-[#00F29D] font-bold border border-[#00F29D]/40 shadow-[0_0_12px_rgba(0,242,157,0.25)]'
+                                : 'text-slate-400 hover:bg-slate-900/90 hover:text-white border border-transparent hover:border-slate-800'
+                                }`}
+                        >
+                            <i className={`bi ${item.icon} text-base ${isActive ? 'text-[#00F29D]' : 'text-slate-400'}`}></i>
+                            {!isCollapsed && <span className="truncate tracking-wide">{item.label}</span>}
+                        </button>
+                    );
+                })}
+            </nav>
+
             {/* Logout Action */}
-            <div className="pt-3 border-t border-slate-800/80">
+            <div className="flex-shrink-0 pt-3 mt-1 border-t border-slate-800/80">
                 <button
                     onClick={handleLogout}
                     className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition-all shadow-md"

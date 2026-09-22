@@ -29,15 +29,25 @@ export const LoginService = {
     async login(credentials) {
         try {
             const response = await api.post('/login/', credentials);
-            const { access, refresh, user } = response.data;
+            const payload = response.data?.data || response.data;
+            const { access, refresh, user } = payload;
 
-            // Store in localStorage
-            localStorage.setItem('access_token', access);
-            localStorage.setItem('refresh_token', refresh);
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('user_role', user.role);
+            if (user && access) {
+                const formattedUser = {
+                    ...user,
+                    name: user.name || user.full_name || (user.email ? user.email.split('@')[0] : 'User'),
+                    full_name: user.full_name || user.name,
+                    role: (user.role || credentials.role || 'member').toUpperCase()
+                };
+                localStorage.setItem('access_token', access);
+                if (refresh) localStorage.setItem('refresh_token', refresh);
+                localStorage.setItem('user', JSON.stringify(formattedUser));
+                localStorage.setItem('user_role', formattedUser.role);
 
-            return { success: true, data: response.data };
+                return { success: true, data: payload };
+            }
+
+            return { success: false, error: 'Invalid login response structure' };
         } catch (error) {
             console.warn('Backend API connection failed or unavailable. Falling back to frontend mock authentication for demonstration.', error);
 
@@ -45,7 +55,10 @@ export const LoginService = {
             const role = (credentials.role || 'member').toLowerCase();
             let displayName = '';
 
-            if (credentials.email === 'member@omnifit.com') {
+            const currentUser = this.getCurrentUser();
+            if (currentUser && currentUser.email?.toLowerCase() === credentials.email?.toLowerCase() && (currentUser.name || currentUser.full_name)) {
+                displayName = currentUser.name || currentUser.full_name;
+            } else if (credentials.email === 'member@omnifit.com') {
                 displayName = 'Alex Mercer';
             } else if (credentials.email === 'trainer@omnifit.com') {
                 displayName = 'Marcus Vance';
@@ -90,8 +103,12 @@ export const LoginService = {
         if (!refresh) return null;
         try {
             const response = await api.post('/token/refresh/', { refresh });
-            localStorage.setItem('access_token', response.data.access);
-            return response.data.access;
+            const payload = response.data?.data || response.data;
+            const newAccess = payload.access || response.data.access;
+            if (newAccess) {
+                localStorage.setItem('access_token', newAccess);
+            }
+            return newAccess;
         } catch (err) {
             this.logout();
             return null;
@@ -114,16 +131,23 @@ export const LoginService = {
     async register(userData) {
         try {
             const response = await api.post('/register/', userData);
-            const { access, refresh, user } = response.data;
+            const payload = response.data?.data || response.data;
+            const { access, refresh, user } = payload;
 
-            if (access) {
+            if (access && user) {
+                const formattedUser = {
+                    ...user,
+                    name: user.name || user.full_name || userData.full_name || 'User',
+                    full_name: user.full_name || user.name || userData.full_name,
+                    role: (user.role || userData.role || 'member').toUpperCase()
+                };
                 localStorage.setItem('access_token', access);
-                localStorage.setItem('refresh_token', refresh);
-                localStorage.setItem('user', JSON.stringify(user));
-                localStorage.setItem('user_role', user.role || userData.role || 'member');
+                if (refresh) localStorage.setItem('refresh_token', refresh);
+                localStorage.setItem('user', JSON.stringify(formattedUser));
+                localStorage.setItem('user_role', formattedUser.role);
             }
 
-            return { success: true, data: response.data };
+            return { success: true, data: payload };
         } catch (error) {
             console.warn('Backend API connection failed or unavailable. Falling back to frontend mock registration for demonstration.', error);
 
@@ -132,7 +156,7 @@ export const LoginService = {
                 name: userData.full_name || userData.email.split('@')[0].toUpperCase(),
                 email: userData.email,
                 phone: userData.phone || '',
-                role: userData.role || 'member',
+                role: (userData.role || 'member').toUpperCase(),
                 avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
             };
 
@@ -168,6 +192,37 @@ export const LoginService = {
     },
 
     /**
+     * Fetch Live User Profile from Backend DB
+     */
+    async fetchCurrentUser() {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (!token) return this.getCurrentUser();
+
+            const response = await api.get('/profile/');
+            const payload = response.data?.data || response.data;
+            if (payload?.user) {
+                const dbUser = payload.user;
+                const formattedUser = {
+                    id: dbUser.id,
+                    name: dbUser.name || dbUser.full_name || (dbUser.email ? dbUser.email.split('@')[0] : 'User'),
+                    full_name: dbUser.full_name || dbUser.name,
+                    email: dbUser.email,
+                    role: (dbUser.role || 'member').toUpperCase(),
+                    avatar: dbUser.profile_image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+                    phone: dbUser.phone || dbUser.phone_no || '',
+                };
+                localStorage.setItem('user', JSON.stringify(formattedUser));
+                localStorage.setItem('user_role', formattedUser.role);
+                return formattedUser;
+            }
+        } catch (err) {
+            console.warn('Backend live profile fetch error/offline, using cached user:', err);
+        }
+        return this.getCurrentUser();
+    },
+
+    /**
      * Get Stored User Role
      */
     getUserRole() {
@@ -179,23 +234,36 @@ export const LoginService = {
      */
     async updateCurrentUser(updatedFields) {
         const currentUser = this.getCurrentUser() || {};
-        const newUser = { ...currentUser, ...updatedFields };
+        const newUser = {
+            ...currentUser,
+            ...updatedFields,
+            name: updatedFields.name || updatedFields.full_name || currentUser.name
+        };
         localStorage.setItem('user', JSON.stringify(newUser));
 
         try {
-            const token = localStorage.getItem('access_token');
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
-            }
-            await fetch('http://localhost:8000/api/auth/profile/update/', {
-                method: 'POST',
-                headers,
-                body: JSON.stringify({
-                    user_id: currentUser.id,
-                    ...newUser
-                })
+            const response = await api.post('/profile/update/', {
+                user_id: currentUser.id,
+                name: newUser.name,
+                full_name: newUser.name,
+                email: newUser.email,
+                phone: newUser.phone,
+                height: newUser.height,
+                weight: newUser.weight,
+                fitnessGoal: newUser.fitnessGoal
             });
+            const updatedData = response.data?.data || response.data;
+            if (updatedData) {
+                const finalUser = {
+                    ...newUser,
+                    name: updatedData.name || newUser.name,
+                    full_name: updatedData.name || newUser.name,
+                    email: updatedData.email || newUser.email,
+                    phone: updatedData.phone || newUser.phone,
+                };
+                localStorage.setItem('user', JSON.stringify(finalUser));
+                return finalUser;
+            }
         } catch (e) {
             console.log('Backend profile sync note:', e);
         }

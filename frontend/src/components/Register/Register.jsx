@@ -41,9 +41,23 @@ const Register = () => {
             return;
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.trim()) {
             setToast({ show: true, message: 'Please enter your Email address.', type: 'warning' });
             return;
+        }
+        if (!emailRegex.test(email.trim())) {
+            setToast({ show: true, message: 'Please enter a valid Email address format.', type: 'warning' });
+            return;
+        }
+
+        if (phone.trim()) {
+            // allows plus, digits, spaces, hyphens, parenthesis 
+            const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
+            if (!phoneRegex.test(phone.trim()) || phone.trim().length < 7) {
+                setToast({ show: true, message: 'Please enter a valid Phone number.', type: 'warning' });
+                return;
+            }
         }
 
         if (!password) {
@@ -243,7 +257,7 @@ const Register = () => {
                                             className="custom-input"
                                             placeholder="John Doe"
                                             value={fullName}
-                                            onChange={(e) => setFullName(e.target.value)}
+                                            onChange={(e) => setFullName(e.target.value.replace(/[^a-zA-Z\s'-]/g, ''))}
                                             required
                                             autoComplete="name"
                                         />

@@ -70,7 +70,7 @@ const initialMeals = [
     }
 ];
 
-const DietModule = ({ role, theme = 'dark' }) => {
+const DietModule = ({ role, theme = 'light' }) => {
     const isLight = theme === 'light';
 
     const [meals, setMeals] = useState(initialMeals);

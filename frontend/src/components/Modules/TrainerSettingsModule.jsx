@@ -20,7 +20,7 @@ import {
     Zap
 } from 'lucide-react';
 
-const TrainerSettingsModule = ({ theme = 'dark' }) => {
+const TrainerSettingsModule = ({ theme = 'light' }) => {
     // ----------------------------------------------------
     // INITIAL DEFAULT STATES
     // ----------------------------------------------------
@@ -211,8 +211,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                         type="button"
                         onClick={() => handleToggle('autoApproveVIP')}
                         className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.autoApproveVIP
-                                ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
-                                : 'bg-slate-800 border-slate-700'
+                            ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
+                            : 'bg-slate-800 border-slate-700'
                             }`}
                     >
                         <span
@@ -352,8 +352,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             type="button"
                             onClick={() => handleToggle('autoGenerateAITemplates')}
                             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.autoGenerateAITemplates
-                                    ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
-                                    : 'bg-slate-800 border-slate-700'
+                                ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
+                                : 'bg-slate-800 border-slate-700'
                                 }`}
                         >
                             <span
@@ -377,8 +377,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             type="button"
                             onClick={() => handleToggle('dynamicProgressiveOverload')}
                             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.dynamicProgressiveOverload
-                                    ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
-                                    : 'bg-slate-800 border-slate-700'
+                                ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
+                                : 'bg-slate-800 border-slate-700'
                                 }`}
                         >
                             <span
@@ -403,8 +403,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                                 type="button"
                                 onClick={() => handleToggle('strictAllergenShield')}
                                 className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.strictAllergenShield
-                                        ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
-                                        : 'bg-slate-800 border-slate-700'
+                                    ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
+                                    : 'bg-slate-800 border-slate-700'
                                     }`}
                             >
                                 <span
@@ -473,8 +473,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             type="button"
                             onClick={() => handleToggle('trajectoryDeviationAlerts')}
                             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.trajectoryDeviationAlerts
-                                    ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
-                                    : 'bg-slate-800 border-slate-700'
+                                ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
+                                : 'bg-slate-800 border-slate-700'
                                 }`}
                         >
                             <span
@@ -498,8 +498,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             type="button"
                             onClick={() => handleToggle('attendanceDropoffWarnings')}
                             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.attendanceDropoffWarnings
-                                    ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
-                                    : 'bg-slate-800 border-slate-700'
+                                ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
+                                : 'bg-slate-800 border-slate-700'
                                 }`}
                         >
                             <span
@@ -523,8 +523,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             type="button"
                             onClick={() => handleToggle('faceScanCheckinNotifs')}
                             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${settings.faceScanCheckinNotifs
-                                    ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
-                                    : 'bg-slate-800 border-slate-700'
+                                ? 'bg-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.4)]'
+                                : 'bg-slate-800 border-slate-700'
                                 }`}
                         >
                             <span
@@ -544,8 +544,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             <label
                                 onClick={() => handleToggle('deliveryInApp')}
                                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${settings.deliveryInApp
-                                        ? 'bg-[#00F29D]/10 border-[#00F29D]/50 text-white'
-                                        : 'bg-slate-900/80 border-slate-800 text-slate-400'
+                                    ? 'bg-[#00F29D]/10 border-[#00F29D]/50 text-white'
+                                    : 'bg-slate-900/80 border-slate-800 text-slate-400'
                                     }`}
                             >
                                 <Monitor className={`w-4 h-4 ${settings.deliveryInApp ? 'text-[#00F29D]' : 'text-slate-500'}`} />
@@ -558,8 +558,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             <label
                                 onClick={() => handleToggle('deliveryEmail')}
                                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${settings.deliveryEmail
-                                        ? 'bg-[#00F29D]/10 border-[#00F29D]/50 text-white'
-                                        : 'bg-slate-900/80 border-slate-800 text-slate-400'
+                                    ? 'bg-[#00F29D]/10 border-[#00F29D]/50 text-white'
+                                    : 'bg-slate-900/80 border-slate-800 text-slate-400'
                                     }`}
                             >
                                 <Mail className={`w-4 h-4 ${settings.deliveryEmail ? 'text-[#00F29D]' : 'text-slate-500'}`} />
@@ -572,8 +572,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             <label
                                 onClick={() => handleToggle('deliverySMS')}
                                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${settings.deliverySMS
-                                        ? 'bg-[#00F29D]/10 border-[#00F29D]/50 text-white'
-                                        : 'bg-slate-900/80 border-slate-800 text-slate-400'
+                                    ? 'bg-[#00F29D]/10 border-[#00F29D]/50 text-white'
+                                    : 'bg-slate-900/80 border-slate-800 text-slate-400'
                                     }`}
                             >
                                 <Smartphone className={`w-4 h-4 ${settings.deliverySMS ? 'text-[#00F29D]' : 'text-slate-500'}`} />
@@ -625,8 +625,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                                 type="button"
                                 onClick={() => handleToggle('acceptingNewMembers')}
                                 className={`px-3 py-1 rounded-full text-xs font-black transition-all flex items-center gap-1.5 ${settings.acceptingNewMembers
-                                        ? 'bg-[#00F29D]/20 text-[#00F29D] border border-[#00F29D]/50 shadow-[0_0_12px_rgba(0,242,157,0.3)]'
-                                        : 'bg-red-500/20 text-red-400 border border-red-500/40'
+                                    ? 'bg-[#00F29D]/20 text-[#00F29D] border border-[#00F29D]/50 shadow-[0_0_12px_rgba(0,242,157,0.3)]'
+                                    : 'bg-red-500/20 text-red-400 border border-red-500/40'
                                     }`}
                             >
                                 <span className={`w-2 h-2 rounded-full ${settings.acceptingNewMembers ? 'bg-[#00F29D] animate-ping' : 'bg-red-400'}`}></span>
@@ -682,8 +682,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                                         type="button"
                                         onClick={() => handleFocusToggle(tag)}
                                         className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${isSelected
-                                                ? 'bg-[#00F29D]/15 text-[#00F29D] border border-[#00F29D]/50 shadow-[0_0_10px_rgba(0,242,157,0.25)]'
-                                                : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
+                                            ? 'bg-[#00F29D]/15 text-[#00F29D] border border-[#00F29D]/50 shadow-[0_0_10px_rgba(0,242,157,0.25)]'
+                                            : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700'
                                             }`}
                                     >
                                         {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}

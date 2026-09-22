@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import NotificationCenter from '../Notifications/NotificationCenter';
 
-const Navbar = ({ title, user, isCollapsed, theme = 'dark', onNavigateTab, searchPlaceholder }) => {
+const Navbar = ({ title, user, isCollapsed, theme = 'light', onNavigateTab, searchPlaceholder }) => {
     const [showNotifications, setShowNotifications] = useState(false);
     const isLight = theme === 'light';
 
@@ -46,6 +46,7 @@ const Navbar = ({ title, user, isCollapsed, theme = 'dark', onNavigateTab, searc
                                     variant="dropdown"
                                     onClose={() => setShowNotifications(false)}
                                     onNavigateTab={onNavigateTab}
+                                    theme={theme}
                                 />
                             </div>
                         )}
@@ -60,7 +61,7 @@ const Navbar = ({ title, user, isCollapsed, theme = 'dark', onNavigateTab, searc
                             </div>
                         )}
                         <div className="hidden sm:block text-left">
-                            <div className="text-xs font-bold text-slate-900 leading-snug">{user?.name || "Sarah Jenkins"}</div>
+                            <div className="text-xs font-bold text-slate-900 leading-snug">{user?.name || user?.full_name || "User"}</div>
                             <span className="text-[10px] font-extrabold tracking-wider text-[#10B981] uppercase block">{user?.role || "MEMBER"}</span>
                         </div>
                     </div>
@@ -108,6 +109,7 @@ const Navbar = ({ title, user, isCollapsed, theme = 'dark', onNavigateTab, searc
                                 variant="dropdown"
                                 onClose={() => setShowNotifications(false)}
                                 onNavigateTab={onNavigateTab}
+                                theme={theme}
                             />
                         </div>
                     )}
@@ -123,7 +125,7 @@ const Navbar = ({ title, user, isCollapsed, theme = 'dark', onNavigateTab, searc
                         </div>
                     )}
                     <div className="hidden sm:block text-left">
-                        <div className="text-xs font-bold text-white leading-snug">{user?.name || "Sarah Jenkins"}</div>
+                        <div className="text-xs font-bold text-white leading-snug">{user?.name || user?.full_name || "User"}</div>
                         <span className="text-[10px] font-black tracking-widest text-[#00F29D] uppercase block">{user?.role || "MEMBER"}</span>
                     </div>
                 </div>

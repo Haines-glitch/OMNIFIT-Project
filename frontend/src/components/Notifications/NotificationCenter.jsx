@@ -55,8 +55,10 @@ const defaultNotifications = [
 const NotificationCenter = ({
     variant = 'panel', // 'panel' | 'dropdown'
     onClose,
-    onNavigateTab
+    onNavigateTab,
+    theme = 'light'
 }) => {
+    const isLight = theme === 'light';
     const [notifications, setNotifications] = useState(defaultNotifications);
     const [activeFilter, setActiveFilter] = useState('All');
     const [statusMessage, setStatusMessage] = useState(null);
@@ -106,6 +108,19 @@ const NotificationCenter = ({
     };
 
     const getIconStyles = (accent) => {
+        if (isLight) {
+            switch (accent) {
+                case 'amber':
+                    return 'bg-amber-50 border-amber-200 text-amber-600';
+                case 'mint':
+                    return 'bg-emerald-50 border-emerald-200 text-[#10B981]';
+                case 'cyan':
+                    return 'bg-cyan-50 border-cyan-200 text-cyan-600';
+                case 'slate':
+                default:
+                    return 'bg-slate-100 border-slate-200 text-slate-600';
+            }
+        }
         switch (accent) {
             case 'amber':
                 return 'bg-amber-500/15 border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.25)]';
@@ -120,6 +135,19 @@ const NotificationCenter = ({
     };
 
     const getTagStyles = (accent) => {
+        if (isLight) {
+            switch (accent) {
+                case 'amber':
+                    return 'bg-amber-50 border-amber-200 text-amber-700';
+                case 'mint':
+                    return 'bg-emerald-50 border-emerald-200 text-emerald-700';
+                case 'cyan':
+                    return 'bg-cyan-50 border-cyan-200 text-cyan-700';
+                case 'slate':
+                default:
+                    return 'bg-slate-100 border-slate-200 text-slate-700';
+            }
+        }
         switch (accent) {
             case 'amber':
                 return 'bg-amber-500/15 border-amber-500/30 text-amber-400';
@@ -134,6 +162,189 @@ const NotificationCenter = ({
     };
 
     const isDropdown = variant === 'dropdown';
+
+    if (isLight) {
+        return (
+            <div className={`
+                bg-white border border-slate-200 rounded-2xl shadow-sm transition-all duration-300
+                ${isDropdown ? 'w-80 sm:w-96 max-h-[85vh] flex flex-col shadow-xl' : 'w-full p-6'}
+            `}>
+                {/* Header Area */}
+                <div className={`${isDropdown ? 'p-4 border-b border-slate-100' : 'mb-6'}`}>
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="flex items-center gap-2.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
+                            <h5 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                {isDropdown ? 'Notifications' : 'Activity & Notifications'}
+                            </h5>
+                            {unreadCount > 0 && (
+                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-[#10B981] border border-emerald-500/30">
+                                    {unreadCount} New
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={handleMarkAllAsRead}
+                                    className="text-[11px] font-bold text-slate-500 hover:text-[#10B981] transition-colors"
+                                >
+                                    Mark all as read
+                                </button>
+                            )}
+                            {isDropdown && onClose && (
+                                <button
+                                    onClick={onClose}
+                                    className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-all"
+                                >
+                                    <i className="bi bi-x-lg text-xs"></i>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Filter Pill Bar */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                        {filters.map((filter) => (
+                            <button
+                                key={filter}
+                                onClick={() => setActiveFilter(filter)}
+                                className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${activeFilter === filter
+                                    ? 'bg-emerald-50 text-[#10B981] border border-emerald-500/30'
+                                    : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
+                                    }`}
+                            >
+                                {filter}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Status Toast Message */}
+                {statusMessage && (
+                    <div className="mx-4 my-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-[#10B981] font-bold flex items-center gap-2 animate-fade-in">
+                        <i className="bi bi-check-circle-fill"></i>
+                        <span>{statusMessage}</span>
+                    </div>
+                )}
+
+                {/* Notification Feed Items */}
+                <div className={`
+                    space-y-3 overflow-y-auto pr-1
+                    ${isDropdown ? 'p-4 flex-1 max-h-[380px]' : ''}
+                `}>
+                    {filteredNotifications.length > 0 ? (
+                        filteredNotifications.map((item) => (
+                            <div
+                                key={item.id}
+                                className={`
+                                    relative p-4 rounded-xl border transition-all duration-200 group
+                                    ${!item.isRead
+                                        ? 'bg-white border-slate-200 border-l-2 border-l-[#10B981] shadow-xs'
+                                        : 'bg-slate-50 border-slate-200 opacity-85 hover:opacity-100'}
+                                `}
+                            >
+                                <div className="flex items-start gap-3.5">
+                                    {/* Icon container */}
+                                    <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${getIconStyles(item.accent)}`}>
+                                        <i className={`bi ${item.icon} text-sm`}></i>
+                                    </div>
+
+                                    {/* Main Content */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between gap-2 mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold border uppercase tracking-wider ${getTagStyles(item.accent)}`}>
+                                                    {item.tag}
+                                                </span>
+                                                {!item.isRead && (
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
+                                                )}
+                                            </div>
+                                            <span className="text-[11px] font-medium text-slate-400">{item.timestamp}</span>
+                                        </div>
+
+                                        <h6
+                                            className="text-xs font-bold text-slate-900 leading-snug mb-1 cursor-pointer hover:text-[#10B981] transition-colors"
+                                            onClick={() => handleToggleRead(item.id)}
+                                        >
+                                            {item.title}
+                                        </h6>
+
+                                        <p className="text-xs text-slate-600 leading-relaxed mb-2">
+                                            {item.message}
+                                        </p>
+
+                                        {/* Action Status if processed */}
+                                        {item.statusText && (
+                                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                                <i className="bi bi-check2 text-[#10B981]"></i>
+                                                Status: {item.statusText}
+                                            </div>
+                                        )}
+
+                                        {/* Quick Actions if unprocessed */}
+                                        {!item.statusText && (
+                                            <div className="flex items-center gap-2 pt-1">
+                                                {item.actionType === 'review' && (
+                                                    <button
+                                                        onClick={() => handleAction(item.id, 'review', item.actionLabel)}
+                                                        className="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5"
+                                                    >
+                                                        <i className="bi bi-box-arrow-up-right text-[10px]"></i>
+                                                        {item.actionLabel}
+                                                    </button>
+                                                )}
+
+                                                {item.actionType === 'appointment' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleAction(item.id, 'appointment', item.actionAcceptLabel)}
+                                                            className="px-3.5 py-1 bg-[#10B981] hover:bg-[#0D9668] text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-1"
+                                                        >
+                                                            <i className="bi bi-check-lg"></i>
+                                                            {item.actionAcceptLabel}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleAction(item.id, 'appointment', item.actionDeclineLabel)}
+                                                            className="px-3.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 text-xs font-semibold rounded-lg transition-all flex items-center gap-1"
+                                                        >
+                                                            <i className="bi bi-x-lg text-[10px]"></i>
+                                                            {item.actionDeclineLabel}
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="py-8 text-center text-slate-400 text-xs">
+                            <i className="bi bi-bell-slash text-2xl block mb-2 opacity-50"></i>
+                            No notifications found for selected filter.
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer Area */}
+                <div className={`${isDropdown ? 'p-3 border-t border-slate-100 text-center' : 'mt-4 pt-3 border-t border-slate-100'}`}>
+                    <button
+                        onClick={() => {
+                            if (onNavigateTab) onNavigateTab('notifications');
+                            if (onClose) onClose();
+                        }}
+                        className="text-xs font-extrabold text-slate-500 hover:text-[#10B981] transition-colors inline-flex items-center gap-1.5"
+                    >
+                        <span>View All Notifications Archive</span>
+                        <i className="bi bi-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={`
@@ -182,8 +393,8 @@ const NotificationCenter = ({
                             key={filter}
                             onClick={() => setActiveFilter(filter)}
                             className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${activeFilter === filter
-                                    ? 'bg-[#00F29D]/15 text-[#00F29D] border border-[#00F29D]/40 shadow-[0_0_10px_rgba(0,242,157,0.2)]'
-                                    : 'bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700'
+                                ? 'bg-[#00F29D]/15 text-[#00F29D] border border-[#00F29D]/40 shadow-[0_0_10px_rgba(0,242,157,0.2)]'
+                                : 'bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700'
                                 }`}
                         >
                             {filter}
