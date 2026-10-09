@@ -74,25 +74,53 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        # Force role to MEMBER regardless of request body
+        data = request.data.copy()
+        data['role'] = 'member'
+
+        serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
-            return standard_response(
-                success=False,
-                message="Registration validation failed.",
-                data=None,
-                errors=serializer.errors,
-                status_code=status.HTTP_400_BAD_REQUEST
-            )
+            errors = serializer.errors
+            err_msg = "Registration validation failed."
+            if "email" in errors:
+                err_msg = errors["email"][0]
+            elif "password" in errors:
+                err_msg = errors["password"][0]
+            return Response({
+                "message": err_msg,
+                "errors": errors
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.save()
+        user.role = 'member'
+        user.save()
 
-        # Task 2: Auto-create corresponding profile row
-        if user.role == 'member':
-            Member.objects.get_or_create(user=user)
-        elif user.role == 'trainer':
-            Trainer.objects.get_or_create(user=user)
-        elif user.role == 'admin':
-            AdminProfile.objects.get_or_create(user=user)
+        # Create/Update Member profile with extended details if supplied
+        member, _ = Member.objects.get_or_create(user=user)
+        if 'date_of_birth' in request.data:
+            member.date_of_birth = request.data.get('date_of_birth')
+        if 'gender' in request.data:
+            member.gender = request.data.get('gender')
+        if 'age' in request.data and request.data.get('age'):
+            try:
+                member.age = int(request.data.get('age'))
+            except (ValueError, TypeError):
+                pass
+        if 'height' in request.data and request.data.get('height'):
+            try:
+                member.height_cm = float(str(request.data.get('height')).replace('cm', '').strip())
+            except (ValueError, TypeError):
+                pass
+        if 'weight' in request.data and request.data.get('weight'):
+            try:
+                member.weight_kg = float(str(request.data.get('weight')).replace('kg', '').strip())
+            except (ValueError, TypeError):
+                pass
+        if 'fitness_goal' in request.data or 'fitnessGoal' in request.data:
+            member.fitness_goal = request.data.get('fitness_goal') or request.data.get('fitnessGoal')
+        if 'address' in request.data:
+            member.address = request.data.get('address')
+        member.save()
 
         # Create welcome notification
         Notification.objects.create(
@@ -102,25 +130,15 @@ class RegisterView(generics.CreateAPIView):
             message=f"Welcome {user.full_name or user.email}! Your AI Athlete profile is active."
         )
 
-        refresh = RefreshToken.for_user(user)
-
-        role_redirect_map = {
-            'member': '/member/dashboard/',
-            'trainer': '/trainer/dashboard/',
-            'admin': '/admin/dashboard/'
-        }
-
-        return standard_response(
-            success=True,
-            message="User registered successfully.",
-            data={
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
-                "user": UserSerializer(user).data,
-                "redirect_url": role_redirect_map.get(user.role.lower(), '/member/dashboard/')
-            },
-            status_code=status.HTTP_201_CREATED
-        )
+        return Response({
+            "message": "Member registration successful",
+            "user": {
+                "id": user.id,
+                "name": user.full_name or user.email,
+                "email": user.email,
+                "role": "MEMBER"
+            }
+        }, status=status.HTTP_201_CREATED)
 
 
 class LogoutView(APIView):
@@ -534,6 +552,7 @@ class UserProfileUpdateView(APIView):
     def post(self, request):
         user_id = request.data.get("user_id")
         email = request.data.get("email")
+        current_email = request.data.get("current_email")
         full_name = request.data.get("name") or request.data.get("full_name")
         phone = request.data.get("phone")
 
@@ -542,6 +561,8 @@ class UserProfileUpdateView(APIView):
             user = request.user
         elif user_id:
             user = User.objects.filter(id=user_id).first()
+        elif current_email:
+            user = User.objects.filter(email__iexact=current_email).first()
         elif email:
             user = User.objects.filter(email__iexact=email).first()
 

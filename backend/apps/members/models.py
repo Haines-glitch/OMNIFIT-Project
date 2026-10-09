@@ -10,6 +10,12 @@ class Member(models.Model):
     join_date = models.DateField(default=date.today)
     membership_plan = models.CharField(max_length=100, default='Platinum VIP')
     expiry_date = models.DateField(null=True, blank=True)
+    
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=20, blank=True, null=True)
+    age = models.IntegerField(null=True, blank=True)
+    address = models.TextField(blank=True, null=True)
+    
     height_cm = models.FloatField(null=True, blank=True, default=180.0)
     weight_kg = models.FloatField(null=True, blank=True, default=78.5)
     bmi = models.FloatField(null=True, blank=True, default=23.7)
@@ -50,4 +56,3 @@ class Member(models.Model):
 
     def __str__(self):
         return f"Member: {self.user.email} ({self.membership_no})"
-

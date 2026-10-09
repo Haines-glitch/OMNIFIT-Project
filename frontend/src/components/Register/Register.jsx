@@ -11,9 +11,14 @@ const Register = () => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [gender, setGender] = useState('Male');
+    const [age, setAge] = useState('');
+    const [height, setHeight] = useState('');
+    const [weight, setWeight] = useState('');
+    const [fitnessGoal, setFitnessGoal] = useState('Strength Training');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('member');
     const [agreeTerms, setAgreeTerms] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -52,7 +57,6 @@ const Register = () => {
         }
 
         if (phone.trim()) {
-            // allows plus, digits, spaces, hyphens, parenthesis 
             const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
             if (!phoneRegex.test(phone.trim()) || phone.trim().length < 7) {
                 setToast({ show: true, message: 'Please enter a valid Phone number.', type: 'warning' });
@@ -87,26 +91,27 @@ const Register = () => {
                 full_name: fullName.trim(),
                 email: email.trim(),
                 phone: phone.trim(),
-                password,
-                role
+                date_of_birth: dateOfBirth,
+                gender,
+                age,
+                height,
+                weight,
+                fitness_goal: fitnessGoal,
+                password
             };
 
             const result = await LoginService.register(userData);
 
             if (result.success) {
-                const user = LoginService.getCurrentUser();
-                setCurrentUser(user);
                 setToast({
                     show: true,
-                    message: result.isMock
-                        ? `Welcome to OMNIFIT, ${fullName}! Account created successfully as ${role.toUpperCase()}.`
-                        : `Account created successfully! Logged in as ${role.toUpperCase()}.`,
+                    message: "Registration successful. Please login.",
                     type: 'success'
                 });
 
-                // Redirect to homepage after brief delay
+                // Redirect newly registered member to /login
                 setTimeout(() => {
-                    navigate('/');
+                    navigate('/login');
                 }, 1500);
             }
         } catch (err) {
@@ -221,33 +226,15 @@ const Register = () => {
                         /* REGISTER FORM */
                         <>
                             {/* TITLE & SUBTITLE */}
-                            <h1 className="register-card-title">JOIN OMNIFIT</h1>
-                            <p className="register-card-subtitle">Create your high-performance account</p>
-
-                            {/* ROLE SELECTION PILLS */}
-                            <div className="role-selector-pills mb-4">
-                                <button
-                                    type="button"
-                                    className={`role-pill ${role === 'member' ? 'active' : ''}`}
-                                    onClick={() => setRole('member')}
-                                >
-                                    <i className="bi bi-person-fill"></i> Member Account
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`role-pill ${role === 'trainer' ? 'active' : ''}`}
-                                    onClick={() => setRole('trainer')}
-                                >
-                                    <i className="bi bi-lightning-charge-fill"></i> Trainer Account
-                                </button>
-                            </div>
+                            <h1 className="register-card-title">CREATE MEMBER ACCOUNT</h1>
+                            <p className="register-card-subtitle">Join the OMNIFIT high-performance health club ecosystem</p>
 
                             {/* REGISTER FORM */}
                             <form onSubmit={handleSubmit} noValidate>
 
                                 {/* FULL NAME */}
                                 <div className="form-group mb-3 text-start">
-                                    <label className="form-label-custom">FULL NAME</label>
+                                    <label className="form-label-custom">FULL NAME *</label>
                                     <div className="custom-input-box">
                                         <span className="input-icon">
                                             <i className="bi bi-person"></i>
@@ -260,13 +247,14 @@ const Register = () => {
                                             onChange={(e) => setFullName(e.target.value.replace(/[^a-zA-Z\s'-]/g, ''))}
                                             required
                                             autoComplete="name"
+                                            data-testid="register-fullname-input"
                                         />
                                     </div>
                                 </div>
 
                                 {/* IDENTITY (EMAIL) */}
                                 <div className="form-group mb-3 text-start">
-                                    <label className="form-label-custom">EMAIL ADDRESS</label>
+                                    <label className="form-label-custom">EMAIL ADDRESS *</label>
                                     <div className="custom-input-box">
                                         <span className="input-icon">@</span>
                                         <input
@@ -277,13 +265,14 @@ const Register = () => {
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
                                             autoComplete="email"
+                                            data-testid="register-email-input"
                                         />
                                     </div>
                                 </div>
 
-                                {/* PHONE NUMBER (OPTIONAL) */}
+                                {/* PHONE NUMBER */}
                                 <div className="form-group mb-3 text-start">
-                                    <label className="form-label-custom">PHONE NUMBER <span className="text-muted font-normal">(OPTIONAL)</span></label>
+                                    <label className="form-label-custom">PHONE NUMBER</label>
                                     <div className="custom-input-box">
                                         <span className="input-icon">
                                             <i className="bi bi-telephone"></i>
@@ -299,9 +288,99 @@ const Register = () => {
                                     </div>
                                 </div>
 
+                                {/* DATE OF BIRTH & GENDER ROW */}
+                                <div className="row g-2 mb-3">
+                                    <div className="col-md-6 text-start">
+                                        <label className="form-label-custom">DATE OF BIRTH</label>
+                                        <div className="custom-input-box">
+                                            <input
+                                                type="date"
+                                                className="custom-input px-3"
+                                                value={dateOfBirth}
+                                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6 text-start">
+                                        <label className="form-label-custom">GENDER</label>
+                                        <div className="custom-input-box">
+                                            <select
+                                                className="custom-input px-3 bg-transparent text-slate-800"
+                                                value={gender}
+                                                onChange={(e) => setGender(e.target.value)}
+                                            >
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* AGE, HEIGHT, WEIGHT ROW */}
+                                <div className="row g-2 mb-3">
+                                    <div className="col-md-4 text-start">
+                                        <label className="form-label-custom">AGE</label>
+                                        <div className="custom-input-box">
+                                            <input
+                                                type="number"
+                                                className="custom-input px-3"
+                                                placeholder="25"
+                                                value={age}
+                                                onChange={(e) => setAge(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 text-start">
+                                        <label className="form-label-custom">HEIGHT (CM)</label>
+                                        <div className="custom-input-box">
+                                            <input
+                                                type="number"
+                                                className="custom-input px-3"
+                                                placeholder="175"
+                                                value={height}
+                                                onChange={(e) => setHeight(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 text-start">
+                                        <label className="form-label-custom">WEIGHT (KG)</label>
+                                        <div className="custom-input-box">
+                                            <input
+                                                type="number"
+                                                className="custom-input px-3"
+                                                placeholder="70"
+                                                value={weight}
+                                                onChange={(e) => setWeight(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* FITNESS GOAL */}
+                                <div className="form-group mb-3 text-start">
+                                    <label className="form-label-custom">FITNESS GOAL</label>
+                                    <div className="custom-input-box">
+                                        <span className="input-icon">
+                                            <i className="bi bi-trophy"></i>
+                                        </span>
+                                        <select
+                                            className="custom-input bg-transparent"
+                                            value={fitnessGoal}
+                                            onChange={(e) => setFitnessGoal(e.target.value)}
+                                        >
+                                            <option value="Weight Loss">Weight Loss</option>
+                                            <option value="Strength Training">Strength Training</option>
+                                            <option value="Hypertrophy & Muscle Gain">Hypertrophy & Muscle Gain</option>
+                                            <option value="Cardio & Endurance">Cardio & Endurance</option>
+                                            <option value="General Health">General Health</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 {/* ACCESS CODE (PASSWORD) */}
                                 <div className="form-group mb-3 text-start">
-                                    <label className="form-label-custom">ACCESS CODE (PASSWORD)</label>
+                                    <label className="form-label-custom">PASSWORD *</label>
                                     <div className="custom-input-box">
                                         <span className="input-icon">
                                             <i className="bi bi-lock"></i>
@@ -314,6 +393,7 @@ const Register = () => {
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
                                             autoComplete="new-password"
+                                            data-testid="register-password-input"
                                         />
                                         <button
                                             type="button"
@@ -327,7 +407,7 @@ const Register = () => {
 
                                 {/* CONFIRM PASSWORD */}
                                 <div className="form-group mb-3 text-start">
-                                    <label className="form-label-custom">CONFIRM ACCESS CODE</label>
+                                    <label className="form-label-custom">CONFIRM PASSWORD *</label>
                                     <div className="custom-input-box">
                                         <span className="input-icon">
                                             <i className="bi bi-shield-lock"></i>
@@ -340,6 +420,7 @@ const Register = () => {
                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                             required
                                             autoComplete="new-password"
+                                            data-testid="register-confirm-password-input"
                                         />
                                         <button
                                             type="button"
@@ -356,6 +437,7 @@ const Register = () => {
                                         id="termsCheck"
                                         checked={agreeTerms}
                                         onChange={(e) => setAgreeTerms(e.target.checked)}
+                                        data-testid="register-terms-checkbox"
                                     />
                                     <label htmlFor="termsCheck" className="terms-label">
                                         I agree to the <a href="#terms" onClick={(e) => e.preventDefault()}>Terms of Service</a> & <a href="#privacy" onClick={(e) => e.preventDefault()}>Privacy Policy</a>.
@@ -367,6 +449,7 @@ const Register = () => {
                                     type="submit"
                                     className="btn-initialize-session"
                                     disabled={isLoading}
+                                    data-testid="register-submit-button"
                                 >
                                     {isLoading ? (
                                         <>

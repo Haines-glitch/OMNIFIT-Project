@@ -58,8 +58,8 @@ class Command(BaseCommand):
             trainer_profile, _ = Trainer.objects.get_or_create(
                 user=user,
                 defaults={
-                    'specialization': t_info['spec'],
-                    'years_experience': t_info['exp'],
+                    'specialization': 'Strength Training',
+                    'experience': t_info['exp'],
                     'certification': 'NASM Master Certified',
                     'bio': f"Expert in {t_info['spec']} with over {t_info['exp']} years of performance coaching."
                 }

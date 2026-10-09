@@ -67,16 +67,17 @@ const Login = () => {
             if (result.success) {
                 const user = LoginService.getCurrentUser();
                 setCurrentUser(user);
+                const actualRole = (user?.role || role).toLowerCase();
                 setToast({
                     show: true,
-                    message: `Authentication successful! Accessing ${role.toUpperCase()} Dashboard...`,
+                    message: `Authentication successful! Welcome to OMNIFIT.`,
                     type: 'success'
                 });
 
                 setTimeout(() => {
-                    if (role === 'admin') {
+                    if (actualRole === 'admin') {
                         navigate('/admin-dashboard');
-                    } else if (role === 'trainer') {
+                    } else if (actualRole === 'trainer') {
                         navigate('/trainer-dashboard');
                     } else {
                         navigate('/member-dashboard');
@@ -145,6 +146,7 @@ const Login = () => {
                     <button
                         className="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold"
                         onClick={() => navigate('/')}
+                        data-testid="login-home-btn"
                     >
                         <i className="bi bi-house-door-fill me-1"></i> HOME
                     </button>
@@ -183,6 +185,7 @@ const Login = () => {
                                 <button
                                     type="button"
                                     className="btn-initialize-session mb-2"
+                                    data-testid="goto-dashboard-btn"
                                     onClick={() => {
                                         const userRole = (currentUser?.role || 'member').toLowerCase();
                                         if (userRole === 'admin') navigate('/admin-dashboard');
@@ -196,6 +199,7 @@ const Login = () => {
                                     type="button"
                                     className="btn btn-outline-danger rounded-pill py-2 fw-bold"
                                     onClick={handleLogout}
+                                    data-testid="logout-btn"
                                 >
                                     LOGOUT SESSION
                                 </button>
@@ -249,6 +253,7 @@ const Login = () => {
                                             onChange={(e) => setEmail(e.target.value)}
                                             required
                                             autoComplete="username"
+                                            data-testid="login-email-input"
                                         />
                                     </div>
                                 </div>
@@ -277,6 +282,7 @@ const Login = () => {
                                             onChange={(e) => setPassword(e.target.value)}
                                             required
                                             autoComplete="current-password"
+                                            data-testid="login-password-input"
                                         />
                                         <button
                                             type="button"
@@ -293,6 +299,7 @@ const Login = () => {
                                     type="submit"
                                     className="btn-initialize-session"
                                     disabled={isLoading}
+                                    data-testid="login-submit-button"
                                 >
                                     {isLoading ? (
                                         <>

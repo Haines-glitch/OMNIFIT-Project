@@ -234,3 +234,12 @@ body {
 .animate-float {
   animation: floatAnimation 4s ease-in-out infinite;
 }
+
+/* Ensure placeholder text is actually visible inside dark inputs */
+.bg-dark::-webkit-input-placeholder,
+.bg-dark::-moz-placeholder,
+.bg-dark::-ms-input-placeholder,
+.bg-dark::placeholder {
+  color: rgba(255, 255, 255, 0.65) !important;
+  opacity: 1;
+}

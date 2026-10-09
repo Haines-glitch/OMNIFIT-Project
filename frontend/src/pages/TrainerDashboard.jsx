@@ -73,6 +73,10 @@ const TrainerDashboard = () => {
         { name: 'Michael Scott', plan: 'Silver Basic', goal: 'Weight Management', attendance: '95%' },
     ];
 
+    const handleSaveUser = (updatedUser) => {
+        setCurrentUser(updatedUser);
+    };
+
     const renderContent = () => {
         switch (activeTab) {
             case 'members':
@@ -102,7 +106,7 @@ const TrainerDashboard = () => {
             case 'reports':
                 return <ReportModule theme="light" />;
             case 'profile':
-                return <ProfileModule user={trainerInfo} role="TRAINER" theme="light" />;
+                return <ProfileModule user={trainerInfo} onSaveUser={handleSaveUser} role="TRAINER" theme="light" />;
             case 'settings':
                 return <TrainerSettingsModule theme="light" />;
             case 'dashboard':

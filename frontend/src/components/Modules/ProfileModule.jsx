@@ -11,11 +11,14 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
 
     const defaultAvatar = 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=300&auto=format&fit=crop&q=80';
 
+    const defaultEmail = user?.email || (role === 'MEMBER' ? 'sarah.jenkins@omnifit.com' : 'marcus.vance@omnifit.com');
+    const defaultName = user?.name || (role === 'MEMBER' ? 'Sarah Jenkins' : 'Marcus Vance');
+
     const [profileData, setProfileData] = useState({
-        name: user?.name || 'Marcus Vance',
-        email: user?.email || 'abhilash.kk@omnifit.com',
+        name: defaultName,
+        email: defaultEmail,
         phone: user?.phone || '+91 98765 43210',
-        gender: user?.gender || 'Male',
+        gender: user?.gender || 'Female',
         dob: user?.dob || '1998-04-12',
         height: user?.height || '182 cm',
         weight: user?.weight || '78.5 kg',
@@ -31,10 +34,10 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
     useEffect(() => {
         if (user) {
             const updated = {
-                name: user.name || 'Marcus Vance',
-                email: user.email || 'abhilash.kk@omnifit.com',
+                name: user.name || (role === 'MEMBER' ? 'Sarah Jenkins' : 'Marcus Vance'),
+                email: user.email || (role === 'MEMBER' ? 'sarah.jenkins@omnifit.com' : 'marcus.vance@omnifit.com'),
                 phone: user.phone || '+91 98765 43210',
-                gender: user.gender || 'Male',
+                gender: user.gender || 'Female',
                 dob: user.dob || '1998-04-12',
                 height: user.height || '182 cm',
                 weight: user.weight || '78.5 kg',
@@ -49,7 +52,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
                 setTempData(updated);
             }
         }
-    }, [user, isEditing]);
+    }, [user, isEditing, role]);
 
     const [passwordData, setPasswordData] = useState({
         currentPassword: '',
@@ -278,12 +281,16 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Email Address</label>
+                                <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center justify-between">
+                                    <span>Email Address</span>
+                                    <span className="text-[10px] text-[#00F29D] font-bold uppercase tracking-wider">Editable</span>
+                                </label>
                                 <input
                                     type="email"
                                     value={tempData.email}
                                     onChange={(e) => setTempData({ ...tempData, email: e.target.value })}
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs font-medium outline-none focus:border-[#00F29D] focus:ring-1 focus:ring-[#00F29D] transition-all"
+                                    placeholder="Enter your email address..."
                                     required
                                 />
                             </div>

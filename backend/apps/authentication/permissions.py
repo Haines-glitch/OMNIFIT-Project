@@ -1,22 +1,35 @@
 from rest_framework.permissions import BasePermission
 
-class IsAdminUserRole(BasePermission):
+class IsAdminRole(BasePermission):
     """
-    Allows access only to users with the 'admin' role.
+    Custom DRF permission that allows access only to users with role == 'admin' (case-insensitive).
+    Returns 401 Unauthorized for unauthenticated requests, and 403 Forbidden for authenticated non-admin users.
     """
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.role == 'admin')
+        return bool(
+            request.user and 
+            request.user.is_authenticated and 
+            getattr(request.user, 'role', '').lower() == 'admin'
+        )
 
-class IsTrainerUserRole(BasePermission):
+class IsTrainerRole(BasePermission):
     """
-    Allows access only to users with the 'trainer' or 'admin' role.
+    Custom DRF permission that allows access to users with role == 'trainer' or 'admin'.
     """
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and request.user.role in ['trainer', 'admin'])
+        return bool(
+            request.user and 
+            request.user.is_authenticated and 
+            getattr(request.user, 'role', '').lower() in ['trainer', 'admin']
+        )
 
-class IsMemberUserRole(BasePermission):
+class IsMemberRole(BasePermission):
     """
-    Allows access to authenticated members, trainers, and admins.
+    Custom DRF permission that allows access to users with role == 'member' or 'admin'.
     """
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated)
+        return bool(
+            request.user and 
+            request.user.is_authenticated and 
+            getattr(request.user, 'role', '').lower() in ['member', 'admin']
+        )

@@ -15,10 +15,32 @@ const WorkoutModule = ({ role }) => {
         name: '', category: 'Chest', sets: 4, reps: 10, duration: '15 mins', calories: 150, difficulty: 'Intermediate', notes: ''
     });
 
-    const handleAddWorkout = (e) => {
+    const handleAddWorkout = async (e) => {
         e.preventDefault();
         if (!newWorkout.name) return;
-        setWorkouts([...workouts, { ...newWorkout, id: Date.now() }]);
+
+        // Automatically assign to the currently active category tab (defaulting to Chest if 'All' is selected)
+        const activeCategory = selectedCategory === 'All' ? 'Chest' : selectedCategory;
+
+        const newExercise = { ...newWorkout, category: activeCategory, id: Date.now() };
+        setWorkouts(prev => [...prev, newExercise]);
+
+        try {
+            const { default: LoginService } = await import('../Login/LoginService');
+            await LoginService.assignRoutine({
+                title: `${activeCategory} Routine: ${newWorkout.name}`,
+                description: 'Trainer assigned custom exercise.',
+                exercises: [{
+                    name: newWorkout.name,
+                    sets_reps: `${newWorkout.sets} x ${newWorkout.reps}`,
+                    target_load: 'Adjust load based on capability',
+                    notes: newWorkout.notes || 'No specific notes.'
+                }]
+            });
+        } catch (err) {
+            console.warn('Backend sync note: could not assign routine. Local UI updated.');
+        }
+
         setNewWorkout({ name: '', category: 'Chest', sets: 4, reps: 10, duration: '15 mins', calories: 150, difficulty: 'Intermediate', notes: '' });
     };
 
@@ -61,43 +83,37 @@ const WorkoutModule = ({ role }) => {
                     <h5 className="fw-bold text-white mb-3"><i className="bi bi-plus-circle-fill text-accent me-2"></i>Assign New Exercise</h5>
                     <form onSubmit={handleAddWorkout} className="row g-3">
                         <div className="col-md-4">
+                            <label className="form-label text-muted small fw-bold">Exercise Name *</label>
                             <input
                                 type="text"
                                 className="form-control bg-dark text-white border-secondary"
-                                placeholder="Exercise Name (e.g. Barbell Squat)"
+                                placeholder="e.g. Barbell Squat"
                                 value={newWorkout.name}
                                 onChange={(e) => setNewWorkout({ ...newWorkout, name: e.target.value })}
                             />
                         </div>
-                        <div className="col-md-2">
-                            <select
-                                className="form-select bg-dark text-white border-secondary"
-                                value={newWorkout.category}
-                                onChange={(e) => setNewWorkout({ ...newWorkout, category: e.target.value })}
-                            >
-                                {categories.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
-                        </div>
-                        <div className="col-md-2">
+                        <div className="col-md-3">
+                            <label className="form-label text-muted small fw-bold">Sets</label>
                             <input
                                 type="number"
                                 className="form-control bg-dark text-white border-secondary"
-                                placeholder="Sets"
+                                placeholder="4"
                                 value={newWorkout.sets}
                                 onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })}
                             />
                         </div>
-                        <div className="col-md-2">
+                        <div className="col-md-3">
+                            <label className="form-label text-muted small fw-bold">Reps / Time</label>
                             <input
                                 type="text"
                                 className="form-control bg-dark text-white border-secondary"
-                                placeholder="Reps (e.g. 10)"
+                                placeholder="10"
                                 value={newWorkout.reps}
                                 onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })}
                             />
                         </div>
-                        <div className="col-md-2">
-                            <button type="submit" className="btn btn-accent w-100">Add Exercise</button>
+                        <div className="col-md-2 d-flex align-items-end">
+                            <button type="submit" className="btn btn-accent w-100 fw-bold">Add Exercise</button>
                         </div>
                     </form>
                 </div>

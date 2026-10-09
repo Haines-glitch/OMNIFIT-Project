@@ -18,6 +18,7 @@ urlpatterns = [
     path('', api_root, name='root'),
     path('admin/', admin.site.urls),
     path('api/auth/', include('apps.authentication.urls')),
+    path('api/trainers/', include('apps.trainers.urls')),
     path('api/', include('apps.authentication.urls')),
 ]
 

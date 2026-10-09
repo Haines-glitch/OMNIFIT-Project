@@ -22,12 +22,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True, min_length=8)
     phone = serializers.CharField(required=False, allow_blank=True)
-    role = serializers.ChoiceField(choices=['member', 'trainer', 'admin'], default='member')
     full_name = serializers.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ['email', 'full_name', 'password', 'phone', 'role']
+        fields = ['email', 'full_name', 'password', 'phone']
 
     def validate_email(self, value):
         email = value.lower().strip()
@@ -36,7 +35,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         except DjangoValidationError:
             raise serializers.ValidationError("Invalid email address format.")
         if User.objects.filter(email__iexact=email).exists():
-            raise serializers.ValidationError("A user with this email address already exists.")
+            raise serializers.ValidationError("An account with this email address already exists.")
         return email
 
     def validate_phone(self, value):
@@ -59,13 +58,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
+        # SECURITY REQUIREMENT: Server MUST ALWAYS force role = member for public registration
         user = User.objects.create_user(
             email=validated_data['email'],
             username=validated_data['email'],
             full_name=validated_data.get('full_name', ''),
             password=validated_data['password'],
             phone=validated_data.get('phone', ''),
-            role=validated_data.get('role', 'member'),
+            role='member',
             status='Active'
         )
         return user
@@ -80,23 +80,19 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 "account": "Your account is suspended or inactive. Please contact system administrator."
             })
 
-        # Verify role requirement if provided in request
-        requested_role = self.context['request'].data.get('role')
-        if requested_role and self.user.role.lower() != str(requested_role).lower():
-            raise serializers.ValidationError({"role": f"User is registered as '{self.user.role}', not '{requested_role}'."})
-
         user_display_name = self.user.full_name
         if not user_display_name:
             prefix = self.user.email.split('@')[0] if '@' in self.user.email else self.user.email
             user_display_name = ' '.join([p.upper() if len(p) <= 2 else p.capitalize() for p in prefix.replace('.', ' ').replace('_', ' ').replace('-', ' ').split()])
 
-        # Dynamic redirect URL based on role
+        # Dynamic redirect URL based on authoritative database role
+        db_role = (self.user.role or 'member').lower()
         role_redirect_map = {
-            'member': '/member/dashboard/',
-            'trainer': '/trainer/dashboard/',
-            'admin': '/admin/dashboard/'
+            'member': '/member-dashboard',
+            'trainer': '/trainer-dashboard',
+            'admin': '/admin-dashboard'
         }
-        redirect_url = role_redirect_map.get(self.user.role.lower(), '/member/dashboard/')
+        redirect_url = role_redirect_map.get(db_role, '/member-dashboard')
 
         data['user'] = {
             'id': self.user.id,

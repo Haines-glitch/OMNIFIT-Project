@@ -12,6 +12,7 @@ import DietModule from '../components/Modules/DietModule';
 import ProfileModule from '../components/Modules/ProfileModule';
 import { getAdminDashboardData } from '../services/dashboardService';
 import LoginService from '../components/Login/LoginService';
+import TrainerManagementModule from '../components/Modules/TrainerManagementModule';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -68,11 +69,12 @@ const AdminDashboard = () => {
 
     const renderContent = () => {
         switch (activeTab) {
-            case 'members':
             case 'trainers':
+                return <TrainerManagementModule theme="light" />;
+            case 'members':
                 return (
                     <DataTable
-                        title="Registered Club Accounts"
+                        title="Registered Member Accounts"
                         columns={[
                             { key: 'member', label: 'Account Name' },
                             { key: 'plan', label: 'Role / Plan' },

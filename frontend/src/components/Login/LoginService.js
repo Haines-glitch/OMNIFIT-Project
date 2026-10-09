@@ -130,50 +130,86 @@ export const LoginService = {
      */
     async register(userData) {
         try {
-            const response = await api.post('/register/', userData);
-            const payload = response.data?.data || response.data;
-            const { access, refresh, user } = payload;
-
-            if (access && user) {
-                const formattedUser = {
-                    ...user,
-                    name: user.name || user.full_name || userData.full_name || 'User',
-                    full_name: user.full_name || user.name || userData.full_name,
-                    role: (user.role || userData.role || 'member').toUpperCase()
-                };
-                localStorage.setItem('access_token', access);
-                if (refresh) localStorage.setItem('refresh_token', refresh);
-                localStorage.setItem('user', JSON.stringify(formattedUser));
-                localStorage.setItem('user_role', formattedUser.role);
-            }
-
-            return { success: true, data: payload };
+            // Strip any role parameter so backend forces MEMBER role
+            const { role, ...memberData } = userData;
+            const response = await api.post('/register/', memberData);
+            const payload = response.data;
+            return {
+                success: true,
+                message: payload.message || "Member registration successful",
+                user: payload.user || payload.data?.user
+            };
         } catch (error) {
             console.warn('Backend API connection failed or unavailable. Falling back to frontend mock registration for demonstration.', error);
 
             const mockUser = {
                 id: Math.floor(Math.random() * 1000) + 100,
-                name: userData.full_name || userData.email.split('@')[0].toUpperCase(),
+                name: userData.full_name || (userData.email ? userData.email.split('@')[0] : 'Member'),
                 email: userData.email,
-                phone: userData.phone || '',
-                role: (userData.role || 'member').toUpperCase(),
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+                role: 'MEMBER'
             };
 
-            const mockResponse = {
-                access: 'mock_jwt_access_token_' + Date.now(),
-                refresh: 'mock_jwt_refresh_token_' + Date.now(),
+            return {
+                success: true,
+                message: "Registration successful. Please login.",
                 user: mockUser,
-                message: 'User registered successfully.'
+                isMock: true
             };
-
-            localStorage.setItem('access_token', mockResponse.access);
-            localStorage.setItem('refresh_token', mockResponse.refresh);
-            localStorage.setItem('user', JSON.stringify(mockUser));
-            localStorage.setItem('user_role', mockUser.role);
-
-            return { success: true, data: mockResponse, isMock: true };
         }
+    },
+
+    /**
+     * Admin Trainer Management API Integrations
+     */
+    async getTrainers() {
+        try {
+            const res = await api.get('/trainers/', { baseURL: '/api' });
+            return res.data?.data || res.data || [];
+        } catch (e) {
+            console.warn('Error fetching trainers:', e);
+            return null;
+        }
+    },
+
+    async createTrainer(trainerData) {
+        const res = await api.post('/trainers/', trainerData, { baseURL: '/api' });
+        return res.data;
+    },
+
+    async getTrainerById(id) {
+        const res = await api.get(`/trainers/${id}/`, { baseURL: '/api' });
+        return res.data?.data || res.data;
+    },
+
+    async updateTrainer(id, data) {
+        const res = await api.patch(`/trainers/${id}/`, data, { baseURL: '/api' });
+        return res.data;
+    },
+
+    async deleteTrainer(id) {
+        const res = await api.delete(`/trainers/${id}/`, { baseURL: '/api' });
+        return res.data;
+    },
+
+    async getAvailableMembers() {
+        try {
+            const res = await api.get('/trainers/available-members/', { baseURL: '/api' });
+            return res.data?.data || res.data || [];
+        } catch (e) {
+            console.warn('Error fetching members:', e);
+            return [];
+        }
+    },
+
+    async assignMemberToTrainer(trainerId, memberId) {
+        const res = await api.post(`/trainers/${trainerId}/assign-member/`, { member_id: memberId }, { baseURL: '/api' });
+        return res.data;
+    },
+
+    async assignRoutine(routineData) {
+        // Will post to /api/auth/trainer/assign-routine/
+        const res = await api.post('/trainer/assign-routine/', routineData);
+        return res.data;
     },
 
     /**
@@ -244,6 +280,7 @@ export const LoginService = {
         try {
             const response = await api.post('/profile/update/', {
                 user_id: currentUser.id,
+                current_email: currentUser.email,
                 name: newUser.name,
                 full_name: newUser.name,
                 email: newUser.email,
