@@ -108,7 +108,36 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
                     })}
                 </nav>
 
-                <div className="flex-shrink-0 pt-3 mt-1 border-t border-slate-100">
+                {!isCollapsed && (
+                    <div className="mb-3 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-lg bg-orange-50 border border-orange-200 text-orange-500 flex items-center justify-center text-xs">
+                                    <i className="bi bi-fire"></i>
+                                </span>
+                                <span className="text-[11px] font-bold text-slate-800">Current Streak</span>
+                            </div>
+                            <span className="text-[10px] font-black text-[#10B981] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-500/30">12 Days</span>
+                        </div>
+                        <div className="flex items-center justify-between pt-1">
+                            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => (
+                                <div key={idx} className="flex flex-col items-center gap-1">
+                                    <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-black ${
+                                        idx < 5 
+                                            ? 'bg-[#10B981] text-white shadow-xs' 
+                                            : idx === 5 
+                                            ? 'bg-emerald-100 text-[#10B981] border border-emerald-300'
+                                            : 'bg-slate-200 text-slate-400'
+                                    }`}>
+                                        {idx < 5 ? '✓' : ''}
+                                    </div>
+                                    <span className="text-[9px] font-bold text-slate-400">{day}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                <div className="flex-shrink-0 pt-2 border-t border-slate-100">
                     <button
                         data-testid="logout-btn"
                         onClick={handleLogout}
@@ -178,8 +207,39 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
                 })}
             </nav>
 
+            {/* Streak Widget (Only when expanded) */}
+            {!isCollapsed && (
+                <div className="mx-1 mb-3 p-3 rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-slate-800/80 shadow-lg">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-lg bg-orange-500/15 border border-orange-500/40 text-orange-400 flex items-center justify-center text-xs shadow-[0_0_8px_rgba(249,115,22,0.3)]">
+                                <i className="bi bi-fire"></i>
+                            </span>
+                            <span className="text-[11px] font-black text-white tracking-wide">Current Streak</span>
+                        </div>
+                        <span className="text-[10px] font-black text-[#00F29D] bg-[#00F29D]/10 px-2 py-0.5 rounded-full border border-[#00F29D]/30 shadow-[0_0_8px_rgba(0,242,157,0.2)]">12 Days</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-1">
+                        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => (
+                            <div key={idx} className="flex flex-col items-center gap-1">
+                                <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-black transition-all ${
+                                    idx < 5 
+                                        ? 'bg-[#00F29D] text-slate-950 shadow-[0_0_10px_rgba(0,242,157,0.5)]' 
+                                        : idx === 5 
+                                        ? 'bg-[#00F29D]/20 text-[#00F29D] border border-[#00F29D]/50'
+                                        : 'bg-slate-800/80 text-slate-500'
+                                }`}>
+                                    {idx < 5 ? '✓' : ''}
+                                </div>
+                                <span className="text-[9px] font-bold text-slate-400">{day}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Logout Action */}
-            <div className="flex-shrink-0 pt-3 mt-1 border-t border-slate-800/80">
+            <div className="flex-shrink-0 pt-2 border-t border-slate-800/80">
                 <button
                     data-testid="logout-btn"
                     onClick={handleLogout}

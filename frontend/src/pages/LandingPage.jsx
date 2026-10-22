@@ -9,181 +9,299 @@ const LandingPage = () => {
         navigate('/login');
     };
 
-    const scrollToFeatures = () => {
-        const element = document.getElementById('features-section');
+    const scrollToPrograms = () => {
+        const element = document.getElementById('programs-section');
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
     return (
-        <div className="landing-page-container">
+        <div className="iron-landing-page">
 
             {/* TOP NAVIGATION BAR */}
-            <header className="landing-navbar">
-                <div className="landing-nav-brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-                    <div className="nav-bolt-box">
-                        <i className="bi bi-lightning-fill"></i>
+            <header className="iron-navbar">
+                <div className="iron-nav-container">
+                    {/* Brand */}
+                    <div className="iron-brand" onClick={() => navigate('/')}>
+                        <div className="iron-brand-icon">
+                            <i className="bi bi-shield-shaded"></i>
+                        </div>
+                        <div className="iron-brand-text">
+                            <span className="iron-title">OMNIFIT</span>
+                            <span className="iron-subtitle">IRON DISTRICT</span>
+                        </div>
                     </div>
-                    <span className="nav-brand-text">OMNIFIT</span>
-                </div>
-                <div className="d-flex align-items-center gap-2">
-                    <button
-                        className="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold me-1"
-                        onClick={() => navigate('/login')}
-                    >
-                        LOGIN
-                    </button>
-                    <button className="btn-nav-get-started" onClick={() => navigate('/register')}>
-                        REGISTER
-                    </button>
+
+                    {/* Nav Links */}
+                    <nav className="iron-nav-links">
+                        <a href="#hero" className="active">HOME</a>
+                        <a href="#about">ABOUT</a>
+                        <a href="#programs-section">TRAINING</a>
+                        <a href="#coaches">COACHES</a>
+                        <a href="#membership">PRICING</a>
+                        <a href="#contact">CONTACT</a>
+                    </nav>
+
+                    {/* Auth Actions */}
+                    <div className="iron-nav-actions">
+                        <button
+                            className="btn-iron-login"
+                            onClick={() => navigate('/login')}
+                        >
+                            LOGIN
+                        </button>
+                        <button
+                            className="btn-iron-primary"
+                            onClick={() => navigate('/register')}
+                        >
+                            <span>START TRAINING</span>
+                            <i className="bi bi-arrow-up-right"></i>
+                        </button>
+                    </div>
                 </div>
             </header>
 
-            {/* HERO SECTION */}
-            <section className="landing-hero-section">
-                <div className="landing-hero-content">
-
-                    {/* MAIN HEADLINE */}
-                    <h1 className="hero-headline">
-                        INITIALIZE<br />
-                        YOUR<br />
-                        <span className="gradient-highlight">PERFORMANCE</span>
-                    </h1>
-
-                    {/* SUBTITLE */}
-                    <p className="hero-description">
-                        The digital ecosystem for high-output athletes. Fusing metabolic bio-signals with proprietary AI to engineer your peak physical state.
-                    </p>
-
-                    {/* CALL TO ACTIONS */}
-                    <div className="hero-actions">
-                        <button className="btn-start-protocol" onClick={handleGetStarted}>
-                            GET STARTED <i className="bi bi-arrow-right ms-2"></i>
-                        </button>
-                        <button className="btn-explore-engine" onClick={scrollToFeatures}>
-                            EXPLORE ENGINE
-                        </button>
-                    </div>
-
+            {/* SECTION 1: HERO SECTION - "BUILT DIFFERENT" */}
+            <section id="hero" className="iron-hero-section">
+                <div className="hero-backdrop">
+                    <img
+                        src="/images/iron_district_hero.jpg"
+                        alt="Iron District Elite Training"
+                        className="hero-backdrop-img"
+                    />
+                    <div className="hero-gradient-overlay"></div>
                 </div>
-            </section>
 
-            {/* FEATURES STACK CARDS SECTION */}
-            <section id="features-section" className="landing-cards-container">
-                <div className="landing-cards-stack">
+                <div className="iron-hero-container">
+                    <div className="hero-left-column">
+                        <h1 className="hero-massive-headline">
+                            BUILT<br />
+                            DIFFERENT<span className="dot-red">.</span>
+                        </h1>
 
-                    {/* CARD 1: METABOLIC SYNC */}
-                    <div className="feature-card white-card">
-                        <div className="feature-card-icon-badge">
-                            <i className="bi bi-sliders"></i>
+                        <div className="hero-red-brush"></div>
+
+                        <div className="hero-subheaders">
+                            <span className="sub-line sub-white">DISCIPLINE TODAY.</span>
+                            <span className="sub-line sub-red">DOMINATE TOMORROW.</span>
                         </div>
-                        <h2 className="feature-card-title">METABOLIC SYNC</h2>
-                        <p className="feature-card-text">
-                            Real-time physiological feedback loops. We track your glucose, VO2 max, and HRV to adjust your output intensity on the fly.
-                        </p>
+
+                        <div className="hero-cta-group">
+                            <button className="btn-iron-primary btn-hero-primary" onClick={handleGetStarted}>
+                                <span>START TRAINING</span>
+                                <i className="bi bi-arrow-up-right"></i>
+                            </button>
+                            <button className="btn-iron-video" onClick={scrollToPrograms}>
+                                <div className="video-play-circle">
+                                    <i className="bi bi-play-fill"></i>
+                                </div>
+                                <span>EXPLORE PROGRAMS</span>
+                            </button>
+                        </div>
                     </div>
 
-                    {/* CARD 2: AI COACH INTERFACE (DARK GLASS CARD) */}
-                    <div className="feature-card dark-terminal-card">
-                        <div className="terminal-header-tag">
-                            AI COACH INTERFACE
+                    {/* Hero Right Stat Column */}
+                    <div className="hero-right-stats">
+                        <div className="stat-brick">
+                            <div className="stat-icon-red">
+                                <i className="bi bi-hdd-rack-fill"></i>
+                            </div>
+                            <div className="stat-data">
+                                <span className="stat-num">500+</span>
+                                <span className="stat-lbl">ACTIVE MEMBERS</span>
+                            </div>
                         </div>
-                        <div className="terminal-content-box">
-                            <p className="terminal-code-text">
-                                "Heart rate recovery is 12% faster than last session. Recommendation: Increase load by 5kg for final set."
-                            </p>
-                            <div className="terminal-ack-badge">
-                                [ACKNOWLEDGED • INCREASING LOAD]
+
+                        <div className="stat-brick">
+                            <div className="stat-icon-red">
+                                <i className="bi bi-fire"></i>
+                            </div>
+                            <div className="stat-data">
+                                <span className="stat-num">15+</span>
+                                <span className="stat-lbl">EXPERT COACHES</span>
+                            </div>
+                        </div>
+
+                        <div className="stat-brick">
+                            <div className="stat-icon-red">
+                                <i className="bi bi-trophy-fill"></i>
+                            </div>
+                            <div className="stat-data">
+                                <span className="stat-num">10K+</span>
+                                <span className="stat-lbl">TRANSFORMATIONS</span>
+                            </div>
+                        </div>
+
+                        <div className="stat-brick">
+                            <div className="stat-icon-red">
+                                <i className="bi bi-lightning-charge-fill"></i>
+                            </div>
+                            <div className="stat-data">
+                                <span className="stat-num">100%</span>
+                                <span className="stat-lbl">DEDICATION</span>
                             </div>
                         </div>
                     </div>
-
-                    {/* CARD 3: ADAPTIVE PLANS */}
-                    <div className="feature-card grey-card">
-                        <div className="card-image-wrapper">
-                            <img
-                                src="/images/landing_workout_gear.png"
-                                alt="High-tech Gym Gear"
-                                className="card-top-image"
-                            />
-                        </div>
-                        <h2 className="feature-card-title mt-3">ADAPTIVE PLANS</h2>
-                        <p className="feature-card-text">
-                            Plans that evolve as you do. Never plateau with our dynamic resistance algorithms.
-                        </p>
-                    </div>
-
-                    {/* CARD 4: FULL SPECTRUM ANALYTICS */}
-                    <div className="feature-card white-card analytics-card">
-                        <div className="analytics-subtitle-tag">
-                            THE PULSE DASHBOARD
-                        </div>
-                        <h2 className="feature-card-title mb-3">FULL SPECTRUM ANALYTICS</h2>
-
-                        <ul className="analytics-checklist mb-4">
-                            <li>
-                                <i className="bi bi-check-circle-fill text-success me-2"></i>
-                                Neuromuscular Fatigue Analysis
-                            </li>
-                            <li>
-                                <i className="bi bi-check-circle-fill text-success me-2"></i>
-                                Sleep-to-Performance Correlation
-                            </li>
-                            <li>
-                                <i className="bi bi-check-circle-fill text-success me-2"></i>
-                                Precision Nutrition Windows
-                            </li>
-                        </ul>
-
-                        <div className="card-image-wrapper">
-                            <img
-                                src="/images/landing_analytics_screen.png"
-                                alt="Pulse Analytics Dashboard"
-                                className="card-bottom-image"
-                            />
-                        </div>
-                    </div>
-
                 </div>
             </section>
 
-            {/* CALL TO ACTION SECTION (DARK SECTION) */}
-            <section className="landing-cta-dark-section">
-                <div className="cta-content">
-                    <h2 className="cta-headline">
-                        BEYOND<br />
-                        HUMAN<br />
-                        LIMITS.
-                    </h2>
-                    <p className="cta-description">
-                        Join the 0.1% of performers who use OMNIFIT to dominate their field. Engineered for those who refuse to settle.
-                    </p>
-                    <button className="btn-initialize-now" onClick={handleGetStarted}>
-                        INITIALIZE NOW
-                    </button>
+            {/* SECTION 2: TRAINING PROGRAMS - "STRONGER EVERYDAY." */}
+            <section id="programs-section" className="iron-programs-section">
+                <div className="programs-container">
+                    {/* Header Info */}
+                    <div className="programs-header-grid">
+                        <div className="programs-title-block">
+                            <span className="section-eyebrow">TRAINING</span>
+                            <h2 className="section-huge-title">
+                                STRONGER<br />
+                                EVERYDAY<span className="dot-red">.</span>
+                            </h2>
+                            <p className="programs-description">
+                                World-class equipment, elite coaching, and an uncompromising AI community that pushes you to conquer your limits.
+                            </p>
+                            <button className="btn-iron-outline" onClick={handleGetStarted}>
+                                <span>EXPLORE ALL PROTOCOLS</span>
+                                <i className="bi bi-arrow-up-right"></i>
+                            </button>
+                        </div>
+
+                        {/* 3x Program Cards Grid */}
+                        <div className="programs-cards-grid">
+                            {/* Card 1: Strength */}
+                            <div className="iron-program-card" onClick={handleGetStarted}>
+                                <div className="card-badge-red">
+                                    <i className="bi bi-cone-striped"></i>
+                                </div>
+                                <div className="card-image-box">
+                                    <img
+                                        src="/images/program_strength.jpg"
+                                        alt="Strength Training Program"
+                                        className="card-bg-photo"
+                                    />
+                                    <div className="card-overlay-gradient"></div>
+                                </div>
+                                <div className="card-content-bottom">
+                                    <h3 className="card-title">STRENGTH</h3>
+                                    <p className="card-tagline">Build raw muscle. Lift heavy. Get results.</p>
+                                    <div className="card-action-arrow">
+                                        <i className="bi bi-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Card 2: Conditioning */}
+                            <div className="iron-program-card" onClick={handleGetStarted}>
+                                <div className="card-badge-red">
+                                    <i className="bi bi-heart-pulse-fill"></i>
+                                </div>
+                                <div className="card-image-box">
+                                    <img
+                                        src="/images/program_conditioning.jpg"
+                                        alt="Conditioning Endurance Program"
+                                        className="card-bg-photo"
+                                    />
+                                    <div className="card-overlay-gradient"></div>
+                                </div>
+                                <div className="card-content-bottom">
+                                    <h3 className="card-title">CONDITIONING</h3>
+                                    <p className="card-tagline">Increase aerobic output. Push your limits.</p>
+                                    <div className="card-action-arrow">
+                                        <i className="bi bi-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Card 3: Personal Training */}
+                            <div className="iron-program-card" onClick={handleGetStarted}>
+                                <div className="card-badge-red">
+                                    <i className="bi bi-person-fill"></i>
+                                </div>
+                                <div className="card-image-box">
+                                    <img
+                                        src="/images/program_coaching.jpg"
+                                        alt="Personal Coaching Program"
+                                        className="card-bg-photo"
+                                    />
+                                    <div className="card-overlay-gradient"></div>
+                                </div>
+                                <div className="card-content-bottom">
+                                    <h3 className="card-title">PERSONAL COACHING</h3>
+                                    <p className="card-tagline">1-on-1 NASM master coaching. 100% focused on you.</p>
+                                    <div className="card-action-arrow">
+                                        <i className="bi bi-arrow-up-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* PAGE FOOTER */}
-            <footer className="landing-footer">
-                <div className="footer-brand-header">
-                    <div className="footer-bolt-box me-2">
-                        <i className="bi bi-lightning-fill"></i>
+            {/* SECTION 3: CALL TO ACTION - "YOUR STRONGEST VERSION STARTS HERE" */}
+            <section className="iron-cta-section">
+                <div className="cta-backdrop">
+                    <img
+                        src="/images/iron_district_footer.jpg"
+                        alt="Be Your Own Standard"
+                        className="cta-backdrop-img"
+                    />
+                    <div className="cta-dark-wash"></div>
+                </div>
+
+                <div className="iron-cta-container">
+                    <div className="cta-left-copy">
+                        <h2 className="cta-giant-headline">
+                            YOUR<br />
+                            <span className="text-red">STRONGEST</span><br />
+                            VERSION
+                        </h2>
+                        <div className="cta-brush-italic">
+                            STARTS HERE.
+                        </div>
+
+                        <div className="cta-action-row">
+                            <button className="btn-iron-primary btn-cta-primary" onClick={handleGetStarted}>
+                                <span>JOIN NOW</span>
+                                <i className="bi bi-arrow-up-right"></i>
+                            </button>
+
+                            <div className="members-social-proof">
+                                <div className="avatar-stack">
+                                    <span className="mini-av av-1"></span>
+                                    <span className="mini-av av-2"></span>
+                                    <span className="mini-av av-3"></span>
+                                    <span className="mini-av av-4"></span>
+                                </div>
+                                <div className="proof-text">
+                                    <span className="proof-title">JOIN 500+ ATHLETES</span>
+                                    <span className="proof-sub">AND START YOUR JOURNEY</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <span className="footer-brand-title">OMNIFIT AI</span>
                 </div>
-                <p className="footer-copyright-text">
-                    © 2024 OMNIFIT AI. ENGINEERED FOR PERFORMANCE.
-                </p>
-                <div className="footer-navigation-links">
-                    <a href="#privacy">PRIVACY</a>
-                    <a href="#terms">TERMS</a>
-                    <a href="#support">SUPPORT</a>
-                    <a href="#twitter">TWITTER</a>
-                    <a href="#instagram">INSTAGRAM</a>
+            </section>
+
+            {/* FOOTER */}
+            <footer className="iron-footer">
+                <div className="footer-top-strip">
+                    <div className="footer-brand">
+                        <i className="bi bi-shield-shaded text-crimson"></i>
+                        <span className="footer-brand-name">OMNIFIT IRON DISTRICT</span>
+                    </div>
+                    <div className="footer-motto">
+                        DISCIPLINE TODAY • DOMINATE TOMORROW
+                    </div>
+                    <div className="footer-links">
+                        <a href="#terms">TERMS</a>
+                        <a href="#privacy">PRIVACY</a>
+                        <a href="#contact">SUPPORT</a>
+                    </div>
                 </div>
-                <div className="footer-bottom-accent-bar"></div>
+                <div className="footer-bottom-copy">
+                    © 2026 OMNIFIT IRON DISTRICT. ALL RIGHTS RESERVED.
+                </div>
             </footer>
 
         </div>

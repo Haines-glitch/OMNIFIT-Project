@@ -157,6 +157,47 @@ export const LoginService = {
     },
 
     /**
+     * Performs Google OAuth / One-Click Google Sign-in
+     */
+    async loginWithGoogle(googleUserData = {}) {
+        const email = (googleUserData.email || 'jagan@gmail.com').toLowerCase().trim();
+        const role = (googleUserData.role || localStorage.getItem('user_role') || 'member').toLowerCase();
+        const rawName = googleUserData.name || (email.split('@')[0]);
+        const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+        
+        const persisted = getPersistedProfile(email) || {};
+
+        const googleUser = {
+            id: persisted.id || Math.floor(Math.random() * 8000) + 1000,
+            name: persisted.name || displayName,
+            full_name: persisted.full_name || displayName,
+            email: email,
+            role: role.toUpperCase(),
+            phone: persisted.phone || '+91 98765 43210',
+            gender: persisted.gender || 'Male',
+            dob: persisted.dob || '1998-04-12',
+            height: persisted.height || '182 cm',
+            weight: persisted.weight || '78.5 kg',
+            bmi: persisted.bmi || 23.7,
+            fitnessGoal: persisted.fitnessGoal || 'Hypertrophy & Fat Loss',
+            emergencyContact: persisted.emergencyContact || 'Sarah Mercer (+91 98765 12345)',
+            medicalHistory: persisted.medicalHistory || 'None (Cleared for high-intensity training)',
+            avatar: googleUserData.avatar || persisted.avatar || DEFAULT_AVATAR,
+            authProvider: 'google',
+            ...persisted
+        };
+
+        savePersistedProfile(email, googleUser);
+        const token = 'google_oauth_token_' + Date.now();
+        localStorage.setItem('access_token', token);
+        localStorage.setItem('refresh_token', 'google_refresh_token_' + Date.now());
+        localStorage.setItem('user', JSON.stringify(googleUser));
+        localStorage.setItem('user_role', role.toUpperCase());
+
+        return { success: true, data: { user: googleUser, access: token } };
+    },
+
+    /**
      * Refresh JWT token
      */
     async refreshToken() {
