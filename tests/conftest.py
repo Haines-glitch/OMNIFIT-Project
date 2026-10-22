@@ -3,6 +3,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from tests.config import Config
 
 @pytest.fixture(scope="function")
@@ -11,14 +12,14 @@ def driver(request):
     Setup Chrome webdriver, yield it to the test, and tear down afterward.
     """
     options = Options()
-    # options.add_argument('--headless') # Uncomment for headless
+    options.add_argument('--headless=new')
     options.add_argument('--window-size=1920,1080')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
 
-    driver = webdriver.Chrome(options=options)
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
     driver.implicitly_wait(10)
-    driver.maximize_window()
     
     yield driver
     

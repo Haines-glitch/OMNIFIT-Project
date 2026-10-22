@@ -1,0 +1,2205 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "1pzuu8q53fuqe7bzx6tgougp86dos8h7",
+  "fields": {
+    "session_data": ".eJxVjEsOwiAUAO_y1obwk0-X7nsG8niAVA0kpV0Z726adKHbmcm8IeC-1bCPvIYlwQQCLr8sIj1zO0R6YLt3Rr1t6xLZkbDTDjb3lF-3s_0bVBwVJpAkroJz5VEQeSclNzzrTCVFLTlF45EsR1RFYhTOW5coWleMKkYrX-DzBdiNN_Q:1wpVlz:YDO8lXO23Q9SBg5PGnEXmvemYd6GU522NpA93NCxO5A",
+    "expire_date": "2026-08-13T18:46:27.483Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "khdpte1fck6koj9ff5beiauyypf9648c",
+  "fields": {
+    "session_data": ".eJxVjLsKwzAMAP9FczG2iWI7Y_d-Q5BsqU5bHMhjKv33EsjQrnfHvWGkfavjvsoyTgUGcHD5ZUz5Ke0Q5UHtPps8t22Z2ByJOe1qbnOR1_Vs_waV1goDdI4CakhdjOKRgtgcYlalpMWVnJFVhZE9J0Zvky29xxi1d8mijQKfL_zBOEs:1wtV5n:Zr_6T19Qp5R7sKTXiDWgwpvHwIGtU9C_BbYsJb8logM",
+    "expire_date": "2026-08-24T18:51:23.557Z"
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$pbsgczNOlJdeLbJciCHodP$ZU4W32KBr5niIs5yqFW3X8cRziHLKRporCNzozmIC8I=",
+    "last_login": "2026-08-10T06:18:05.803Z",
+    "is_superuser": true,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "date_joined": "2026-07-30T18:35:38.367Z",
+    "username": "admin",
+    "email": "admin@omnifit.com",
+    "full_name": null,
+    "phone": null,
+    "role": "ADMIN",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-07-30T18:35:38.632Z",
+    "updated_at": "2026-08-18T16:33:09.183Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$Dttw40WVfcnzTjvVsoqdv8$lJySUEMkwYV+21VxjCzyBetrhzP6LGqM3hzkFvZouMs=",
+    "last_login": "2026-08-06T06:52:32.619Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-08-06T06:52:03.328Z",
+    "username": "jibin@gmail.com",
+    "email": "jibin@gmail.com",
+    "full_name": "Jibin P Chacko",
+    "phone": "",
+    "role": "trainer",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-06T06:52:05.211Z",
+    "updated_at": "2026-08-06T06:52:05.211Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$12FlzU2KPaaEr43OkS30Oc$ddj0ar3phgrKvf3dwmwcRZhJLy9Mx7lAzAT18ET+BBM=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "date_joined": "2026-08-10T06:12:50.147Z",
+    "username": "marcus.vance@omnifit.com",
+    "email": "marcus.vance@omnifit.com",
+    "full_name": "Marcus Vance",
+    "phone": null,
+    "role": "trainer",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:50.148Z",
+    "updated_at": "2026-08-18T16:33:07.989Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$hkVbdyTJftbpEIoA2wJvsG$FZe5SUIB0hRZYCrx/AeELWbF8MiHxQRGKuUn8qdTJrc=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "date_joined": "2026-08-10T06:12:50.881Z",
+    "username": "elena.rostova@omnifit.com",
+    "email": "elena.rostova@omnifit.com",
+    "full_name": "Elena Rostova",
+    "phone": null,
+    "role": "trainer",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:50.881Z",
+    "updated_at": "2026-08-10T06:12:51.451Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$jG7rwzyO3GsfVM0przis9R$F+TNdyH/aXqs1HOrGq7t7Gg4uR/sCCV2Hou2yOJUVWE=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "date_joined": "2026-08-10T06:12:51.471Z",
+    "username": "david.kim@omnifit.com",
+    "email": "david.kim@omnifit.com",
+    "full_name": "David Kim",
+    "phone": null,
+    "role": "trainer",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:51.471Z",
+    "updated_at": "2026-08-10T06:12:52.135Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$5beG97U6ofemjyvRDU5SSo$EALaWjMVbH5slQW32x8IZJRBn/9PzBeukvMNyozf/3I=",
+    "last_login": "2026-08-10T18:52:37.318Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-08-10T06:12:52.151Z",
+    "username": "alex.mercer@omnifit.com",
+    "email": "alex.mercer@omnifit.com",
+    "full_name": "Alexander Vance",
+    "phone": "+91 98765 43210",
+    "role": "member",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:52.151Z",
+    "updated_at": "2026-09-07T18:00:19.243Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$QXLPd2PIo5DqWk1spkarHf$Zv4LCT4v+XUUIQS+K6FO2kbmFovTO/7gNdlom3hHyKI=",
+    "last_login": "2026-08-18T16:33:23.524Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-08-10T06:12:52.996Z",
+    "username": "sarah.jenkins@omnifit.com",
+    "email": "sarah.jenkins@omnifit.com",
+    "full_name": "Sarah Jenkins",
+    "phone": null,
+    "role": "member",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:52.996Z",
+    "updated_at": "2026-08-18T16:33:08.596Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$rqpPs6Sn5Dnw79Tiv92DTx$ThPuAb2TrNhNTnK7xlL4JdRb8Wf22Z6jjO964zBuht8=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-08-10T06:12:53.726Z",
+    "username": "michael.scott@omnifit.com",
+    "email": "michael.scott@omnifit.com",
+    "full_name": "Michael Scott",
+    "phone": null,
+    "role": "member",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:53.727Z",
+    "updated_at": "2026-08-10T06:12:54.372Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$DqvOFmEPSXChtJPvLrgvuy$Nvl5SlQX2VfL+phEPbroy6aoVMZpX6eNbIQ1Cfge8Ow=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-08-10T06:12:54.486Z",
+    "username": "rachel.green@omnifit.com",
+    "email": "rachel.green@omnifit.com",
+    "full_name": "Rachel Green",
+    "phone": null,
+    "role": "member",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:54.487Z",
+    "updated_at": "2026-08-10T06:12:55.116Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$ZujlFCehWL943YQhho4f5n$HxZ0T/4DtiweFRyev2SWb56N8SqQiYBzgR8wahLA054=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-08-10T17:31:34.026Z",
+    "username": "abhilash.kk@omnifit.com",
+    "email": "abhilash.kk@omnifit.com",
+    "full_name": "Abhilash KK",
+    "phone": null,
+    "role": "member",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-10T17:31:34.027Z",
+    "updated_at": "2026-08-10T17:31:34.603Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$hIoUVZOwL6TwnNSxNaO5w1$hbUtLorgJ6tdLuZnlmsYry97JawYOgm3JOl/O38s95c=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-08-18T16:33:45.806Z",
+    "username": "valid.athlete@omnifit.com",
+    "email": "valid.athlete@omnifit.com",
+    "full_name": "Valid Athlete",
+    "phone": "+15554443333",
+    "role": "member",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-08-18T16:33:46.084Z",
+    "updated_at": "2026-08-18T16:33:46.084Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.user",
+  "fields": {
+    "password": "pbkdf2_sha256$720000$GYe92oAFSsoskgOajozIvX$Z9ZmuqYyaFPgdDXOxgUTOuT5d9kY09fbxHY9oufp67g=",
+    "last_login": "2026-09-25T08:50:16.804Z",
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "is_staff": false,
+    "date_joined": "2026-09-24T03:27:08.303Z",
+    "username": "josekutty@gmail.com",
+    "email": "josekutty@gmail.com",
+    "full_name": "Josekutty Shoby",
+    "phone": "+91 8301821664",
+    "role": "member",
+    "status": "Active",
+    "profile_image": "",
+    "is_active": true,
+    "created_at": "2026-09-24T03:27:08.821Z",
+    "updated_at": "2026-09-24T03:50:17.462Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "authentication.notification",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "notification_type": "AI Alert",
+    "title": "Macro Target Adjusted",
+    "message": "Protein target increased to 160g based on recent intensity logs.",
+    "read": false,
+    "created_at": "2026-08-18T16:33:09.203Z"
+  }
+},
+{
+  "model": "authentication.notification",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "notification_type": "Appointment",
+    "title": "1-on-1 Session Confirmed",
+    "message": "Session scheduled with Marcus Vance at 10:00 AM.",
+    "read": false,
+    "created_at": "2026-08-18T16:33:09.205Z"
+  }
+},
+{
+  "model": "authentication.notification",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "notification_type": "Member Update",
+    "title": "New Routine Prescribed",
+    "message": "Trainer assigned a new routine: 'Leg & Core Destruction'.",
+    "read": false,
+    "created_at": "2026-08-18T16:33:23.548Z"
+  }
+},
+{
+  "model": "authentication.notification",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "valid.athlete@omnifit.com"
+    ],
+    "notification_type": "AI Alert",
+    "title": "Welcome to OMNIFIT Ecosystem",
+    "message": "Welcome Valid Athlete! Your AI Athlete profile is active.",
+    "read": false,
+    "created_at": "2026-08-18T16:33:46.092Z"
+  }
+},
+{
+  "model": "authentication.notification",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "notification_type": "AI Alert",
+    "title": "Welcome to OMNIFIT Ecosystem",
+    "message": "Welcome Josekutty Shoby! Your AI Athlete profile is active.",
+    "read": false,
+    "created_at": "2026-09-24T03:27:08.843Z"
+  }
+},
+{
+  "model": "members.member",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "assigned_trainer": [
+      "elena.rostova@omnifit.com"
+    ],
+    "membership_no": null,
+    "join_date": "2026-08-18",
+    "membership_plan": "Gold Fitness",
+    "expiry_date": null,
+    "date_of_birth": null,
+    "gender": null,
+    "age": null,
+    "address": null,
+    "height_cm": 168.0,
+    "weight_kg": 62.0,
+    "bmi": 22.0,
+    "fitness_goal": "Endurance & Cardio",
+    "status": "Active",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:53.663Z"
+  }
+},
+{
+  "model": "members.member",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "assigned_trainer": [
+      "david.kim@omnifit.com"
+    ],
+    "membership_no": null,
+    "join_date": "2026-08-18",
+    "membership_plan": "Silver Basic",
+    "expiry_date": null,
+    "date_of_birth": null,
+    "gender": null,
+    "age": null,
+    "address": null,
+    "height_cm": 175.0,
+    "weight_kg": 85.0,
+    "bmi": 27.8,
+    "fitness_goal": "Weight Management",
+    "status": "Active",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:54.407Z"
+  }
+},
+{
+  "model": "members.member",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "assigned_trainer": [
+      "marcus.vance@omnifit.com"
+    ],
+    "membership_no": null,
+    "join_date": "2026-08-18",
+    "membership_plan": "Platinum VIP",
+    "expiry_date": null,
+    "date_of_birth": null,
+    "gender": null,
+    "age": null,
+    "address": null,
+    "height_cm": 165.0,
+    "weight_kg": 56.5,
+    "bmi": 20.8,
+    "fitness_goal": "Flexibility & Toning",
+    "status": "Active",
+    "is_active": true,
+    "created_at": "2026-08-10T06:12:55.124Z"
+  }
+},
+{
+  "model": "members.member",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "assigned_trainer": [
+      "marcus.vance@omnifit.com"
+    ],
+    "membership_no": null,
+    "join_date": "2026-08-18",
+    "membership_plan": "Platinum VIP",
+    "expiry_date": null,
+    "date_of_birth": null,
+    "gender": null,
+    "age": null,
+    "address": null,
+    "height_cm": 178.0,
+    "weight_kg": 76.0,
+    "bmi": 24.0,
+    "fitness_goal": "Hypertrophy & Performance",
+    "status": "Active",
+    "is_active": true,
+    "created_at": "2026-08-10T17:31:34.630Z"
+  }
+},
+{
+  "model": "members.member",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "assigned_trainer": [
+      "elena.rostova@omnifit.com"
+    ],
+    "membership_no": "OMNI-MBR-1006",
+    "join_date": "2026-08-18",
+    "membership_plan": "Platinum VIP",
+    "expiry_date": "2027-01-05",
+    "date_of_birth": null,
+    "gender": null,
+    "age": null,
+    "address": null,
+    "height_cm": 182.0,
+    "weight_kg": 78.5,
+    "bmi": 23.7,
+    "fitness_goal": "Hypertrophy & Fat Loss",
+    "status": "Active",
+    "is_active": true,
+    "created_at": "2026-08-10T17:31:34.685Z"
+  }
+},
+{
+  "model": "members.member",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "valid.athlete@omnifit.com"
+    ],
+    "assigned_trainer": null,
+    "membership_no": "OMNI-MBR-1011",
+    "join_date": "2026-08-18",
+    "membership_plan": "Platinum VIP",
+    "expiry_date": "2026-12-16",
+    "date_of_birth": null,
+    "gender": null,
+    "age": null,
+    "address": null,
+    "height_cm": 180.0,
+    "weight_kg": 78.5,
+    "bmi": 24.2,
+    "fitness_goal": "Hypertrophy & Fat Loss",
+    "status": "Active",
+    "is_active": true,
+    "created_at": "2026-08-18T16:33:46.088Z"
+  }
+},
+{
+  "model": "members.member",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "assigned_trainer": null,
+    "membership_no": "OMNI-MBR-1012",
+    "join_date": "2026-09-24",
+    "membership_plan": "Platinum VIP",
+    "expiry_date": "2027-01-22",
+    "date_of_birth": null,
+    "gender": null,
+    "age": null,
+    "address": null,
+    "height_cm": 182.0,
+    "weight_kg": 78.5,
+    "bmi": 23.7,
+    "fitness_goal": "Hypertrophy & Fat Loss",
+    "status": "Active",
+    "is_active": true,
+    "created_at": "2026-09-24T03:27:08.834Z"
+  }
+},
+{
+  "model": "trainers.trainer",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "marcus.vance@omnifit.com"
+    ],
+    "specialization": "NASM Master Trainer - Hypertrophy",
+    "experience": 5,
+    "qualification": "B.Sc Sports Science",
+    "certification": "NASM Master Certified",
+    "license_number": "NASM-98421",
+    "bio": "Expert in NASM Master Trainer - Hypertrophy with over 8 years of performance coaching.",
+    "date_of_birth": null,
+    "gender": "Male",
+    "working_days": [],
+    "start_time": "08:00 AM",
+    "end_time": "05:00 PM",
+    "rating": 4.95,
+    "status": "Active",
+    "created_at": "2026-09-24T05:14:43.226Z",
+    "updated_at": "2026-09-24T05:14:43.385Z"
+  }
+},
+{
+  "model": "trainers.trainer",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "elena.rostova@omnifit.com"
+    ],
+    "specialization": "AI Bio-Metrics & Pilates Master",
+    "experience": 5,
+    "qualification": "B.Sc Sports Science",
+    "certification": "NASM Master Certified",
+    "license_number": "NASM-98421",
+    "bio": "Expert in AI Bio-Metrics & Pilates Master with over 6 years of performance coaching.",
+    "date_of_birth": null,
+    "gender": "Male",
+    "working_days": [],
+    "start_time": "08:00 AM",
+    "end_time": "05:00 PM",
+    "rating": 4.95,
+    "status": "Active",
+    "created_at": "2026-09-24T05:14:43.226Z",
+    "updated_at": "2026-09-24T05:14:43.385Z"
+  }
+},
+{
+  "model": "trainers.trainer",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "david.kim@omnifit.com"
+    ],
+    "specialization": "Functional Strength & Conditioning",
+    "experience": 5,
+    "qualification": "B.Sc Sports Science",
+    "certification": "NASM Master Certified",
+    "license_number": "NASM-98421",
+    "bio": "Expert in Functional Strength & Conditioning with over 10 years of performance coaching.",
+    "date_of_birth": null,
+    "gender": "Male",
+    "working_days": [],
+    "start_time": "08:00 AM",
+    "end_time": "05:00 PM",
+    "rating": 4.95,
+    "status": "Active",
+    "created_at": "2026-09-24T05:14:43.226Z",
+    "updated_at": "2026-09-24T05:14:43.385Z"
+  }
+},
+{
+  "model": "workouts.workoutplan",
+  "pk": 1,
+  "fields": {
+    "member": [
+      "alex.mercer@omnifit.com"
+    ],
+    "title": "AI Hypertrophy Split",
+    "description": "4 Sets Incline Bench Press, Dumbbell Flyes, Cable Crossovers",
+    "difficulty": "Advanced",
+    "ai_generated": true,
+    "status": "Active",
+    "created_at": "2026-08-10T06:12:52.924Z"
+  }
+},
+{
+  "model": "workouts.workoutplan",
+  "pk": 2,
+  "fields": {
+    "member": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "title": "AI Hypertrophy Split",
+    "description": "4 Sets Incline Bench Press, Dumbbell Flyes, Cable Crossovers",
+    "difficulty": "Advanced",
+    "ai_generated": true,
+    "status": "Active",
+    "created_at": "2026-08-10T06:12:53.671Z"
+  }
+},
+{
+  "model": "workouts.workoutplan",
+  "pk": 3,
+  "fields": {
+    "member": [
+      "michael.scott@omnifit.com"
+    ],
+    "title": "AI Hypertrophy Split",
+    "description": "4 Sets Incline Bench Press, Dumbbell Flyes, Cable Crossovers",
+    "difficulty": "Advanced",
+    "ai_generated": true,
+    "status": "Active",
+    "created_at": "2026-08-10T06:12:54.417Z"
+  }
+},
+{
+  "model": "workouts.workoutplan",
+  "pk": 4,
+  "fields": {
+    "member": [
+      "rachel.green@omnifit.com"
+    ],
+    "title": "AI Hypertrophy Split",
+    "description": "4 Sets Incline Bench Press, Dumbbell Flyes, Cable Crossovers",
+    "difficulty": "Advanced",
+    "ai_generated": true,
+    "status": "Active",
+    "created_at": "2026-08-10T06:12:55.132Z"
+  }
+},
+{
+  "model": "workouts.workoutplan",
+  "pk": 5,
+  "fields": {
+    "member": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "title": "AI Hypertrophy Split",
+    "description": "4 Sets Incline Bench Press, Dumbbell Flyes, Cable Crossovers",
+    "difficulty": "Advanced",
+    "ai_generated": true,
+    "status": "Active",
+    "created_at": "2026-08-10T17:31:34.638Z"
+  }
+},
+{
+  "model": "workouts.workoutplan",
+  "pk": 6,
+  "fields": {
+    "member": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "title": "Push Hypertrophy & Upper Body Focus",
+    "description": "Targeted chest, shoulders, and triceps program.",
+    "difficulty": "Intermediate",
+    "ai_generated": true,
+    "status": "Active",
+    "created_at": "2026-08-18T16:33:09.191Z"
+  }
+},
+{
+  "model": "workouts.workoutplan",
+  "pk": 7,
+  "fields": {
+    "member": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "title": "Leg & Core Destruction",
+    "description": "Prescribed by Trainer",
+    "difficulty": "Intermediate",
+    "ai_generated": false,
+    "status": "Active",
+    "created_at": "2026-08-18T16:33:23.540Z"
+  }
+},
+{
+  "model": "workouts.exercise",
+  "pk": 1,
+  "fields": {
+    "workout_plan": 6,
+    "name": "Incline Dumbbell Press",
+    "sets_reps": "4 x 10–12",
+    "target_load": "24 kg",
+    "status": "Completed",
+    "notes": null
+  }
+},
+{
+  "model": "workouts.exercise",
+  "pk": 2,
+  "fields": {
+    "workout_plan": 6,
+    "name": "Barbell Overhead Press",
+    "sets_reps": "3 x 8–10",
+    "target_load": "40 kg",
+    "status": "Pending",
+    "notes": null
+  }
+},
+{
+  "model": "workouts.exercise",
+  "pk": 3,
+  "fields": {
+    "workout_plan": 6,
+    "name": "Cable Lateral Raises",
+    "sets_reps": "4 x 15",
+    "target_load": "10 kg",
+    "status": "Pending",
+    "notes": null
+  }
+},
+{
+  "model": "workouts.exercise",
+  "pk": 4,
+  "fields": {
+    "workout_plan": 7,
+    "name": "Barbell Back Squats",
+    "sets_reps": "4 x 8-10",
+    "target_load": "80 kg",
+    "status": "Pending",
+    "notes": ""
+  }
+},
+{
+  "model": "workouts.exercise",
+  "pk": 5,
+  "fields": {
+    "workout_plan": 7,
+    "name": "Romanian Deadlifts",
+    "sets_reps": "3 x 10",
+    "target_load": "60 kg",
+    "status": "Pending",
+    "notes": ""
+  }
+},
+{
+  "model": "diet.dietplan",
+  "pk": 1,
+  "fields": {
+    "member": [
+      "alex.mercer@omnifit.com"
+    ],
+    "title": "High-Protein Caloric Surplus",
+    "daily_calories": 2500,
+    "protein_grams": 180,
+    "carbs_grams": 250,
+    "fats_grams": 65,
+    "ai_customized": true,
+    "created_at": "2026-08-10T06:12:52.935Z"
+  }
+},
+{
+  "model": "diet.dietplan",
+  "pk": 2,
+  "fields": {
+    "member": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "title": "High-Protein Caloric Surplus",
+    "daily_calories": 2500,
+    "protein_grams": 180,
+    "carbs_grams": 250,
+    "fats_grams": 65,
+    "ai_customized": true,
+    "created_at": "2026-08-10T06:12:53.678Z"
+  }
+},
+{
+  "model": "diet.dietplan",
+  "pk": 3,
+  "fields": {
+    "member": [
+      "michael.scott@omnifit.com"
+    ],
+    "title": "High-Protein Caloric Surplus",
+    "daily_calories": 2500,
+    "protein_grams": 180,
+    "carbs_grams": 250,
+    "fats_grams": 65,
+    "ai_customized": true,
+    "created_at": "2026-08-10T06:12:54.427Z"
+  }
+},
+{
+  "model": "diet.dietplan",
+  "pk": 4,
+  "fields": {
+    "member": [
+      "rachel.green@omnifit.com"
+    ],
+    "title": "High-Protein Caloric Surplus",
+    "daily_calories": 2500,
+    "protein_grams": 180,
+    "carbs_grams": 250,
+    "fats_grams": 65,
+    "ai_customized": true,
+    "created_at": "2026-08-10T06:12:55.143Z"
+  }
+},
+{
+  "model": "diet.dietplan",
+  "pk": 5,
+  "fields": {
+    "member": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "title": "High-Protein Caloric Surplus",
+    "daily_calories": 2500,
+    "protein_grams": 180,
+    "carbs_grams": 250,
+    "fats_grams": 65,
+    "ai_customized": true,
+    "created_at": "2026-08-10T17:31:34.646Z"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:52.944Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:52.953Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.1,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:52.960Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:52.969Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:52.975Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:53.683Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:53.689Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:53.696Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:53.702Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 10,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:53.707Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.1,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 11,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:54.434Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 12,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:54.441Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.5,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 13,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:54.449Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 14,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:54.456Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.9,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 15,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:54.465Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.6,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 16,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:55.150Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.6,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 17,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:55.157Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.2,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 18,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:55.165Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 19,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:55.171Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.6,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 20,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T06:12:55.178Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.6,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 21,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.652Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.1,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 22,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.658Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 23,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.663Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.2,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 24,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.669Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 25,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.675Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 26,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.694Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 27,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.700Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 28,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.707Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.1,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 29,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.712Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 30,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.720Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 31,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.730Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 32,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.734Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.1,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 33,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.739Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 34,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.744Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.5,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 35,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.749Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 36,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.763Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 37,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.769Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 38,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.774Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 39,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.780Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 40,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.787Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 41,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.799Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.6,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 42,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.804Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.2,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 43,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.810Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.5,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 44,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.817Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 45,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-08-10T17:31:34.824Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.0,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 46,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.762Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 47,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.766Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.9,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 48,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.768Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 49,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.771Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.5,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 50,
+  "fields": {
+    "user": [
+      "abhilash.kk@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.773Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.5,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 51,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.777Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 52,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.780Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.5,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 53,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.781Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 54,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.784Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 55,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.786Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.2,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 56,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.790Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.9,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 57,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.793Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 58,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.795Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 59,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.798Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 60,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.799Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 61,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.804Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.3,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 62,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.806Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.0,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 63,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.808Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 64,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.810Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.7,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 65,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.812Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 66,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.817Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.4,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 67,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.819Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.9,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 68,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.821Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 69,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.824Z",
+    "facial_recognition_match": true,
+    "confidence_score": 99.6,
+    "status": "Present"
+  }
+},
+{
+  "model": "attendance.attendance",
+  "pk": 70,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "check_in": "2026-09-24T05:39:43.826Z",
+    "facial_recognition_match": true,
+    "confidence_score": 98.8,
+    "status": "Present"
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "amount": "199.00",
+    "transaction_id": "TXN-9841",
+    "plan_name": "Platinum VIP Membership",
+    "status": "Paid",
+    "created_at": "2026-08-10T06:12:52.985Z"
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "amount": "129.00",
+    "transaction_id": "TXN-9842",
+    "plan_name": "Platinum VIP Membership",
+    "status": "Paid",
+    "created_at": "2026-08-10T06:12:53.716Z"
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "michael.scott@omnifit.com"
+    ],
+    "amount": "89.00",
+    "transaction_id": "TXN-9843",
+    "plan_name": "Platinum VIP Membership",
+    "status": "Pending",
+    "created_at": "2026-08-10T06:12:54.475Z"
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "amount": "199.00",
+    "transaction_id": "TXN-9844",
+    "plan_name": "Platinum VIP Membership",
+    "status": "Paid",
+    "created_at": "2026-08-10T06:12:55.185Z"
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "rachel.green@omnifit.com"
+    ],
+    "amount": "199.00",
+    "transaction_id": "TXN-9845",
+    "plan_name": "Platinum VIP Membership",
+    "status": "Paid",
+    "created_at": "2026-08-10T17:31:34.833Z"
+  }
+},
+{
+  "model": "payments.payment",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "amount": "299.00",
+    "transaction_id": "TXN-998214",
+    "plan_name": "Platinum VIP Membership",
+    "status": "COMPLETED",
+    "created_at": "2026-08-18T16:33:09.208Z"
+  }
+},
+{
+  "model": "adminpanel.adminprofile",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "admin@omnifit.com"
+    ],
+    "access_level": "Superadmin",
+    "created_at": "2026-08-18T16:33:09.188Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "jibin@gmail.com"
+    ],
+    "jti": "b156ce8d61994adcb4463869586c1d96",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjYwMzkyNSwiaWF0IjoxNzg1OTk5MTI1LCJqdGkiOiJiMTU2Y2U4ZDYxOTk0YWRjYjQ0NjM4Njk1ODZjMWQ5NiIsInVzZXJfaWQiOiIyIn0.Aw2a6VjAyhxCyLlYxZG3ow609wk3mooii-PzumCTNvI",
+    "created_at": "2026-08-06T06:52:05.227Z",
+    "expires_at": "2026-08-13T06:52:05Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "jibin@gmail.com"
+    ],
+    "jti": "f51ce181635b43e69779d7979b9013f9",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjYwMzk1MiwiaWF0IjoxNzg1OTk5MTUyLCJqdGkiOiJmNTFjZTE4MTYzNWI0M2U2OTc3OWQ3OTc5YjkwMTNmOSIsInVzZXJfaWQiOiIyIn0.gbS0wYRZ5D1l_MrjJTcWjctf5Ft-fyrwxpE060iLnsU",
+    "created_at": "2026-08-06T06:52:32.605Z",
+    "expires_at": "2026-08-13T06:52:32Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "alex.mercer@omnifit.com"
+    ],
+    "jti": "46c5b032ccc34ac4a900f923766b533a",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4Njk5Mjc1NywiaWF0IjoxNzg2Mzg3OTU3LCJqdGkiOiI0NmM1YjAzMmNjYzM0YWM0YTkwMGY5MjM3NjZiNTMzYSIsInVzZXJfaWQiOiI2In0.-D2d8zkLRjkLDVFrtq9-B78QQF16yGwGKzxOTQTmGgA",
+    "created_at": "2026-08-10T18:52:37.310Z",
+    "expires_at": "2026-08-17T18:52:37Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "sarah.jenkins@omnifit.com"
+    ],
+    "jti": "4dd97ff01fe94cba9ea919f2c27155f2",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzY3NTYwMywiaWF0IjoxNzg3MDcwODAzLCJqdGkiOiI0ZGQ5N2ZmMDFmZTk0Y2JhOWVhOTE5ZjJjMjcxNTVmMiIsInVzZXJfaWQiOiI3In0.RfztYLqxJPAq1TDweSGueGWT6PMfoFm95oLlhqbHpqQ",
+    "created_at": "2026-08-18T16:33:23.507Z",
+    "expires_at": "2026-08-25T16:33:23Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "valid.athlete@omnifit.com"
+    ],
+    "jti": "384b2798e59c4a62ba1f5f059a53c6f7",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzY3NTYyNiwiaWF0IjoxNzg3MDcwODI2LCJqdGkiOiIzODRiMjc5OGU1OWM0YTYyYmExZjVmMDU5YTUzYzZmNyIsInVzZXJfaWQiOiIxMSJ9.NJZlCA2ZsDQEF0zy-JAGSPq0Yc-x8OnSg1cbBFh6Dp0",
+    "created_at": "2026-08-18T16:33:46.094Z",
+    "expires_at": "2026-08-25T16:33:46Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "9caa490e67984fe992ffc1b2df517453",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDgyNTIyOCwiaWF0IjoxNzkwMjIwNDI4LCJqdGkiOiI5Y2FhNDkwZTY3OTg0ZmU5OTJmZmMxYjJkZjUxNzQ1MyIsInVzZXJfaWQiOiIxMiJ9.Dj5hxcFxHvpXqNPhmvRk5PK39m_OQ8b7yA7m9H4ITx4",
+    "created_at": "2026-09-24T03:27:08.849Z",
+    "expires_at": "2026-10-01T03:27:08Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "037a65f2781f44d09606ba1a46379a91",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDgyNTI5NSwiaWF0IjoxNzkwMjIwNDk1LCJqdGkiOiIwMzdhNjVmMjc4MWY0NGQwOTYwNmJhMWE0NjM3OWE5MSIsInVzZXJfaWQiOiIxMiJ9.WYFqFv9h5NZts4wiuTom_oeJ20W5gBrnSBVTg2-FNlQ",
+    "created_at": "2026-09-24T03:28:15.035Z",
+    "expires_at": "2026-10-01T03:28:15Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "d831ebe437754997b3e58c1f7c5137fd",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDgyNTc2NSwiaWF0IjoxNzkwMjIwOTY1LCJqdGkiOiJkODMxZWJlNDM3NzU0OTk3YjNlNThjMWY3YzUxMzdmZCIsInVzZXJfaWQiOiIxMiJ9.pOrJLW2_VoDVQsBNzPkr1tYlBxz_ZrqdcCmb9GOf_dA",
+    "created_at": "2026-09-24T03:36:05.078Z",
+    "expires_at": "2026-10-01T03:36:05Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "b1492f790e0f4f1aba436f14c0383f96",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDgyNTc4NCwiaWF0IjoxNzkwMjIwOTg0LCJqdGkiOiJiMTQ5MmY3OTBlMGY0ZjFhYmE0MzZmMTRjMDM4M2Y5NiIsInVzZXJfaWQiOiIxMiJ9.YHTBOf68Kjf4q-QqMy4fn6EFuG1CyZRy0IaNe267tM4",
+    "created_at": "2026-09-24T03:36:24.144Z",
+    "expires_at": "2026-10-01T03:36:24Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 10,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "cdb63bbe64214cbda695aec4286a04ec",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDgyNjQ3NCwiaWF0IjoxNzkwMjIxNjc0LCJqdGkiOiJjZGI2M2JiZTY0MjE0Y2JkYTY5NWFlYzQyODZhMDRlYyIsInVzZXJfaWQiOiIxMiJ9.mSDFJHkaQGXiimcPKCvYwqXkD93WIRgkp26g9YsdAxY",
+    "created_at": "2026-09-24T03:47:54.978Z",
+    "expires_at": "2026-10-01T03:47:54Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 11,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "3f04950762e7466d94fbf846046f3389",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDgyNjUxMSwiaWF0IjoxNzkwMjIxNzExLCJqdGkiOiIzZjA0OTUwNzYyZTc0NjZkOTRmYmY4NDYwNDZmMzM4OSIsInVzZXJfaWQiOiIxMiJ9.UNRm1GKqvBxeeE6qPqjWcSih9dAx95fX1vz8vO_jd9M",
+    "created_at": "2026-09-24T03:48:31.281Z",
+    "expires_at": "2026-10-01T03:48:31Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 12,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "01d2c64910964467b2974450f4b7234b",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDgyNjYzMCwiaWF0IjoxNzkwMjIxODMwLCJqdGkiOiIwMWQyYzY0OTEwOTY0NDY3YjI5NzQ0NTBmNGI3MjM0YiIsInVzZXJfaWQiOiIxMiJ9.bFfOWg1VRir_5Sz_30xzaSYpFgErclj9NRRpWKFZ0qc",
+    "created_at": "2026-09-24T03:50:30.960Z",
+    "expires_at": "2026-10-01T03:50:30Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 13,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "3440a16a37c64108903820efd3b3ac1a",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkwODU4MywiaWF0IjoxNzkwMzAzNzgzLCJqdGkiOiIzNDQwYTE2YTM3YzY0MTA4OTAzODIwZWZkM2IzYWMxYSIsInVzZXJfaWQiOiIxMiJ9.GzbiQErLtZlJun8RyU0wBDdqkJIQCbzmndlkUR-ynbk",
+    "created_at": "2026-09-25T02:36:23.377Z",
+    "expires_at": "2026-10-02T02:36:23Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 14,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "ea6d5f99899c49cc92783b4f04fac36d",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkyMDI0NSwiaWF0IjoxNzkwMzE1NDQ1LCJqdGkiOiJlYTZkNWY5OTg5OWM0OWNjOTI3ODNiNGYwNGZhYzM2ZCIsInVzZXJfaWQiOiIxMiJ9.FXY9hZ_HnfuiIpHn6bufOuoB9Y3p4XNGKlu8U2X-ZJE",
+    "created_at": "2026-09-25T05:50:45.582Z",
+    "expires_at": "2026-10-02T05:50:45Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 15,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "6e73fc02b4034a83a3e3abd1605eddf4",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkyMDcxMiwiaWF0IjoxNzkwMzE1OTEyLCJqdGkiOiI2ZTczZmMwMmI0MDM0YTgzYTNlM2FiZDE2MDVlZGRmNCIsInVzZXJfaWQiOiIxMiJ9.N-JOTHfkBcKGuVEww0hVg2vxMKm6csc0_a-IPrwJKfY",
+    "created_at": "2026-09-25T05:58:32.004Z",
+    "expires_at": "2026-10-02T05:58:32Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 16,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "3afca0ec4ae645d6a51598c4f6e799b7",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkyMDc0MCwiaWF0IjoxNzkwMzE1OTQwLCJqdGkiOiIzYWZjYTBlYzRhZTY0NWQ2YTUxNTk4YzRmNmU3OTliNyIsInVzZXJfaWQiOiIxMiJ9.AdyCgvaBNXHkbZiJ4JzP0dNlG-jsV176V9FZBs0j_PA",
+    "created_at": "2026-09-25T05:59:00.185Z",
+    "expires_at": "2026-10-02T05:59:00Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 17,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "e5e451a829754d7f90680cf2e39b265c",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkyMjc0MywiaWF0IjoxNzkwMzE3OTQzLCJqdGkiOiJlNWU0NTFhODI5NzU0ZDdmOTA2ODBjZjJlMzliMjY1YyIsInVzZXJfaWQiOiIxMiJ9.jJ--BOqSy1m8jnitJfG137BLLX5rE7nsxi9FZP0pZKA",
+    "created_at": "2026-09-25T06:32:23.346Z",
+    "expires_at": "2026-10-02T06:32:23Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 18,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "7cd1e8db2c6f4a2bba6c201f6bb79466",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkyMjgwNywiaWF0IjoxNzkwMzE4MDA3LCJqdGkiOiI3Y2QxZThkYjJjNmY0YTJiYmE2YzIwMWY2YmI3OTQ2NiIsInVzZXJfaWQiOiIxMiJ9.yRdLsUElocVuJNsseVq8qPpKa6cAJZVe5ETRhXbCEFI",
+    "created_at": "2026-09-25T06:33:27.783Z",
+    "expires_at": "2026-10-02T06:33:27Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 19,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "e59ed01cd570481abcf4246a6eab1434",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkyOTkzOSwiaWF0IjoxNzkwMzI1MTM5LCJqdGkiOiJlNTllZDAxY2Q1NzA0ODFhYmNmNDI0NmE2ZWFiMTQzNCIsInVzZXJfaWQiOiIxMiJ9.QR4gFVpQ9WRB6vza2WqgujCV9-hbcYBPiGdl0kn3v5o",
+    "created_at": "2026-09-25T08:32:19.705Z",
+    "expires_at": "2026-10-02T08:32:19Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 20,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "afa5c1089e8d4a6fb4423d943a5beed2",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkzMDc1NywiaWF0IjoxNzkwMzI1OTU3LCJqdGkiOiJhZmE1YzEwODllOGQ0YTZmYjQ0MjNkOTQzYTViZWVkMiIsInVzZXJfaWQiOiIxMiJ9.vtyyF-Ktc4jOgf5Wyi4F7WUEnhabaL2gXl60kGvjz6M",
+    "created_at": "2026-09-25T08:45:57.439Z",
+    "expires_at": "2026-10-02T08:45:57Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 21,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "ee4cf162dffc4e80b350f8b45acdb017",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkzMDk5NCwiaWF0IjoxNzkwMzI2MTk0LCJqdGkiOiJlZTRjZjE2MmRmZmM0ZTgwYjM1MGY4YjQ1YWNkYjAxNyIsInVzZXJfaWQiOiIxMiJ9.BUgMr_dHBWLnfNZ65ljxUPoB_W21Rs6TaV-vzDFFCwY",
+    "created_at": "2026-09-25T08:49:54.364Z",
+    "expires_at": "2026-10-02T08:49:54Z"
+  }
+},
+{
+  "model": "token_blacklist.outstandingtoken",
+  "pk": 22,
+  "fields": {
+    "user": [
+      "josekutty@gmail.com"
+    ],
+    "jti": "53e056d6c6634e8480ee1d49da9e0cc3",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc5MDkzMTAxNiwiaWF0IjoxNzkwMzI2MjE2LCJqdGkiOiI1M2UwNTZkNmM2NjM0ZTg0ODBlZTFkNDlkYTllMGNjMyIsInVzZXJfaWQiOiIxMiJ9.gMl2_yUGU11H-t3Le_EI38TlRSqrGDjHNyMxq_zr3hM",
+    "created_at": "2026-09-25T08:50:16.795Z",
+    "expires_at": "2026-10-02T08:50:16Z"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-08-10T17:10:57.062Z",
+    "user": [
+      "admin@omnifit.com"
+    ],
+    "content_type": [
+      "members",
+      "member"
+    ],
+    "object_id": "1",
+    "object_repr": "Member: alex.mercer@omnifit.com",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-08-10T18:51:23.508Z",
+    "user": [
+      "admin@omnifit.com"
+    ],
+    "content_type": [
+      "authentication",
+      "user"
+    ],
+    "object_id": "6",
+    "object_repr": "alex.mercer@omnifit.com (member)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+}
+]

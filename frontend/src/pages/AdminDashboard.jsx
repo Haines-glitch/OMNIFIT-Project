@@ -13,6 +13,7 @@ import ProfileModule from '../components/Modules/ProfileModule';
 import { getAdminDashboardData } from '../services/dashboardService';
 import LoginService from '../components/Login/LoginService';
 import TrainerManagementModule from '../components/Modules/TrainerManagementModule';
+import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -33,8 +34,14 @@ const AdminDashboard = () => {
     const adminInfo = {
         ...currentUser,
         name: currentUser?.name || currentUser?.full_name || 'Sarah Jenkins',
+        email: currentUser?.email || 'sarah.jenkins@omnifit.com',
+        phone: currentUser?.phone || '+91 98765 43210',
         role: currentUser?.role || 'ADMIN',
-        avatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
+        avatar: currentUser?.avatar || DEFAULT_AVATAR,
+    };
+
+    const handleSaveUser = (updatedUser) => {
+        setCurrentUser(updatedUser);
     };
 
     const paymentColumns = [
@@ -96,6 +103,8 @@ const AdminDashboard = () => {
                 return <DietModule role="ADMIN" theme="light" />;
             case 'reports':
                 return <ReportModule theme="light" />;
+            case 'profile':
+                return <ProfileModule user={adminInfo} onSaveUser={handleSaveUser} role="ADMIN" theme="light" />;
             case 'settings':
                 return (
                     <div

@@ -110,6 +110,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
 
                 <div className="flex-shrink-0 pt-3 mt-1 border-t border-slate-100">
                     <button
+                        data-testid="logout-btn"
                         onClick={handleLogout}
                         className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-200"
                     >
@@ -180,6 +181,7 @@ const Sidebar = ({ activeTab, setActiveTab, role, isCollapsed, toggleSidebar, th
             {/* Logout Action */}
             <div className="flex-shrink-0 pt-3 mt-1 border-t border-slate-800/80">
                 <button
+                    data-testid="logout-btn"
                     onClick={handleLogout}
                     className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 transition-all shadow-md"
                 >

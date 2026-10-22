@@ -12,7 +12,8 @@ from .serializers import (
     CustomTokenObtainPairSerializer, 
     RegisterSerializer, 
     UserSerializer, 
-    ChangePasswordSerializer
+    ChangePasswordSerializer,
+    DEFAULT_AVATAR
 )
 
 from apps.members.models import Member
@@ -50,7 +51,7 @@ class LoginView(TokenObtainPairView):
                 status_code=status.HTTP_200_OK
             )
         except Exception as exc:
-            error_details = serializer.errors if hasattr(serializer, 'errors') else str(exc)
+            error_details = getattr(exc, 'detail', str(exc))
             # Check for 403 Forbidden suspension/inactive case
             if "suspended or inactive" in str(error_details):
                 return standard_response(
@@ -103,17 +104,23 @@ class RegisterView(generics.CreateAPIView):
             member.gender = request.data.get('gender')
         if 'age' in request.data and request.data.get('age'):
             try:
-                member.age = int(request.data.get('age'))
+                parsed_age = int(request.data.get('age'))
+                if 10 <= parsed_age <= 120:
+                    member.age = parsed_age
             except (ValueError, TypeError):
                 pass
         if 'height' in request.data and request.data.get('height'):
             try:
-                member.height_cm = float(str(request.data.get('height')).replace('cm', '').strip())
+                parsed_h = float(str(request.data.get('height')).replace('cm', '').strip())
+                if 50.0 <= parsed_h <= 260.0:
+                    member.height_cm = parsed_h
             except (ValueError, TypeError):
                 pass
         if 'weight' in request.data and request.data.get('weight'):
             try:
-                member.weight_kg = float(str(request.data.get('weight')).replace('kg', '').strip())
+                parsed_w = float(str(request.data.get('weight')).replace('kg', '').strip())
+                if 20.0 <= parsed_w <= 350.0:
+                    member.weight_kg = parsed_w
             except (ValueError, TypeError):
                 pass
         if 'fitness_goal' in request.data or 'fitnessGoal' in request.data:
@@ -183,21 +190,47 @@ class UserProfileView(APIView):
                     "membership_no": m.membership_no,
                     "membership_plan": m.membership_plan,
                     "expiry_date": str(m.expiry_date),
+                    "gender": m.gender or "Female",
+                    "dob": str(m.date_of_birth) if m.date_of_birth else "1998-04-12",
                     "height": m.height_cm,
                     "weight": m.weight_kg,
                     "bmi": m.bmi,
                     "goal": m.fitness_goal,
+                    "fitness_goal": m.fitness_goal,
+                    "emergencyContact": m.address or "Sarah Mercer (+91 98765 12345)",
+                    "emergency_contact": m.address or "Sarah Mercer (+91 98765 12345)",
+                    "medicalHistory": "None (Cleared for high-intensity training)",
                     "status": m.status
                 }
+                user_data.update({
+                    "gender": m.gender or "Female",
+                    "dob": str(m.date_of_birth) if m.date_of_birth else "1998-04-12",
+                    "height": f"{m.height_cm} cm" if m.height_cm else "182 cm",
+                    "weight": f"{m.weight_kg} kg" if m.weight_kg else "78.5 kg",
+                    "bmi": m.bmi or 23.7,
+                    "fitnessGoal": m.fitness_goal or "Hypertrophy & Fat Loss",
+                    "emergencyContact": m.address or "Sarah Mercer (+91 98765 12345)",
+                    "medicalHistory": "None (Cleared for high-intensity training)",
+                })
             elif hasattr(user, 'trainer_profile'):
                 t = user.trainer_profile
                 trainer_data = {
                     "specialization": t.specialization,
                     "experience_years": t.years_experience,
+                    "experience": t.experience,
                     "certification": t.certification,
+                    "qualification": t.qualification,
+                    "gender": t.gender or "Male",
+                    "dob": str(t.date_of_birth) if t.date_of_birth else "",
                     "rating": t.rating,
                     "status": t.status
                 }
+                user_data.update({
+                    "specialization": t.specialization,
+                    "experience": t.experience,
+                    "gender": t.gender or "Male",
+                    "dob": str(t.date_of_birth) if t.date_of_birth else "",
+                })
 
             return standard_response(
                 success=True,
@@ -569,44 +602,144 @@ class UserProfileUpdateView(APIView):
         if user:
             if full_name:
                 user.full_name = full_name
-            if email and email != user.email:
-                user.email = email
-            if phone:
+            if email and email.strip():
+                new_email = email.strip()
+                if new_email.lower() != user.email.lower():
+                    user.email = new_email
+                    user.username = new_email
+            if phone is not None:
                 user.phone = phone
             user.save()
 
             member = getattr(user, 'member_profile', None)
             if member:
-                if 'height' in request.data:
+                if 'height' in request.data and request.data['height']:
                     try:
-                        member.height_cm = float(str(request.data['height']).replace('cm', '').strip())
+                        parsed_h = float(str(request.data['height']).replace('cm', '').strip())
+                        if 50.0 <= parsed_h <= 260.0:
+                            member.height_cm = parsed_h
                     except ValueError:
                         pass
-                if 'weight' in request.data:
+                if 'weight' in request.data and request.data['weight']:
                     try:
-                        member.weight_kg = float(str(request.data['weight']).replace('kg', '').strip())
+                        parsed_w = float(str(request.data['weight']).replace('kg', '').strip())
+                        if 20.0 <= parsed_w <= 350.0:
+                            member.weight_kg = parsed_w
                     except ValueError:
                         pass
-                if 'fitnessGoal' in request.data:
-                    member.fitness_goal = request.data['fitnessGoal']
+                if 'fitnessGoal' in request.data or 'fitness_goal' in request.data:
+                    member.fitness_goal = request.data.get('fitnessGoal') or request.data.get('fitness_goal')
+                if 'gender' in request.data and request.data.get('gender'):
+                    member.gender = request.data.get('gender')
+                if 'dob' in request.data or 'date_of_birth' in request.data:
+                    member.date_of_birth = request.data.get('dob') or request.data.get('date_of_birth')
+                if 'emergencyContact' in request.data or 'emergency_contact' in request.data:
+                    member.address = request.data.get('emergencyContact') or request.data.get('emergency_contact')
                 member.save()
+
+            trainer = getattr(user, 'trainer_profile', None)
+            if trainer:
+                if 'specialization' in request.data and request.data.get('specialization'):
+                    trainer.specialization = request.data.get('specialization')
+                if 'gender' in request.data and request.data.get('gender'):
+                    trainer.gender = request.data.get('gender')
+                if 'dob' in request.data or 'date_of_birth' in request.data:
+                    trainer.date_of_birth = request.data.get('dob') or request.data.get('date_of_birth')
+                trainer.save()
+
+            # Return complete profile payload
+            res_data = {
+                "id": user.id,
+                "name": user.full_name or user.email,
+                "full_name": user.full_name or user.email,
+                "email": user.email,
+                "phone": user.phone or '',
+                "role": user.role.upper(),
+            }
+            if member:
+                res_data.update({
+                    "gender": member.gender or 'Female',
+                    "dob": str(member.date_of_birth) if member.date_of_birth else '1998-04-12',
+                    "height": f"{member.height_cm} cm" if member.height_cm else '182 cm',
+                    "weight": f"{member.weight_kg} kg" if member.weight_kg else '78.5 kg',
+                    "bmi": member.bmi or 23.7,
+                    "fitnessGoal": member.fitness_goal or 'Hypertrophy & Fat Loss',
+                    "emergencyContact": member.address or 'Sarah Mercer (+91 98765 12345)',
+                    "medicalHistory": "None (Cleared for high-intensity training)",
+                })
+            elif trainer:
+                res_data.update({
+                    "specialization": trainer.specialization,
+                    "gender": trainer.gender or 'Male',
+                    "dob": str(trainer.date_of_birth) if trainer.date_of_birth else '',
+                    "experience": trainer.experience,
+                    "rating": trainer.rating,
+                })
 
             return standard_response(
                 success=True,
                 message="Profile updated successfully.",
-                data={
-                    "id": user.id,
-                    "name": user.full_name or user.email,
-                    "email": user.email,
-                    "phone": user.phone,
-                    "role": user.role.upper()
-                }
+                data=res_data
             )
 
         return standard_response(
             success=True,
             message="Profile updated locally.",
-            data=None
+            data=request.data
+        )
+
+
+class MemberDashboardDataView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        user = request.user
+        if not user or not user.is_authenticated:
+            user = User.objects.filter(role='member').first() or User.objects.first()
+
+        m = getattr(user, 'member_profile', None) if user else None
+
+        member_data = {
+            "name": user.full_name or user.email if user else "Sarah Jenkins",
+            "email": user.email if user else "sarah.jenkins@omnifit.com",
+            "phone": user.phone if user else "+91 98765 43210",
+            "role": "Member",
+            "membershipPlan": m.membership_plan if m else "Platinum VIP Membership",
+            "membershipExpiry": "120 Days",
+            "trainerName": "Marcus Vance (NASM Master)",
+            "avatar": user.profile_image.url if (user and user.profile_image) else DEFAULT_AVATAR,
+            "age": m.age if (m and m.age) else 26,
+            "gender": m.gender if (m and m.gender) else "Female",
+            "dob": str(m.date_of_birth) if (m and m.date_of_birth) else "1998-04-12",
+            "height": f"{m.height_cm} cm" if (m and m.height_cm) else "182 cm",
+            "weight": f"{m.weight_kg} kg" if (m and m.weight_kg) else "78.5 kg",
+            "bmi": m.bmi if (m and m.bmi) else 23.7,
+            "fitnessGoal": m.fitness_goal if m else "Hypertrophy & Fat Loss",
+            "bodyFat": "14.2%",
+            "waterIntake": "3.2 L / 4.0 L",
+            "caloriesBurnedToday": "840 kcal",
+            "todayCaloriesConsumed": "1,950 / 2,500 kcal",
+            "attendancePercent": "94.5%",
+            "workoutCompletion": "88%",
+        }
+
+        return standard_response(
+            success=True,
+            message="Member dashboard data retrieved.",
+            data={
+                "member": member_data,
+                "stats": {
+                    "todayWorkout": "Chest & Triceps Hypertrophy",
+                    "todayDiet": "High-Protein Surplus (180g P)",
+                    "upcomingAppointment": "Tomorrow @ 10:00 AM with Marcus",
+                },
+                "charts": {
+                    "weeklyCalories": [620, 780, 840, 710, 950, 890, 840],
+                    "weightProgress": [81.0, 80.4, 79.8, 79.2, 78.9, 78.5],
+                    "workoutProgress": [65, 70, 78, 82, 85, 88],
+                    "attendancePercent": 94.5,
+                }
+            }
         )
 
 

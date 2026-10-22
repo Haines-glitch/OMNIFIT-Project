@@ -23,9 +23,11 @@ class TestRegistration:
         """TC_REGISTER_002: Empty required fields"""
         register_page = RegisterPage(driver)
         register_page.open()
+        time.sleep(2)
         register_page.click_register()
         time.sleep(1)
         toast_text = register_page.get_toast_message_text()
+        assert toast_text is not None
         assert "please enter" in toast_text.lower()
         
     def test_tc_register_003_invalid_email(self, driver):
@@ -47,6 +49,7 @@ class TestRegistration:
         register_page.enter_email("newuser@omnifit.com")
         register_page.enter_password("short")
         register_page.enter_confirm_password("short")
+        register_page.click_terms()
         register_page.click_register()
         time.sleep(1)
         toast_text = register_page.get_toast_message_text()

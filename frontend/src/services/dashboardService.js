@@ -1,4 +1,5 @@
 import api from './axios';
+import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 
 export const getMemberDashboardData = async () => {
     try {
@@ -36,7 +37,7 @@ export const getFallbackMemberData = () => ({
         membershipPlan: "Platinum VIP Membership",
         membershipExpiry: "120 Days",
         trainerName: "Marcus Vance (NASM Master)",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+        avatar: DEFAULT_AVATAR,
         age: 26,
         gender: "Male",
         dob: "1998-04-12",

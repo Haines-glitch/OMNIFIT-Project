@@ -83,6 +83,15 @@ const TrainerSettingsModule = ({ theme = 'light' }) => {
 
     // Save Action
     const handleSave = () => {
+        if (settings.maxClientCapacity < 10 || settings.maxClientCapacity > 100) {
+            showToast('Max client capacity must be between 10 and 100.');
+            return;
+        }
+        if (settings.maxClientCapacity < settings.activeClientsCount) {
+            showToast(`Capacity cannot be lower than current active athlete count (${settings.activeClientsCount}).`);
+            return;
+        }
+
         setIsSaving(true);
         setTimeout(() => {
             setIsSaving(false);
@@ -655,7 +664,11 @@ const TrainerSettingsModule = ({ theme = 'light' }) => {
                                     min="10"
                                     max="100"
                                     value={settings.maxClientCapacity}
-                                    onChange={(e) => handleChange('maxClientCapacity', parseInt(e.target.value) || 50)}
+                                    onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                    onChange={(e) => {
+                                        const clean = e.target.value.replace(/[^0-9]/g, '');
+                                        handleChange('maxClientCapacity', clean ? parseInt(clean, 10) : '');
+                                    }}
                                     className="w-20 bg-slate-900 border border-slate-800 text-center font-bold text-white rounded-lg py-1 text-xs focus:border-[#00F29D]"
                                 />
                             </div>

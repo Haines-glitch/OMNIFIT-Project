@@ -11,7 +11,12 @@ class RegisterPage(BasePage):
     TERMS_CHECKBOX = (By.CSS_SELECTOR, "[data-testid='register-terms-checkbox']")
     SUBMIT_BUTTON = (By.CSS_SELECTOR, "[data-testid='register-submit-button']")
     
-    TOAST_MESSAGE = (By.CLASS_NAME, 'toast-message')
+    TOAST_MESSAGE = (By.CSS_SELECTOR, "[data-testid='toast-message']")
+
+    def get_toast_message_text(self):
+        if self.is_visible(self.TOAST_MESSAGE, timeout=5):
+            return self.get_text(self.TOAST_MESSAGE)
+        return None
 
     def open(self):
         self.driver.get(f"{Config.FRONTEND_URL}/register")
@@ -33,6 +38,9 @@ class RegisterPage(BasePage):
         checkbox = self.find_element(self.TERMS_CHECKBOX)
         if not checkbox.is_selected():
             self.click(self.TERMS_CHECKBOX)
+
+    def click_terms(self):
+        self.check_terms()
 
     def click_register(self):
         self.click(self.SUBMIT_BUTTON)

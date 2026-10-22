@@ -13,7 +13,8 @@ from .views import (
     MemberTodayWorkoutView,
     NotificationsView,
     NotificationMarkReadView,
-    AdminDashboardView
+    AdminDashboardView,
+    MemberDashboardDataView
 )
 
 urlpatterns = [
@@ -33,6 +34,7 @@ urlpatterns = [
     # Member Endpoints
     path('member/overview/', MemberOverviewView.as_view(), name='member_overview'),
     path('member/today-workout/', MemberTodayWorkoutView.as_view(), name='member_today_workout'),
+    path('member-dashboard/', MemberDashboardDataView.as_view(), name='member_dashboard_data'),
 
     # Notifications Endpoints
     path('notifications/', NotificationsView.as_view(), name='notifications_list'),

@@ -7,6 +7,8 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 
 User = get_user_model()
 
+DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='64' fill='%23E2E8F0'/%3E%3Ccircle cx='64' cy='46' r='23' fill='%2394A3B8'/%3E%3Cpath d='M26 108c0-20.987 17.013-38 38-38s38 17.013 38 38c0 4.418-3.582 8-8 8H34c-4.418 0-8-3.582-8-8z' fill='%2394A3B8'/%3E%3C/svg%3E"
+
 PHONE_REGEX = re.compile(r'^\+?[0-9]{10,15}$')
 
 class UserSerializer(serializers.ModelSerializer):
@@ -94,15 +96,46 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         }
         redirect_url = role_redirect_map.get(db_role, '/member-dashboard')
 
-        data['user'] = {
+        user_payload = {
             'id': self.user.id,
             'user_id': self.user.id,
             'name': user_display_name,
+            'full_name': self.user.full_name or user_display_name,
             'email': self.user.email,
+            'phone': self.user.phone or '',
             'role': self.user.role.upper(),
             'status': self.user.status,
+            'avatar': self.user.profile_image.url if self.user.profile_image else DEFAULT_AVATAR,
             'redirect_url': redirect_url
         }
+
+        # Enrich with member profile if available
+        if hasattr(self.user, 'member_profile'):
+            m = self.user.member_profile
+            user_payload.update({
+                'gender': m.gender or 'Female',
+                'dob': str(m.date_of_birth) if m.date_of_birth else '1998-04-12',
+                'height': f"{m.height_cm} cm" if m.height_cm else '182 cm',
+                'weight': f"{m.weight_kg} kg" if m.weight_kg else '78.5 kg',
+                'bmi': m.bmi or 23.7,
+                'fitnessGoal': m.fitness_goal or 'Hypertrophy & Fat Loss',
+                'emergencyContact': m.address or 'Sarah Mercer (+91 98765 12345)',
+                'membership_plan': m.membership_plan or 'Platinum VIP',
+                'membership_no': m.membership_no or '',
+            })
+        elif hasattr(self.user, 'trainer_profile'):
+            t = self.user.trainer_profile
+            user_payload.update({
+                'gender': t.gender or 'Male',
+                'dob': str(t.date_of_birth) if t.date_of_birth else '',
+                'specialization': t.specialization,
+                'experience': t.experience,
+                'rating': t.rating,
+                'qualification': t.qualification,
+                'certification': t.certification,
+            })
+
+        data['user'] = user_payload
         return data
 
 class ChangePasswordSerializer(serializers.Serializer):

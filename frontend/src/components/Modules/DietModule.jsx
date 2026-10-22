@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { validateText, validateNumericRange } from '../../utils/validation';
 
 const initialMeals = [
     {
@@ -76,6 +77,7 @@ const DietModule = ({ role, theme = 'light' }) => {
     const [meals, setMeals] = useState(initialMeals);
     const [showAddModal, setShowAddModal] = useState(false);
     const [selectedMealId, setSelectedMealId] = useState('breakfast');
+    const [modalError, setModalError] = useState('');
     const [newItem, setNewItem] = useState({
         name: '',
         portion: '',
@@ -94,6 +96,7 @@ const DietModule = ({ role, theme = 'light' }) => {
 
     const handleOpenAddModal = (mealId) => {
         setSelectedMealId(mealId);
+        setModalError('');
         setNewItem({
             name: '',
             portion: '',
@@ -107,12 +110,44 @@ const DietModule = ({ role, theme = 'light' }) => {
 
     const handleAddFoodItem = (e) => {
         e.preventDefault();
-        if (!newItem.name || !newItem.portion) return;
+        setModalError('');
+
+        // 1. Food Name Validation
+        const nameVal = validateText(newItem.name, 'Food Item Name', 2, 80);
+        if (!nameVal.valid) {
+            setModalError(nameVal.message);
+            return;
+        }
+
+        // 2. Portion Validation
+        const portionVal = validateText(newItem.portion, 'Portion Size', 2, 100);
+        if (!portionVal.valid) {
+            setModalError(portionVal.message);
+            return;
+        }
+
+        // 3. Calories Validation (if provided)
+        if (newItem.calories !== '' && newItem.calories !== undefined) {
+            const calVal = validateNumericRange(newItem.calories, 'Calories', 0, 5000, 'kcal');
+            if (!calVal.valid) {
+                setModalError(calVal.message);
+                return;
+            }
+        }
+
+        // 4. Protein Validation (if provided)
+        if (newItem.protein !== '' && newItem.protein !== undefined) {
+            const protVal = validateNumericRange(newItem.protein, 'Protein', 0, 500, 'g');
+            if (!protVal.valid) {
+                setModalError(protVal.message);
+                return;
+            }
+        }
 
         const itemToAdd = {
             id: Date.now(),
-            name: newItem.name,
-            portion: newItem.portion,
+            name: newItem.name.trim(),
+            portion: newItem.portion.trim(),
             calories: Number(newItem.calories) || 0,
             protein: Number(newItem.protein) || 0,
             type: newItem.type || 'Custom Food',
@@ -396,6 +431,12 @@ const DietModule = ({ role, theme = 'light' }) => {
                             </div>
                             <form onSubmit={handleAddFoodItem}>
                                 <div className="modal-body vstack gap-3 pt-3">
+                                    {modalError && (
+                                        <div className="alert alert-warning py-2 px-3 small d-flex align-items-center gap-2 mb-0 rounded-3">
+                                            <i className="bi bi-exclamation-triangle-fill text-warning"></i>
+                                            <span>{modalError}</span>
+                                        </div>
+                                    )}
                                     <div>
                                         <label className="form-label small fw-semibold">Food Item Name *</label>
                                         <input
@@ -431,7 +472,10 @@ const DietModule = ({ role, theme = 'light' }) => {
                                                 style={{ background: isLight ? '#F8FAFC' : '#0F172A', color: textPrimary, border: `1px solid ${isLight ? '#CBD5E1' : '#334155'}` }}
                                                 placeholder="e.g. 210"
                                                 value={newItem.calories}
-                                                onChange={(e) => setNewItem({ ...newItem, calories: e.target.value })}
+                                                min="0"
+                                                max="5000"
+                                                onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                                onChange={(e) => setNewItem({ ...newItem, calories: e.target.value.replace(/[^0-9]/g, '') })}
                                             />
                                         </div>
                                         <div className="col-6">
@@ -442,7 +486,10 @@ const DietModule = ({ role, theme = 'light' }) => {
                                                 style={{ background: isLight ? '#F8FAFC' : '#0F172A', color: textPrimary, border: `1px solid ${isLight ? '#CBD5E1' : '#334155'}` }}
                                                 placeholder="e.g. 24"
                                                 value={newItem.protein}
-                                                onChange={(e) => setNewItem({ ...newItem, protein: e.target.value })}
+                                                min="0"
+                                                max="500"
+                                                onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                                onChange={(e) => setNewItem({ ...newItem, protein: e.target.value.replace(/[^0-9]/g, '') })}
                                             />
                                         </div>
                                     </div>

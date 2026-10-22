@@ -44,7 +44,7 @@ const Toast = ({ show, message, type = 'info', onClose, duration = 4000 }) => {
             >
                 <div className="d-flex p-3 align-items-center">
                     <i className={`bi ${style.icon} fs-4 me-3`} style={{ color: style.color }}></i>
-                    <div className="toast-body flex-grow-1 p-0">
+                    <div className="toast-body flex-grow-1 p-0" data-testid="toast-message">
                         <strong className="d-block" style={{ color: style.color, fontSize: '0.9rem' }}>{style.title}</strong>
                         <span className="small text-light">{message}</span>
                     </div>

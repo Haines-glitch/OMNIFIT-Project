@@ -53,7 +53,7 @@ class TrainerCreateSerializer(serializers.Serializer):
     profile_image = serializers.ImageField(required=False, allow_null=True)
     
     specialization = serializers.CharField(required=True)
-    experience = serializers.IntegerField(required=False, default=1)
+    experience = serializers.IntegerField(required=False, default=1, min_value=0, max_value=50)
     qualification = serializers.CharField(required=False, allow_blank=True, default='')
     certification = serializers.CharField(required=False, allow_blank=True, default='')
     license_number = serializers.CharField(required=False, allow_blank=True, default='')

@@ -32,10 +32,9 @@ class Member(models.Model):
             self.membership_no = f"OMNI-MBR-{1000 + self.user_id}"
         if not self.expiry_date:
             self.expiry_date = date.today() + timedelta(days=120)
-        if self.height_cm and self.weight_kg:
+        if self.height_cm and self.weight_kg and self.height_cm > 0 and self.weight_kg > 0:
             height_m = self.height_cm / 100.0
-            if height_m > 0:
-                self.bmi = round(self.weight_kg / (height_m ** 2), 1)
+            self.bmi = round(self.weight_kg / (height_m ** 2), 1)
         super().save(*args, **kwargs)
 
     @property

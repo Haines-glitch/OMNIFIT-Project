@@ -13,6 +13,7 @@ import TrainerSettingsModule from '../components/Modules/TrainerSettingsModule';
 import NotificationCenter from '../components/Notifications/NotificationCenter';
 import { getTrainerDashboardData } from '../services/dashboardService';
 import LoginService from '../components/Login/LoginService';
+import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 
 const TrainerDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -34,9 +35,13 @@ const TrainerDashboard = () => {
         ...(data?.trainer || {}),
         ...currentUser,
         name: currentUser?.name || currentUser?.full_name || data?.trainer?.name || 'Marcus Vance',
+        email: currentUser?.email || data?.trainer?.email || 'marcus.vance@omnifit.com',
+        phone: currentUser?.phone || data?.trainer?.phone || '+91 98765 43210',
+        gender: currentUser?.gender || 'Male',
+        dob: currentUser?.dob || '1992-06-15',
         role: currentUser?.role || 'TRAINER',
-        specialization: data?.trainer?.specialization || 'NASM Master Trainer',
-        avatar: currentUser?.avatar || data?.trainer?.avatar || 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=150&auto=format&fit=crop&q=80',
+        specialization: currentUser?.specialization || data?.trainer?.specialization || 'NASM Master Trainer',
+        avatar: currentUser?.avatar || data?.trainer?.avatar || DEFAULT_AVATAR,
     };
 
     const memberColumns = [

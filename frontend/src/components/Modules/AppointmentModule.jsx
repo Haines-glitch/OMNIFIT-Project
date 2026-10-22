@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { validateAppointmentDate, validateText } from '../../utils/validation';
 
 const AppointmentModule = ({ role }) => {
     const [appointments, setAppointments] = useState([
@@ -8,24 +9,40 @@ const AppointmentModule = ({ role }) => {
     ]);
 
     const [booking, setBooking] = useState({ trainer: 'Marcus Vance', date: '', time: '10:00 AM', purpose: '' });
-    const [msg, setMsg] = useState('');
+    const [msg, setMsg] = useState(null);
 
     const handleBook = (e) => {
         e.preventDefault();
-        if (!booking.date || !booking.purpose) return;
+
+        // 1. Validate Appointment Date
+        const dateVal = validateAppointmentDate(booking.date);
+        if (!dateVal.valid) {
+            setMsg({ type: 'warning', text: dateVal.message });
+            setTimeout(() => setMsg(null), 5000);
+            return;
+        }
+
+        // 2. Validate Purpose / Focus Text
+        const purposeVal = validateText(booking.purpose, 'Purpose / Focus', 3, 100);
+        if (!purposeVal.valid) {
+            setMsg({ type: 'warning', text: purposeVal.message });
+            setTimeout(() => setMsg(null), 5000);
+            return;
+        }
+
         const newAppt = {
             id: Date.now(),
             trainer: booking.trainer,
             member: 'Alex Mercer',
             date: booking.date,
             time: booking.time,
-            purpose: booking.purpose,
+            purpose: booking.purpose.trim(),
             status: 'Pending',
         };
         setAppointments([newAppt, ...appointments]);
-        setMsg('Appointment booking submitted successfully! Pending trainer approval.');
+        setMsg({ type: 'success', text: 'Appointment booking submitted successfully! Pending trainer approval.' });
         setBooking({ trainer: 'Marcus Vance', date: '', time: '10:00 AM', purpose: '' });
-        setTimeout(() => setMsg(''), 5000);
+        setTimeout(() => setMsg(null), 5000);
     };
 
     const updateStatus = (id, newStatus) => {
@@ -35,8 +52,11 @@ const AppointmentModule = ({ role }) => {
     return (
         <div className="vstack gap-4 animate-fade-in">
             {msg && (
-                <div className="alert alert-success bg-accent text-dark fw-bold rounded-3 p-3">
-                    <i className="bi bi-check-circle-fill me-2"></i>{msg}
+                <div className={`alert fw-bold rounded-3 p-3 d-flex align-items-center ${
+                    msg.type === 'warning' ? 'alert-warning text-dark' : 'alert-success bg-accent text-dark'
+                }`}>
+                    <i className={`bi me-2 ${msg.type === 'warning' ? 'bi-exclamation-triangle-fill text-warning' : 'bi-check-circle-fill'}`}></i>
+                    <span>{typeof msg === 'object' ? msg.text : msg}</span>
                 </div>
             )}
 
@@ -62,6 +82,7 @@ const AppointmentModule = ({ role }) => {
                             <label className="form-label text-muted small">Session Date</label>
                             <input
                                 type="date"
+                                min={new Date().toISOString().split('T')[0]}
                                 className="form-control bg-dark text-white border-secondary"
                                 value={booking.date}
                                 onChange={(e) => setBooking({ ...booking, date: e.target.value })}

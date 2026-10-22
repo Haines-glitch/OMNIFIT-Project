@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import LoginService from './LoginService';
 import Toast from '../Toast/Toast';
 import './Login.css';
+import { validateEmail } from '../../utils/validation';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -59,6 +60,12 @@ const Login = () => {
             return;
         }
 
+        const emailVal = validateEmail(email);
+        if (!emailVal.valid) {
+            setToast({ show: true, message: 'Please enter a valid Email address format.', type: 'warning' });
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -83,6 +90,12 @@ const Login = () => {
                         navigate('/member-dashboard');
                     }
                 }, 800);
+            } else {
+                setToast({
+                    show: true,
+                    message: result.error || 'Invalid email, password, or role mismatch.',
+                    type: 'error'
+                });
             }
         } catch (err) {
             setToast({
@@ -110,8 +123,13 @@ const Login = () => {
     // Forgot Password Submit
     const handleForgotSubmit = (e) => {
         e.preventDefault();
-        if (!forgotEmail) {
+        if (!forgotEmail || !forgotEmail.trim()) {
             setToast({ show: true, message: 'Please enter your account email.', type: 'warning' });
+            return;
+        }
+        const emailVal = validateEmail(forgotEmail);
+        if (!emailVal.valid) {
+            setToast({ show: true, message: 'Please enter a valid Email address format.', type: 'warning' });
             return;
         }
         setToast({

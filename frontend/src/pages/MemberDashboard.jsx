@@ -13,6 +13,7 @@ import ReportModule from '../components/Modules/ReportModule';
 import FeedbackModule from '../components/Modules/FeedbackModule';
 import { getMemberDashboardData } from '../services/dashboardService';
 import LoginService from '../components/Login/LoginService';
+import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 
 const MemberDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -76,10 +77,18 @@ const MemberDashboard = () => {
         name: currentUser?.name || currentUser?.full_name || data?.member?.name || 'Sarah Jenkins',
         email: currentUser?.email || data?.member?.email || 'sarah.jenkins@omnifit.com',
         phone: currentUser?.phone || data?.member?.phone || '+91 98765 43210',
+        gender: currentUser?.gender || data?.member?.gender || 'Female',
+        dob: currentUser?.dob || data?.member?.dob || '1998-04-12',
+        height: currentUser?.height || data?.member?.height || '182 cm',
+        weight: currentUser?.weight || data?.member?.weight || '78.5 kg',
+        bmi: currentUser?.bmi || data?.member?.bmi || 23.7,
+        fitnessGoal: currentUser?.fitnessGoal || data?.member?.fitnessGoal || data?.member?.goal || 'Hypertrophy & Fat Loss',
+        emergencyContact: currentUser?.emergencyContact || data?.member?.emergencyContact || 'Sarah Mercer (+91 98765 12345)',
+        medicalHistory: currentUser?.medicalHistory || data?.member?.medicalHistory || 'None (Cleared for high-intensity training)',
         role: currentUser?.role || 'MEMBER',
-        membershipPlan: data?.member?.membershipPlan || 'PREMIUM ATHLETE TIER',
+        membershipPlan: currentUser?.membership_plan || data?.member?.membershipPlan || 'PREMIUM ATHLETE TIER',
         trainerName: data?.member?.trainerName || 'Marcus Vance',
-        avatar: currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        avatar: currentUser?.avatar || data?.member?.avatar || DEFAULT_AVATAR,
     };
 
     const handleSaveUser = (updatedUser) => {

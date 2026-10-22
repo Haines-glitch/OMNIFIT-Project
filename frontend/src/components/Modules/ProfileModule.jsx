@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import LoginService from '../Login/LoginService';
+import { validateName, validateEmail, validateDateOfBirth, validateNumericRange } from '../../utils/validation';
+import { DEFAULT_AVATAR } from '../../utils/defaultAvatar';
 
 const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
     const isLight = theme === 'light';
@@ -9,7 +11,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
     const [showConfirmPass, setShowConfirmPass] = useState(false);
     const fileInputRef = useRef(null);
 
-    const defaultAvatar = 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=300&auto=format&fit=crop&q=80';
+    const defaultAvatar = DEFAULT_AVATAR;
 
     const defaultEmail = user?.email || (role === 'MEMBER' ? 'sarah.jenkins@omnifit.com' : 'marcus.vance@omnifit.com');
     const defaultName = user?.name || (role === 'MEMBER' ? 'Sarah Jenkins' : 'Marcus Vance');
@@ -64,7 +66,11 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
     const [passwordMessage, setPasswordMessage] = useState(null);
 
     const handleStartEdit = () => {
-        setTempData({ ...profileData });
+        setTempData({
+            ...profileData,
+            height: String(profileData.height || '').replace(/[^0-9.]/g, ''),
+            weight: String(profileData.weight || '').replace(/[^0-9.]/g, ''),
+        });
         setIsEditing(true);
     };
 
@@ -76,24 +82,94 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
 
-        // Strict email validation
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(tempData.email)) {
-            setSavedMessage('Invalid email format provided. Please fix it.');
-            setTimeout(() => setSavedMessage(''), 5000);
+        // 1. Logical Name Validation
+        const nameVal = validateName(tempData.name, 'Full Name');
+        if (!nameVal.valid) {
+            setSavedMessage({ type: 'warning', text: nameVal.message });
+            setTimeout(() => setSavedMessage(null), 5000);
             return;
         }
 
-        setProfileData({ ...tempData });
+        // 2. Logical Email Validation
+        const emailVal = validateEmail(tempData.email);
+        if (!emailVal.valid) {
+            setSavedMessage({ type: 'warning', text: 'Invalid email format provided. Please fix it.' });
+            setTimeout(() => setSavedMessage(null), 5000);
+            return;
+        }
+
+        // 3. Logical Contact Number Validation
+        if (tempData.phone) {
+            const rawDigits = tempData.phone.replace(/\D/g, '');
+            if (rawDigits.length < 10) {
+                setSavedMessage({ type: 'warning', text: 'Please enter a valid 10-digit mobile contact number.' });
+                setTimeout(() => setSavedMessage(null), 5000);
+                return;
+            }
+        }
+
+        // 4. Logical Date of Birth Validation
+        if (tempData.dob) {
+            const dobVal = validateDateOfBirth(tempData.dob);
+            if (!dobVal.valid) {
+                setSavedMessage({ type: 'warning', text: dobVal.message });
+                setTimeout(() => setSavedMessage(null), 5000);
+                return;
+            }
+        }
+
+        // 5. Logical Height Validation
+        const cleanHeight = String(tempData.height || '').replace(/[^0-9.]/g, '');
+        if (cleanHeight) {
+            const heightVal = validateNumericRange(cleanHeight, 'Height', 50, 260, 'cm');
+            if (!heightVal.valid) {
+                setSavedMessage({ type: 'warning', text: heightVal.message });
+                setTimeout(() => setSavedMessage(null), 5000);
+                return;
+            }
+        }
+
+        // 6. Logical Weight Validation
+        const cleanWeight = String(tempData.weight || '').replace(/[^0-9.]/g, '');
+        if (cleanWeight) {
+            const weightVal = validateNumericRange(cleanWeight, 'Weight', 20, 350, 'kg');
+            if (!weightVal.valid) {
+                setSavedMessage({ type: 'warning', text: weightVal.message });
+                setTimeout(() => setSavedMessage(null), 5000);
+                return;
+            }
+        }
+
+        // 7. Logical Emergency Contact Validation
+        if (tempData.emergencyContact && tempData.emergencyContact.trim()) {
+            if (tempData.emergencyContact.trim().length < 3) {
+                setSavedMessage({ type: 'warning', text: 'Emergency contact details must be at least 3 characters.' });
+                setTimeout(() => setSavedMessage(null), 5000);
+                return;
+            }
+        }
+
+        const calculatedBmi = (cleanHeight && cleanWeight && Number(cleanHeight) > 0)
+            ? Number((Number(cleanWeight) / Math.pow(Number(cleanHeight) / 100, 2)).toFixed(1))
+            : profileData.bmi;
+
+        const updatedProfile = {
+            ...tempData,
+            height: cleanHeight ? `${cleanHeight} cm` : '',
+            weight: cleanWeight ? `${cleanWeight} kg` : '',
+            bmi: calculatedBmi
+        };
+
+        setProfileData(updatedProfile);
 
         const updatedUser = await LoginService.updateCurrentUser({
-            name: tempData.name,
-            email: tempData.email,
-            phone: tempData.phone,
+            name: tempData.name.trim(),
+            email: tempData.email.trim(),
+            phone: tempData.phone.trim(),
             gender: tempData.gender,
             dob: tempData.dob,
-            height: tempData.height,
-            weight: tempData.weight,
+            height: updatedProfile.height,
+            weight: updatedProfile.weight,
             fitnessGoal: tempData.fitnessGoal,
             medicalHistory: tempData.medicalHistory,
             emergencyContact: tempData.emergencyContact,
@@ -105,14 +181,26 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
         }
 
         setIsEditing(false);
-        setSavedMessage('Profile updated successfully! All changes saved to active session & database.');
-        setTimeout(() => setSavedMessage(''), 5000);
+        setSavedMessage({ type: 'success', text: 'Profile updated successfully! All changes saved to active session & database.' });
+        setTimeout(() => setSavedMessage(null), 5000);
     };
 
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
+        if (!passwordData.currentPassword || !passwordData.currentPassword.trim()) {
+            setPasswordMessage({ type: 'warning', text: 'Please enter your current password.' });
+            return;
+        }
         if (!passwordData.newPassword) {
             setPasswordMessage({ type: 'warning', text: 'Please enter a new password.' });
+            return;
+        }
+        if (passwordData.newPassword.length < 8) {
+            setPasswordMessage({ type: 'warning', text: 'New password must be at least 8 characters long.' });
+            return;
+        }
+        if (passwordData.newPassword === passwordData.currentPassword) {
+            setPasswordMessage({ type: 'warning', text: 'New password cannot be identical to your current password.' });
             return;
         }
         if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -131,33 +219,58 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
         }
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onloadend = () => {
+            reader.onloadend = async () => {
                 const base64String = reader.result;
-                setProfileData({ ...profileData, avatar: base64String });
-                setTempData({ ...tempData, avatar: base64String });
-                setSavedMessage('Avatar updated successfully!');
-                setTimeout(() => setSavedMessage(''), 4000);
+                setProfileData(prev => ({ ...prev, avatar: base64String }));
+                setTempData(prev => ({ ...prev, avatar: base64String }));
+                // Persist immediately to active session & storage
+                const updated = await LoginService.updateCurrentUser({ avatar: base64String });
+                if (onSaveUser) {
+                    onSaveUser(updated);
+                }
+                setSavedMessage({ type: 'success', text: 'Profile picture updated successfully!' });
+                setTimeout(() => setSavedMessage(null), 4000);
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    const handleRemoveAvatar = async (e) => {
+        e.stopPropagation();
+        setProfileData(prev => ({ ...prev, avatar: defaultAvatar }));
+        setTempData(prev => ({ ...prev, avatar: defaultAvatar }));
+        const updated = await LoginService.updateCurrentUser({ avatar: defaultAvatar });
+        if (onSaveUser) {
+            onSaveUser(updated);
+        }
+        setSavedMessage({ type: 'success', text: 'Profile picture removed. Reverted to default avatar.' });
+        setTimeout(() => setSavedMessage(null), 4000);
     };
 
     return (
         <div className="space-y-6 animate-fade-in font-sans antialiased">
             {/* System Status Banner */}
             {savedMessage && (
-                <div className="p-4 rounded-2xl bg-[#00F29D]/15 border border-[#00F29D]/40 text-[#00F29D] font-bold text-xs flex items-center justify-between shadow-lg shadow-[#00F29D]/10">
+                <div className={`p-4 rounded-2xl font-bold text-xs flex items-center justify-between shadow-lg transition-all ${
+                    (savedMessage.type === 'warning' || savedMessage.type === 'danger')
+                        ? 'bg-amber-500/15 border border-amber-500/40 text-amber-500 shadow-amber-500/10'
+                        : 'bg-[#00F29D]/15 border border-[#00F29D]/40 text-[#00F29D] shadow-[#00F29D]/10'
+                }`}>
                     <div className="flex items-center gap-2.5">
-                        <i className="bi bi-check-circle-fill text-base"></i>
-                        <span>{savedMessage}</span>
+                        <i className={`bi text-base ${
+                            (savedMessage.type === 'warning' || savedMessage.type === 'danger')
+                                ? 'bi-exclamation-triangle-fill'
+                                : 'bi-check-circle-fill'
+                        }`}></i>
+                        <span>{typeof savedMessage === 'object' ? savedMessage.text : savedMessage}</span>
                     </div>
                     <button
-                        onClick={() => setSavedMessage('')}
-                        className="text-[#00F29D] hover:text-white transition-colors"
+                        onClick={() => setSavedMessage(null)}
+                        className="opacity-75 hover:opacity-100 transition-opacity"
                     >
                         <i className="bi bi-x-lg text-xs"></i>
                     </button>
@@ -172,24 +285,50 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
                         {/* Modern Profile Avatar */}
-                        <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
-                            <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
-                            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-[#00F29D] p-1 shadow-[0_0_25px_rgba(0,242,157,0.35)] transition-transform duration-300 group-hover:scale-105">
-                                <img
-                                    src={profileData.avatar}
-                                    alt={profileData.name}
-                                    className="w-full h-full object-cover rounded-full"
-                                />
-                            </div>
-                            {/* Interactive Camera Hover Badge */}
-                            <div className="absolute inset-0 bg-slate-950/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 backdrop-blur-xs">
-                                <div className="w-9 h-9 rounded-full bg-[#00F29D] text-slate-950 flex items-center justify-center shadow-lg">
-                                    <i className="bi bi-camera-fill text-sm"></i>
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="relative group cursor-pointer" onClick={handleAvatarClick} title="Click to upload/change photo">
+                                <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-[#00F29D] p-1 shadow-[0_0_25px_rgba(0,242,157,0.35)] transition-transform duration-300 group-hover:scale-105 bg-slate-100">
+                                    <img
+                                        src={profileData.avatar || defaultAvatar}
+                                        alt={profileData.name}
+                                        className="w-full h-full object-cover rounded-full"
+                                    />
                                 </div>
+                                {/* Interactive Camera Hover Badge */}
+                                <div className="absolute inset-0 bg-slate-950/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 backdrop-blur-xs">
+                                    <div className="w-9 h-9 rounded-full bg-[#00F29D] text-slate-950 flex items-center justify-center shadow-lg">
+                                        <i className="bi bi-camera-fill text-sm"></i>
+                                    </div>
+                                </div>
+                                <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-[#00F29D] border-2 border-slate-950 flex items-center justify-center text-[10px] text-slate-950 font-black shadow-md">
+                                    <i className="bi bi-check-lg"></i>
+                                </span>
                             </div>
-                            <span className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-[#00F29D] border-2 border-slate-950 flex items-center justify-center text-[10px] text-slate-950 font-black shadow-md">
-                                <i className="bi bi-[#check]"></i>
-                            </span>
+
+                            {/* Avatar Controls: Upload / Remove */}
+                            <div className="flex items-center gap-1.5 pt-1">
+                                <button
+                                    type="button"
+                                    onClick={handleAvatarClick}
+                                    className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition-all flex items-center gap-1 cursor-pointer"
+                                    title="Upload photo from device"
+                                >
+                                    <i className="bi bi-upload text-[10px]"></i>
+                                    <span>Upload</span>
+                                </button>
+                                {profileData.avatar && profileData.avatar !== defaultAvatar && (
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveAvatar}
+                                        className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-all flex items-center gap-1 cursor-pointer"
+                                        title="Remove custom photo and revert to default silhouette"
+                                    >
+                                        <i className="bi bi-trash3 text-[10px]"></i>
+                                        <span>Remove</span>
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         {/* Trainer Meta Info */}
@@ -302,9 +441,11 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
                                     <input
                                         type="text"
                                         value={tempData.phone.replace('+91 ', '')}
+                                        maxLength="10"
+                                        placeholder="9876543210"
                                         onChange={(e) => {
-                                            const raw = e.target.value;
-                                            const formatted = raw.startsWith('+91') ? raw : `+91 ${raw}`;
+                                            const raw = e.target.value.replace(/[^0-9]/g, '');
+                                            const formatted = raw ? `+91 ${raw}` : '';
                                             setTempData({ ...tempData, phone: formatted });
                                         }}
                                         className="w-full px-3.5 py-2.5 bg-transparent text-white text-xs outline-none"
@@ -331,6 +472,7 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
                                 <label className="block text-xs font-semibold text-slate-400 mb-1.5">Date of Birth</label>
                                 <input
                                     type="date"
+                                    max={new Date().toISOString().split('T')[0]}
                                     value={tempData.dob}
                                     onChange={(e) => setTempData({ ...tempData, dob: e.target.value })}
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
@@ -338,21 +480,30 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'light' }) => {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Height</label>
+                                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Height (cm)</label>
                                 <input
-                                    type="text"
-                                    value={tempData.height}
-                                    onChange={(e) => setTempData({ ...tempData, height: e.target.value })}
+                                    type="number"
+                                    min="50"
+                                    max="260"
+                                    value={String(tempData.height || '').replace(/[^0-9.]/g, '')}
+                                    placeholder="e.g. 182"
+                                    onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                    onChange={(e) => setTempData({ ...tempData, height: e.target.value.replace(/[^0-9.]/g, '') })}
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Current Weight</label>
+                                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Current Weight (kg)</label>
                                 <input
-                                    type="text"
-                                    value={tempData.weight}
-                                    onChange={(e) => setTempData({ ...tempData, weight: e.target.value })}
+                                    type="number"
+                                    min="20"
+                                    max="350"
+                                    step="0.1"
+                                    value={String(tempData.weight || '').replace(/[^0-9.]/g, '')}
+                                    placeholder="e.g. 78.5"
+                                    onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                    onChange={(e) => setTempData({ ...tempData, weight: e.target.value.replace(/[^0-9.]/g, '') })}
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-slate-200 text-slate-900 text-xs outline-none focus:border-[#00F29D] transition-all"
                                 />
                             </div>

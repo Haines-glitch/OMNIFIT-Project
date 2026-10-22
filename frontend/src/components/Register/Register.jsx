@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import LoginService from '../Login/LoginService';
 import Toast from '../Toast/Toast';
 import './Register.css';
+import { validateName, validateEmail, validatePhone, validateDateOfBirth, validateNumericRange } from '../../utils/validation';
+import { DEFAULT_AVATAR } from '../../utils/defaultAvatar';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -45,21 +47,58 @@ const Register = () => {
             setToast({ show: true, message: 'Please enter your Full Name.', type: 'warning' });
             return;
         }
+        const nameVal = validateName(fullName);
+        if (!nameVal.valid) {
+            setToast({ show: true, message: nameVal.message, type: 'warning' });
+            return;
+        }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.trim()) {
             setToast({ show: true, message: 'Please enter your Email address.', type: 'warning' });
             return;
         }
-        if (!emailRegex.test(email.trim())) {
+        const emailVal = validateEmail(email);
+        if (!emailVal.valid) {
             setToast({ show: true, message: 'Please enter a valid Email address format.', type: 'warning' });
             return;
         }
 
         if (phone.trim()) {
-            const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
-            if (!phoneRegex.test(phone.trim()) || phone.trim().length < 7) {
+            const phoneVal = validatePhone(phone);
+            if (!phoneVal.valid) {
                 setToast({ show: true, message: 'Please enter a valid Phone number.', type: 'warning' });
+                return;
+            }
+        }
+
+        if (dateOfBirth) {
+            const dobVal = validateDateOfBirth(dateOfBirth);
+            if (!dobVal.valid) {
+                setToast({ show: true, message: dobVal.message, type: 'warning' });
+                return;
+            }
+        }
+
+        if (age) {
+            const ageVal = validateNumericRange(age, 'Age', 10, 120, 'years');
+            if (!ageVal.valid) {
+                setToast({ show: true, message: ageVal.message, type: 'warning' });
+                return;
+            }
+        }
+
+        if (height) {
+            const heightVal = validateNumericRange(height, 'Height', 50, 260, 'cm');
+            if (!heightVal.valid) {
+                setToast({ show: true, message: heightVal.message, type: 'warning' });
+                return;
+            }
+        }
+
+        if (weight) {
+            const weightVal = validateNumericRange(weight, 'Weight', 20, 350, 'kg');
+            if (!weightVal.valid) {
+                setToast({ show: true, message: weightVal.message, type: 'warning' });
                 return;
             }
         }
@@ -105,14 +144,19 @@ const Register = () => {
             if (result.success) {
                 setToast({
                     show: true,
-                    message: "Registration successful. Please login.",
+                    message: result.message || "Registration successful. Please login.",
                     type: 'success'
                 });
-
                 // Redirect newly registered member to /login
                 setTimeout(() => {
                     navigate('/login');
                 }, 1500);
+            } else {
+                setToast({
+                    show: true,
+                    message: result.error || 'Registration failed. Please check your details.',
+                    type: 'error'
+                });
             }
         } catch (err) {
             const errorMsg = err.response?.data?.email?.[0]
@@ -169,7 +213,7 @@ const Register = () => {
                     {currentUser && (
                         <div className="navbar-avatar">
                             <img
-                                src={currentUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"}
+                                src={currentUser?.avatar || DEFAULT_AVATAR}
                                 alt="User Avatar"
                             />
                         </div>
@@ -282,7 +326,7 @@ const Register = () => {
                                             className="custom-input"
                                             placeholder="+1 (555) 000-0000"
                                             value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
+                                            onChange={(e) => setPhone(e.target.value.replace(/[^0-9+() -]/g, ''))}
                                             autoComplete="tel"
                                         />
                                     </div>
@@ -297,7 +341,15 @@ const Register = () => {
                                                 type="date"
                                                 className="custom-input px-3"
                                                 value={dateOfBirth}
-                                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                                max={new Date().toISOString().split('T')[0]}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    setDateOfBirth(val);
+                                                    const dobCheck = validateDateOfBirth(val);
+                                                    if (dobCheck.valid && dobCheck.calculatedAge) {
+                                                        setAge(String(dobCheck.calculatedAge));
+                                                    }
+                                                }}
                                             />
                                         </div>
                                     </div>
@@ -327,7 +379,10 @@ const Register = () => {
                                                 className="custom-input px-3"
                                                 placeholder="25"
                                                 value={age}
-                                                onChange={(e) => setAge(e.target.value)}
+                                                min="10"
+                                                max="120"
+                                                onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                                onChange={(e) => setAge(e.target.value.replace(/[^0-9]/g, ''))}
                                             />
                                         </div>
                                     </div>
@@ -339,7 +394,10 @@ const Register = () => {
                                                 className="custom-input px-3"
                                                 placeholder="175"
                                                 value={height}
-                                                onChange={(e) => setHeight(e.target.value)}
+                                                min="50"
+                                                max="260"
+                                                onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                                onChange={(e) => setHeight(e.target.value.replace(/[^0-9.]/g, ''))}
                                             />
                                         </div>
                                     </div>
@@ -351,7 +409,11 @@ const Register = () => {
                                                 className="custom-input px-3"
                                                 placeholder="70"
                                                 value={weight}
-                                                onChange={(e) => setWeight(e.target.value)}
+                                                min="20"
+                                                max="350"
+                                                step="0.1"
+                                                onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                                onChange={(e) => setWeight(e.target.value.replace(/[^0-9.]/g, ''))}
                                             />
                                         </div>
                                     </div>
@@ -388,7 +450,7 @@ const Register = () => {
                                         <input
                                             type={showPassword ? 'text' : 'password'}
                                             className="custom-input"
-                                            placeholder="Min. 8 characters"
+                                            placeholder="Min 8 chars, 1 letter, 1 digit, 1 symbol (e.g. Pass@123)"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             required

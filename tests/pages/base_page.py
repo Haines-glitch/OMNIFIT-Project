@@ -1,3 +1,4 @@
+import time
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -15,7 +16,12 @@ class BasePage:
 
     def click(self, locator):
         element = self.wait.until(EC.element_to_be_clickable(locator))
-        element.click()
+        try:
+            self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
+            time.sleep(0.2)
+            element.click()
+        except:
+            self.driver.execute_script("arguments[0].click();", element)
 
     def enter_text(self, locator, text):
         element = self.wait.until(EC.visibility_of_element_located(locator))
@@ -26,9 +32,9 @@ class BasePage:
         element = self.wait.until(EC.visibility_of_element_located(locator))
         return element.text
 
-    def is_visible(self, locator):
+    def is_visible(self, locator, timeout=3):
         try:
-            self.wait.until(EC.visibility_of_element_located(locator))
+            WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located(locator))
             return True
         except:
             return False

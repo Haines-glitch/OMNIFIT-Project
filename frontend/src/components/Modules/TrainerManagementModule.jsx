@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LoginService from '../Login/LoginService';
 import Toast from '../Toast/Toast';
+import { validateName, validateEmail, validatePhone, validateDateOfBirth, validateNumericRange } from '../../utils/validation';
 
 const TrainerManagementModule = ({ theme = 'light' }) => {
     const [trainers, setTrainers] = useState([]);
@@ -116,7 +117,15 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        let cleanValue = value;
+        if (name === 'experience') {
+            cleanValue = value.replace(/[^0-9]/g, '');
+        } else if (name === 'phone') {
+            cleanValue = value.replace(/[^0-9+() -]/g, '');
+        } else if (name === 'full_name') {
+            cleanValue = value.replace(/[^a-zA-Z\s'.-]/g, '');
+        }
+        setFormData(prev => ({ ...prev, [name]: cleanValue }));
     };
 
     const handleWorkingDaysToggle = (day) => {
@@ -133,11 +142,58 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
     const handleAddTrainerSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.full_name || !formData.email || !formData.phone || !formData.password) {
+        // 1. Required Fields Check
+        if (!formData.full_name?.trim() || !formData.email?.trim() || !formData.phone?.trim() || !formData.password) {
             setToast({ show: true, message: 'Please fill in all required fields marked with *', type: 'warning' });
             return;
         }
 
+        // 2. Full Name Validation
+        const nameVal = validateName(formData.full_name, 'Trainer Full Name');
+        if (!nameVal.valid) {
+            setToast({ show: true, message: nameVal.message, type: 'warning' });
+            return;
+        }
+
+        // 3. Email Validation
+        const emailVal = validateEmail(formData.email);
+        if (!emailVal.valid) {
+            setToast({ show: true, message: 'Please enter a valid trainer Email address format.', type: 'warning' });
+            return;
+        }
+
+        // 4. Phone Validation
+        const phoneVal = validatePhone(formData.phone, true);
+        if (!phoneVal.valid) {
+            setToast({ show: true, message: phoneVal.message, type: 'warning' });
+            return;
+        }
+
+        // 5. Date of Birth (Trainer must be >= 18)
+        if (formData.date_of_birth) {
+            const dobVal = validateDateOfBirth(formData.date_of_birth, 18, 80);
+            if (!dobVal.valid) {
+                setToast({ show: true, message: dobVal.message, type: 'warning' });
+                return;
+            }
+        }
+
+        // 6. Experience Validation
+        if (formData.experience !== '' && formData.experience !== undefined) {
+            const expVal = validateNumericRange(formData.experience, 'Years of Experience', 0, 50, 'years');
+            if (!expVal.valid) {
+                setToast({ show: true, message: expVal.message, type: 'warning' });
+                return;
+            }
+        }
+
+        // 7. License Number validation if entered
+        if (formData.license_number?.trim() && formData.license_number.trim().length < 3) {
+            setToast({ show: true, message: 'License number must be at least 3 characters.', type: 'warning' });
+            return;
+        }
+
+        // 8. Password Validation
         if (formData.password.length < 8) {
             setToast({ show: true, message: 'Temporary password must be at least 8 characters.', type: 'warning' });
             return;
@@ -510,6 +566,9 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                         <input
                                             type="number"
                                             name="experience"
+                                            min="0"
+                                            max="50"
+                                            onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
                                             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
                                             value={formData.experience}
                                             onChange={handleInputChange}

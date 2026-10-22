@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { validateText, validateNumericRange } from '../../utils/validation';
 
 const WorkoutModule = ({ role }) => {
     const [selectedCategory, setSelectedCategory] = useState('All');
@@ -11,37 +12,68 @@ const WorkoutModule = ({ role }) => {
         { id: 4, name: 'High-Intensity Treadmill Sprints', category: 'Cardio', sets: 5, reps: '30s Sprint', duration: '15 mins', calories: 280, difficulty: 'Intermediate', notes: '140+ BPM target heart rate' },
     ]);
 
+    const [formFeedback, setFormFeedback] = useState(null);
     const [newWorkout, setNewWorkout] = useState({
         name: '', category: 'Chest', sets: 4, reps: 10, duration: '15 mins', calories: 150, difficulty: 'Intermediate', notes: ''
     });
 
     const handleAddWorkout = async (e) => {
         e.preventDefault();
-        if (!newWorkout.name) return;
+        setFormFeedback(null);
+
+        // 1. Validate Exercise Name
+        const nameVal = validateText(newWorkout.name, 'Exercise Name', 2, 60);
+        if (!nameVal.valid) {
+            setFormFeedback({ type: 'warning', message: nameVal.message });
+            return;
+        }
+
+        // 2. Validate Sets
+        const setsVal = validateNumericRange(newWorkout.sets, 'Sets', 1, 50, 'sets');
+        if (!setsVal.valid) {
+            setFormFeedback({ type: 'warning', message: setsVal.message });
+            return;
+        }
+
+        // 3. Validate Reps / Time
+        const repsVal = validateText(String(newWorkout.reps || ''), 'Reps / Time', 1, 30);
+        if (!repsVal.valid) {
+            setFormFeedback({ type: 'warning', message: repsVal.message });
+            return;
+        }
 
         // Automatically assign to the currently active category tab (defaulting to Chest if 'All' is selected)
         const activeCategory = selectedCategory === 'All' ? 'Chest' : selectedCategory;
 
-        const newExercise = { ...newWorkout, category: activeCategory, id: Date.now() };
+        const newExercise = {
+            ...newWorkout,
+            name: newWorkout.name.trim(),
+            sets: Number(newWorkout.sets) || 1,
+            reps: String(newWorkout.reps).trim(),
+            category: activeCategory,
+            id: Date.now()
+        };
         setWorkouts(prev => [...prev, newExercise]);
 
         try {
             const { default: LoginService } = await import('../Login/LoginService');
             await LoginService.assignRoutine({
-                title: `${activeCategory} Routine: ${newWorkout.name}`,
+                title: `${activeCategory} Routine: ${newExercise.name}`,
                 description: 'Trainer assigned custom exercise.',
                 exercises: [{
-                    name: newWorkout.name,
-                    sets_reps: `${newWorkout.sets} x ${newWorkout.reps}`,
+                    name: newExercise.name,
+                    sets_reps: `${newExercise.sets} x ${newExercise.reps}`,
                     target_load: 'Adjust load based on capability',
-                    notes: newWorkout.notes || 'No specific notes.'
+                    notes: newExercise.notes || 'No specific notes.'
                 }]
             });
         } catch (err) {
             console.warn('Backend sync note: could not assign routine. Local UI updated.');
         }
 
+        setFormFeedback({ type: 'success', message: `Exercise "${newExercise.name}" assigned successfully!` });
         setNewWorkout({ name: '', category: 'Chest', sets: 4, reps: 10, duration: '15 mins', calories: 150, difficulty: 'Intermediate', notes: '' });
+        setTimeout(() => setFormFeedback(null), 4000);
     };
 
     const filteredWorkouts = selectedCategory === 'All'
@@ -81,6 +113,14 @@ const WorkoutModule = ({ role }) => {
             {(role === 'TRAINER' || role === 'ADMIN') && (
                 <div className="glass-card p-4">
                     <h5 className="fw-bold text-white mb-3"><i className="bi bi-plus-circle-fill text-accent me-2"></i>Assign New Exercise</h5>
+                    {formFeedback && (
+                        <div className={`alert py-2 px-3 small d-flex align-items-center gap-2 mb-3 rounded-3 ${
+                            formFeedback.type === 'warning' ? 'alert-warning' : 'alert-success'
+                        }`}>
+                            <i className={`bi ${formFeedback.type === 'warning' ? 'bi-exclamation-triangle-fill text-warning' : 'bi-check-circle-fill text-success'}`}></i>
+                            <span>{formFeedback.message}</span>
+                        </div>
+                    )}
                     <form onSubmit={handleAddWorkout} className="row g-3">
                         <div className="col-md-4">
                             <label className="form-label text-muted small fw-bold">Exercise Name *</label>
@@ -99,7 +139,10 @@ const WorkoutModule = ({ role }) => {
                                 className="form-control bg-dark text-white border-secondary"
                                 placeholder="4"
                                 value={newWorkout.sets}
-                                onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })}
+                                min="1"
+                                max="50"
+                                onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
+                                onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value.replace(/[^0-9]/g, '') })}
                             />
                         </div>
                         <div className="col-md-3">
@@ -109,7 +152,7 @@ const WorkoutModule = ({ role }) => {
                                 className="form-control bg-dark text-white border-secondary"
                                 placeholder="10"
                                 value={newWorkout.reps}
-                                onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })}
+                                onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value.replace(/^-+/g, '') })}
                             />
                         </div>
                         <div className="col-md-2 d-flex align-items-end">

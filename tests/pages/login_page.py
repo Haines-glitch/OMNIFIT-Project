@@ -10,7 +10,7 @@ class LoginPage(BasePage):
     HOME_BUTTON = (By.CSS_SELECTOR, "[data-testid='login-home-btn']")
 
     # Toast Notifications
-    TOAST_MESSAGE = (By.CLASS_NAME, 'toast-message')
+    TOAST_MESSAGE = (By.CSS_SELECTOR, "[data-testid='toast-message']")
 
     # Logged In State Elements
     GOTO_DASHBOARD_BTN = (By.CSS_SELECTOR, "[data-testid='goto-dashboard-btn']")
@@ -35,7 +35,7 @@ class LoginPage(BasePage):
         self.open()
         
         # Check if already logged in, if so, logout first
-        if self.is_visible(self.LOGOUT_BTN):
+        if self.is_visible(self.LOGOUT_BTN, timeout=1):
             self.click_logout()
             self.open()
             
@@ -44,6 +44,6 @@ class LoginPage(BasePage):
         self.click_login()
         
     def get_toast_message_text(self):
-        if self.is_visible(self.TOAST_MESSAGE):
+        if self.is_visible(self.TOAST_MESSAGE, timeout=5):
             return self.get_text(self.TOAST_MESSAGE)
         return None

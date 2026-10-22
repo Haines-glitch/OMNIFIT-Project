@@ -9,7 +9,7 @@ class MemberDashboardPage(BasePage):
     WORKOUT_TAB = (By.XPATH, "//span[text()='Workouts' or text()='Workout' or contains(text(), 'Workout')]/ancestor::button | //button[contains(., 'Workout')]")
     DIET_TAB = (By.XPATH, "//span[text()='Diet Plan' or text()='Diet' or contains(text(), 'Diet')]/ancestor::button | //button[contains(., 'Diet')]")
     PROFILE_TAB = (By.XPATH, "//span[text()='Profile' or contains(text(), 'Profile')]/ancestor::button | //button[contains(., 'Profile')]")
-    LOGOUT_BTN = (By.XPATH, "//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'logout')]")
+    LOGOUT_BTN = (By.CSS_SELECTOR, "[data-testid='logout-btn']")
     
     # On the dashboard page itself
     WORKOUT_ACTION_BTN = (By.XPATH, "//button[contains(., \"Log Today's Workout\")]")

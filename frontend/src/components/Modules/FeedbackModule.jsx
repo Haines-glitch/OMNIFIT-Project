@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { validateText } from '../../utils/validation';
 
 const FeedbackModule = ({ theme = 'light' }) => {
     const isLight = theme === 'light';
@@ -8,6 +9,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
     const [submittedAlert, setSubmittedAlert] = useState(false);
+    const [validationError, setValidationError] = useState('');
 
     const [feedbacks, setFeedbacks] = useState([
         {
@@ -41,12 +43,28 @@ const FeedbackModule = ({ theme = 'light' }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!subject.trim() || !message.trim()) return;
+        setValidationError('');
+
+        // 1. Subject validation
+        const subVal = validateText(subject, 'Subject / Headline', 3, 100);
+        if (!subVal.valid) {
+            setValidationError(subVal.message);
+            setTimeout(() => setValidationError(''), 5000);
+            return;
+        }
+
+        // 2. Message validation (at least 10 chars)
+        const msgVal = validateText(message, 'Detailed Comments', 10, 1000);
+        if (!msgVal.valid) {
+            setValidationError(msgVal.message);
+            setTimeout(() => setValidationError(''), 5000);
+            return;
+        }
 
         const newFeedback = {
             id: `FB-${Math.floor(100 + Math.random() * 900)}`,
             category,
-            subject,
+            subject: subject.trim(),
             rating,
             status: 'Under Review',
             date: new Date().toISOString().split('T')[0],
@@ -106,6 +124,12 @@ const FeedbackModule = ({ theme = 'light' }) => {
                         </h5>
 
                         <form onSubmit={handleSubmit} className="vstack gap-3">
+                            {validationError && (
+                                <div className="alert alert-warning d-flex align-items-center py-2 px-3 rounded-3 small text-dark mb-0">
+                                    <i className="bi bi-exclamation-triangle-fill me-2 text-warning"></i>
+                                    <span>{validationError}</span>
+                                </div>
+                            )}
                             <div>
                                 <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>Feedback Category</label>
                                 <select
