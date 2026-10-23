@@ -5,6 +5,7 @@ import Toast from '../Toast/Toast';
 import './Register.css';
 import { validateName, validateEmail, validatePhone, validateDateOfBirth, validateNumericRange } from '../../utils/validation';
 import { DEFAULT_AVATAR } from '../../utils/defaultAvatar';
+import { initGoogleAuth } from '../../utils/googleAuth';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -41,6 +42,18 @@ const Register = () => {
             setCurrentUser(LoginService.getCurrentUser());
         }
     }, []);
+
+    // Initialize Google Identity Services (GIS) when Google Modal opens
+    useEffect(() => {
+        if (showGoogleModal) {
+            const timer = setTimeout(() => {
+                initGoogleAuth((profile) => {
+                    handleGoogleSignUp(profile.email, profile.name);
+                }, 'google-signup-button-slot');
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [showGoogleModal]);
 
     // Google Sign-Up Handler
     const handleGoogleSignUp = async (selectedEmail, selectedName) => {
@@ -631,6 +644,17 @@ const Register = () => {
                             <p className="small text-secondary mb-3">
                                 Choose an account to register with <strong>OMNIFIT</strong>
                             </p>
+
+                            {/* Live Google Official One-Tap / Sign-In Button */}
+                            <div className="mb-3 d-flex justify-content-center">
+                                <div id="google-signup-button-slot" className="w-100 d-flex justify-content-center"></div>
+                            </div>
+
+                            <div className="d-flex align-items-center gap-2 mb-3 text-secondary">
+                                <div className="border-top border-secondary border-opacity-25 flex-grow-1"></div>
+                                <span style={{ fontSize: '10px', letterSpacing: '0.05em' }} className="fw-bold text-uppercase">Or Select Demo Account</span>
+                                <div className="border-top border-secondary border-opacity-25 flex-grow-1"></div>
+                            </div>
 
                             {/* Saved Accounts List */}
                             <div className="d-flex flex-col gap-2 mb-3">

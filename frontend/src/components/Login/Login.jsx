@@ -4,6 +4,7 @@ import LoginService from './LoginService';
 import Toast from '../Toast/Toast';
 import './Login.css';
 import { validateEmail } from '../../utils/validation';
+import { initGoogleAuth } from '../../utils/googleAuth';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -57,6 +58,18 @@ const Login = () => {
             console.warn('URL param parse error:', e);
         }
     }, []);
+
+    // Initialize Google Identity Services (GIS) when Google Modal opens
+    useEffect(() => {
+        if (showGoogleModal) {
+            const timer = setTimeout(() => {
+                initGoogleAuth((profile) => {
+                    handleGoogleSignIn(profile.email, profile.name);
+                }, 'google-login-button-slot');
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [showGoogleModal]);
 
     // Form Submit Handler (Unified Single Sign-On)
     const handleSubmit = async (e) => {
@@ -606,6 +619,17 @@ const Login = () => {
                             <p className="small text-secondary mb-3">
                                 Choose a Google account to continue to <strong>OMNIFIT</strong>
                             </p>
+
+                            {/* Live Google Official One-Tap / Sign-In Button */}
+                            <div className="mb-3 d-flex justify-content-center">
+                                <div id="google-login-button-slot" className="w-100 d-flex justify-content-center"></div>
+                            </div>
+
+                            <div className="d-flex align-items-center gap-2 mb-3 text-secondary">
+                                <div className="border-top border-secondary border-opacity-25 flex-grow-1"></div>
+                                <span style={{ fontSize: '10px', letterSpacing: '0.05em' }} className="fw-bold text-uppercase">Or Select Demo Account</span>
+                                <div className="border-top border-secondary border-opacity-25 flex-grow-1"></div>
+                            </div>
 
                             {/* Saved Accounts List */}
                             <div className="d-flex flex-col gap-2 mb-3">
