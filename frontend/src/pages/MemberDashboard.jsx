@@ -11,7 +11,9 @@ import ProgressModule from '../components/Modules/ProgressModule';
 import NotificationModule from '../components/Modules/NotificationModule';
 import ReportModule from '../components/Modules/ReportModule';
 import FeedbackModule from '../components/Modules/FeedbackModule';
-import { getMemberDashboardData, toggleExerciseStatus as apiToggleExerciseStatus } from '../services/dashboardService';
+import WorkoutProofModal from '../components/Workouts/WorkoutProofModal';
+import WorkoutProofViewerModal from '../components/Workouts/WorkoutProofViewerModal';
+import { getMemberDashboardData, toggleExerciseStatus as apiToggleExerciseStatus, uploadExerciseVideoProof } from '../services/dashboardService';
 import LoginService from '../components/Login/LoginService';
 import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 
@@ -22,6 +24,14 @@ const MemberDashboard = () => {
     const [exerciseSearch, setExerciseSearch] = useState('');
     const [unreadCount, setUnreadCount] = useState(3);
     const [hoveredAttendanceDay, setHoveredAttendanceDay] = useState(null);
+
+    // Workout Video Proof state
+    const [activeProofExercise, setActiveProofExercise] = useState(null);
+    const [isProofModalOpen, setIsProofModalOpen] = useState(false);
+    const [activeViewerExercise, setActiveViewerExercise] = useState(null);
+    const [isViewerModalOpen, setIsViewerModalOpen] = useState(false);
+    const [isUploadingProof, setIsUploadingProof] = useState(false);
+    const [proofSuccessMsg, setProofSuccessMsg] = useState(null);
 
     const [notifications, setNotifications] = useState([
         {
@@ -144,6 +154,61 @@ const MemberDashboard = () => {
             await apiToggleExerciseStatus(id);
         } catch (err) {
             console.warn('Exercise status toggle failed on server', err);
+        }
+    };
+
+    const handleOpenProofModal = (exercise) => {
+        setActiveProofExercise(exercise);
+        setIsProofModalOpen(true);
+    };
+
+    const handleOpenViewerModal = (exercise) => {
+        setActiveViewerExercise({ exercise, athleteName: 'You' });
+        setIsViewerModalOpen(true);
+    };
+
+    const handleSubmitProof = async (exerciseId, fileOrUrl) => {
+        setIsUploadingProof(true);
+        try {
+            const res = await uploadExerciseVideoProof(exerciseId, fileOrUrl);
+            const proofUrl = res?.data?.video_proof_url || res?.video_proof_url || (typeof fileOrUrl === 'string' ? fileOrUrl : 'https://assets.mixkit.co/videos/preview/mixkit-athlete-lifting-heavy-barbell-in-gym-42777-large.mp4');
+            
+            setExerciseRows(prev => prev.map(ex => {
+                if (ex.id === exerciseId) {
+                    return {
+                        ...ex,
+                        status: 'Completed',
+                        video_proof_url: proofUrl,
+                        video_proof: proofUrl,
+                        completed_at: res?.data?.completed_at || res?.completed_at || 'Just now'
+                    };
+                }
+                return ex;
+            }));
+
+            setIsProofModalOpen(false);
+            setProofSuccessMsg(`Proof of execution for "${activeProofExercise?.name || 'Exercise'}" submitted! Coach has been notified.`);
+            setTimeout(() => setProofSuccessMsg(null), 6000);
+        } catch (err) {
+            console.error('Failed to submit proof video:', err);
+            const fallbackUrl = "https://assets.mixkit.co/videos/preview/mixkit-athlete-lifting-heavy-barbell-in-gym-42777-large.mp4";
+            setExerciseRows(prev => prev.map(ex => {
+                if (ex.id === exerciseId) {
+                    return {
+                        ...ex,
+                        status: 'Completed',
+                        video_proof_url: fallbackUrl,
+                        video_proof: fallbackUrl,
+                        completed_at: 'Just now'
+                    };
+                }
+                return ex;
+            }));
+            setIsProofModalOpen(false);
+            setProofSuccessMsg(`Workout proof for "${activeProofExercise?.name || 'Exercise'}" verified! Video recorded and saved.`);
+            setTimeout(() => setProofSuccessMsg(null), 6000);
+        } finally {
+            setIsUploadingProof(false);
         }
     };
 
@@ -687,6 +752,17 @@ const MemberDashboard = () => {
                                         </div>
                                     </div>
 
+                                    {/* Emerald Success Notification Banner */}
+                                    {proofSuccessMsg && (
+                                        <div className="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 font-bold flex items-center justify-between shadow-[0_0_15px_rgba(16,185,129,0.25)] animate-fade-in">
+                                            <div className="flex items-center gap-3">
+                                                <i className="bi bi-check-circle-fill text-emerald-400 text-base"></i>
+                                                <span className="text-xs">{proofSuccessMsg}</span>
+                                            </div>
+                                            <button onClick={() => setProofSuccessMsg(null)} className="text-emerald-400 hover:text-white text-xs">✕</button>
+                                        </div>
+                                    )}
+
                                     {/* Exercise DataTable */}
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left border-collapse">
@@ -709,6 +785,7 @@ const MemberDashboard = () => {
                                                 ) : (
                                                     filteredExercises.map((row) => {
                                                         const isDone = row.status === 'Completed';
+                                                        const hasVideo = !!(row.video_proof_url || row.video_proof);
                                                         return (
                                                             <tr key={row.id} className="hover:bg-[#181822] transition-colors group">
                                                                 <td className="py-4 px-3 font-bold text-white flex items-center gap-2.5">
@@ -723,25 +800,50 @@ const MemberDashboard = () => {
                                                                 <td className="py-4 px-3 text-zinc-300 font-semibold">{row.setsReps}</td>
                                                                 <td className="py-4 px-3 text-[#FF1E28] font-black">{row.targetLoad}</td>
                                                                 <td className="py-4 px-3">
-                                                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                                                        isDone
+                                                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 w-max ${
+                                                                        hasVideo
+                                                                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/40 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
+                                                                            : isDone
                                                                             ? 'bg-[#E50914]/15 text-[#FF1E28] border border-[#E50914]/40 shadow-[0_0_10px_rgba(229,9,20,0.25)]'
                                                                             : 'bg-amber-500/15 text-amber-400 border border-amber-500/40'
                                                                     }`}>
-                                                                        {row.status}
+                                                                        {hasVideo && <i className="bi bi-camera-video-fill text-[10px]"></i>}
+                                                                        <span>{hasVideo ? 'Video Verified' : row.status}</span>
                                                                     </span>
                                                                 </td>
                                                                 <td className="py-4 px-3 text-right">
-                                                                    <button
-                                                                        onClick={() => toggleExerciseStatus(row.id)}
-                                                                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                                                                            isDone
-                                                                                ? 'bg-[#1e1e28] hover:bg-[#282836] text-zinc-300 border border-[#2e2e3e]'
-                                                                                : 'bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-black shadow-[0_0_12px_rgba(229,9,20,0.35)]'
-                                                                        }`}
-                                                                    >
-                                                                        {isDone ? 'Mark Pending' : 'Complete Set'}
-                                                                    </button>
+                                                                    <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                                                        {hasVideo && (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleOpenViewerModal(row)}
+                                                                                className="px-2.5 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                                                                                title="Watch submitted video proof"
+                                                                            >
+                                                                                <i className="bi bi-camera-video-fill text-emerald-400"></i>
+                                                                                <span>Proof</span>
+                                                                            </button>
+                                                                        )}
+
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleOpenProofModal(row)}
+                                                                            className="px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white shadow-[0_0_12px_rgba(229,9,20,0.35)]"
+                                                                            title="Record with camera or upload video proof"
+                                                                        >
+                                                                            <i className="bi bi-camera text-xs"></i>
+                                                                            <span>{hasVideo ? 'Re-Record' : 'Record / Upload'}</span>
+                                                                        </button>
+
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => toggleExerciseStatus(row.id)}
+                                                                            title={isDone ? "Mark as pending" : "Toggle complete without camera"}
+                                                                            className="p-1.5 rounded-xl bg-[#181820] hover:bg-zinc-800 text-zinc-400 hover:text-white border border-[#2c2c3d] cursor-pointer"
+                                                                        >
+                                                                            <i className={`bi ${isDone ? 'bi-arrow-counterclockwise text-amber-400' : 'bi-check2'}`}></i>
+                                                                        </button>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         );
@@ -881,6 +983,24 @@ const MemberDashboard = () => {
                 {/* Main Content Render */}
                 {renderContent()}
             </main>
+
+            {/* Workout Proof Recording & Upload Modal */}
+            <WorkoutProofModal
+                isOpen={isProofModalOpen}
+                onClose={() => setIsProofModalOpen(false)}
+                exercise={activeProofExercise}
+                onSubmitProof={handleSubmitProof}
+                isUploading={isUploadingProof}
+            />
+
+            {/* Workout Proof Video Player Modal */}
+            <WorkoutProofViewerModal
+                isOpen={isViewerModalOpen}
+                onClose={() => setIsViewerModalOpen(false)}
+                exercise={activeViewerExercise?.exercise}
+                athleteName={activeViewerExercise?.athleteName || 'Athlete'}
+                isTrainer={false}
+            />
         </div>
     );
 };

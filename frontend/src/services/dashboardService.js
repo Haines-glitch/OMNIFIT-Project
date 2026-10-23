@@ -79,6 +79,39 @@ export const toggleExerciseStatus = async (exerciseId) => {
     }
 };
 
+export const uploadExerciseVideoProof = async (exerciseId, fileOrUrl) => {
+    try {
+        if (typeof fileOrUrl === 'string') {
+            const response = await api.post(`auth/member/exercise/${exerciseId}/video-proof/`, {
+                video_url: fileOrUrl
+            });
+            return response.data;
+        } else {
+            const formData = new FormData();
+            formData.append('video', fileOrUrl);
+            const response = await api.post(`auth/member/exercise/${exerciseId}/video-proof/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
+            return response.data;
+        }
+    } catch (error) {
+        console.warn('Failed to upload video proof to server:', error);
+        throw error;
+    }
+};
+
+export const getTrainerAthleteWorkout = async (athleteEmail) => {
+    try {
+        const response = await api.get(`auth/trainer/athlete-workout/?email=${encodeURIComponent(athleteEmail)}`);
+        return response.data?.data || response.data;
+    } catch (error) {
+        console.warn('Failed to fetch athlete workout for trainer:', error);
+        return null;
+    }
+};
+
 export const getFallbackMemberData = () => ({
     member: {
         name: "Alex Mercer",

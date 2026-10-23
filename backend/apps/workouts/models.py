@@ -23,6 +23,9 @@ class Exercise(models.Model):
     target_load = models.CharField(max_length=50, default='24 kg')
     status = models.CharField(max_length=20, default='Pending') # Completed / Pending
     notes = models.TextField(blank=True, null=True)
+    video_proof = models.FileField(upload_to='workout_proofs/', blank=True, null=True)
+    video_proof_url = models.TextField(blank=True, null=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'tbl_exercise'
