@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 const WorkoutProofModal = ({
     isOpen,
@@ -24,75 +24,137 @@ const WorkoutProofModal = ({
     const recordedVideoRef = useRef(null);
     const timerIntervalRef = useRef(null);
     const chunksRef = useRef([]);
+    const streamRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
 
     // Sample high-quality gym overload clip for demonstration
     const DEMO_GYM_CLIP = "https://assets.mixkit.co/videos/preview/mixkit-athlete-lifting-heavy-barbell-in-gym-42777-large.mp4";
 
-    // Handle camera stream start/cleanup
-    useEffect(() => {
-        if (isOpen && mode === 'camera' && recordingStatus === 'idle') {
-            startCamera();
-        } else if (!isOpen || mode !== 'camera' || recordingStatus !== 'idle') {
-            stopCameraStream();
+    const stopCameraStream = useCallback(() => {
+        if (streamRef.current) {
+            try {
+                streamRef.current.getTracks().forEach(track => {
+                    try { track.stop(); } catch (e) { /* ignore */ }
+                });
+            } catch (err) {
+                console.warn("Error stopping media tracks:", err);
+            }
+            streamRef.current = null;
         }
+        setStream(null);
+    }, []);
 
-        return () => {
-            stopCameraStream();
-            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-        };
-    }, [isOpen, mode, recordingStatus]);
-
-    const startCamera = async () => {
+    const startCamera = useCallback(async () => {
         setCameraError(null);
         try {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 throw new Error("Webcam recording is not supported in this browser environment.");
             }
-            const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: true
-            }).catch(async () => {
-                // Try without audio if microphone is blocked or not available
-                return await navigator.mediaDevices.getUserMedia({ video: true });
-            });
 
+            // Stop any previous tracks before initiating new stream
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(t => {
+                    try { t.stop(); } catch (e) {}
+                });
+                streamRef.current = null;
+            }
+
+            let mediaStream;
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+                    audio: true
+                });
+            } catch (audioErr) {
+                // If microphone is blocked or missing, fall back gracefully to video only
+                console.warn("Microphone access unavailable or denied, falling back to video only:", audioErr);
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }
+                });
+            }
+
+            streamRef.current = mediaStream;
             setStream(mediaStream);
+
             if (videoLiveRef.current) {
                 videoLiveRef.current.srcObject = mediaStream;
+                videoLiveRef.current.play().catch(e => console.warn("Live video autoPlay warning:", e));
             }
         } catch (err) {
             console.warn("Camera access failed or unavailable:", err);
             setCameraError(err.message || "Camera access was denied or no webcam hardware detected.");
-        }
-    };
-
-    const stopCameraStream = () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
             setStream(null);
         }
-    };
+    }, []);
+
+    // Camera stream lifecycle: Start when modal is open and on camera mode, stop on close or switch to upload
+    useEffect(() => {
+        if (!isOpen || mode !== 'camera') {
+            stopCameraStream();
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+                timerIntervalRef.current = null;
+            }
+        } else if (isOpen && mode === 'camera' && recordingStatus !== 'preview') {
+            const hasLiveTrack = streamRef.current &&
+                streamRef.current.active &&
+                streamRef.current.getVideoTracks().some(t => t.readyState === 'live');
+
+            if (!hasLiveTrack) {
+                startCamera();
+            }
+        }
+    }, [isOpen, mode, recordingStatus, startCamera, stopCameraStream]);
+
+    // Ensure videoLiveRef element is bound and playing live feed whenever rendered
+    useEffect(() => {
+        if (videoLiveRef.current && stream && recordingStatus !== 'preview') {
+            if (videoLiveRef.current.srcObject !== stream) {
+                videoLiveRef.current.srcObject = stream;
+            }
+            videoLiveRef.current.play().catch(e => console.warn("Live video play error:", e));
+        }
+    }, [stream, recordingStatus, mode]);
+
+    // Unmount cleanup
+    useEffect(() => {
+        return () => {
+            stopCameraStream();
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+                timerIntervalRef.current = null;
+            }
+        };
+    }, [stopCameraStream]);
 
     // Live Recording Controls
     const startRecording = () => {
-        if (!stream) {
-            setCameraError("Camera stream not active. Please enable webcam or use demo clip.");
+        const activeStream = streamRef.current || stream;
+        if (!activeStream || !activeStream.active || activeStream.getVideoTracks().length === 0) {
+            setCameraError("Camera stream not active. Please grant webcam permissions or use sample clip.");
             return;
         }
 
         chunksRef.current = [];
         try {
-            const options = { mimeType: 'video/webm;codecs=vp8,opus' };
-            let recorder;
-            if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
-                recorder = new MediaRecorder(stream, options);
-            } else if (MediaRecorder.isTypeSupported('video/webm')) {
-                recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-            } else if (MediaRecorder.isTypeSupported('video/mp4')) {
-                recorder = new MediaRecorder(stream, { mimeType: 'video/mp4' });
-            } else {
-                recorder = new MediaRecorder(stream);
+            const supportedTypes = [
+                'video/webm;codecs=vp9,opus',
+                'video/webm;codecs=vp8,opus',
+                'video/webm',
+                'video/mp4;codecs=avc1,mp4a.40.2',
+                'video/mp4'
+            ];
+            let selectedMimeType = '';
+            for (const type of supportedTypes) {
+                if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) {
+                    selectedMimeType = type;
+                    break;
+                }
             }
+
+            const options = selectedMimeType ? { mimeType: selectedMimeType } : {};
+            const recorder = new MediaRecorder(activeStream, options);
 
             recorder.ondataavailable = (event) => {
                 if (event.data && event.data.size > 0) {
@@ -101,19 +163,28 @@ const WorkoutProofModal = ({
             };
 
             recorder.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'video/webm' });
+                const finalMime = recorder.mimeType || selectedMimeType || 'video/webm';
+                const blob = new Blob(chunksRef.current, { type: finalMime });
                 const url = URL.createObjectURL(blob);
                 setRecordedBlob(blob);
                 setRecordedUrl(url);
                 setRecordingStatus('preview');
+                // Release active camera tracks once recording is finished and in preview
                 stopCameraStream();
             };
 
+            recorder.onerror = (e) => {
+                console.error("MediaRecorder error:", e);
+                setCameraError("Recording error: " + (e.error?.message || "Unknown error"));
+            };
+
             recorder.start(100);
+            mediaRecorderRef.current = recorder;
             setMediaRecorder(recorder);
             setRecordingStatus('recording');
             setRecordingTime(0);
 
+            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             timerIntervalRef.current = setInterval(() => {
                 setRecordingTime(prev => prev + 1);
             }, 1000);
@@ -124,21 +195,56 @@ const WorkoutProofModal = ({
     };
 
     const stopRecording = () => {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-        }
         if (timerIntervalRef.current) {
             clearInterval(timerIntervalRef.current);
+            timerIntervalRef.current = null;
+        }
+
+        const recorder = mediaRecorderRef.current || mediaRecorder;
+        if (recorder && recorder.state !== 'inactive') {
+            try {
+                recorder.requestData();
+            } catch (e) {
+                // Request any final data
+            }
+            recorder.stop();
         }
     };
 
     const resetRecording = () => {
-        if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+        if (recordedUrl && recordedUrl !== DEMO_GYM_CLIP) {
+            URL.revokeObjectURL(recordedUrl);
+        }
         setRecordedBlob(null);
         setRecordedUrl(null);
         setRecordingStatus('idle');
         setRecordingTime(0);
         setUseDemoClip(false);
+        // Re-open camera feed for new recording
+        startCamera();
+    };
+
+    const handleClose = () => {
+        stopCameraStream();
+        if (timerIntervalRef.current) {
+            clearInterval(timerIntervalRef.current);
+            timerIntervalRef.current = null;
+        }
+        if (recordedUrl && recordedUrl !== DEMO_GYM_CLIP) {
+            URL.revokeObjectURL(recordedUrl);
+        }
+        if (filePreviewUrl && filePreviewUrl !== DEMO_GYM_CLIP) {
+            URL.revokeObjectURL(filePreviewUrl);
+        }
+        setRecordedBlob(null);
+        setRecordedUrl(null);
+        setSelectedFile(null);
+        setFilePreviewUrl(null);
+        setUseDemoClip(false);
+        setRecordingStatus('idle');
+        setRecordingTime(0);
+        setCameraError(null);
+        onClose();
     };
 
     // File Upload handling
@@ -153,6 +259,7 @@ const WorkoutProofModal = ({
     };
 
     const handleSelectDemoClip = () => {
+        stopCameraStream();
         setUseDemoClip(true);
         setSelectedFile(null);
         setRecordedBlob(null);
@@ -170,7 +277,8 @@ const WorkoutProofModal = ({
         if (useDemoClip) {
             payload = DEMO_GYM_CLIP;
         } else if (mode === 'camera' && recordedBlob) {
-            payload = new File([recordedBlob], `workout_proof_${exercise.id}_${Date.now()}.webm`, {
+            const ext = recordedBlob.type?.includes('mp4') ? 'mp4' : 'webm';
+            payload = new File([recordedBlob], `workout_proof_${exercise.id}_${Date.now()}.${ext}`, {
                 type: recordedBlob.type || 'video/webm'
             });
         } else if (mode === 'upload' && selectedFile) {
@@ -216,7 +324,7 @@ const WorkoutProofModal = ({
                     </div>
 
                     <button
-                        onClick={onClose}
+                        onClick={handleClose}
                         disabled={isUploading}
                         className="w-10 h-10 rounded-2xl bg-[#181820] hover:bg-[#252532] border border-[#2c2c3d] text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer"
                     >
@@ -451,7 +559,7 @@ const WorkoutProofModal = ({
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
-                            onClick={onClose}
+                            onClick={handleClose}
                             disabled={isUploading}
                             className="px-4 py-2.5 rounded-xl bg-[#181820] hover:bg-[#20202a] border border-[#2c2c3d] text-zinc-300 hover:text-white font-bold text-xs cursor-pointer transition-all disabled:opacity-50"
                         >
