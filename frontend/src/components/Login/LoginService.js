@@ -112,13 +112,21 @@ export const LoginService = {
                 const userEmail = (user.email || credentials.email || '').toLowerCase().trim();
                 const persisted = getPersistedProfile(userEmail) || {};
 
+                const resolvedRole = (user.role || credentials.role || persisted.role || 'member').toUpperCase();
+                const targetRedirect = user.redirect_url || (
+                    resolvedRole === 'ADMIN' ? '/admin-dashboard' :
+                    resolvedRole === 'TRAINER' ? '/trainer-dashboard' :
+                    '/member-dashboard'
+                );
+
                 const formattedUser = {
                     ...persisted,
                     ...user,
                     name: user.name || user.full_name || persisted.name || (userEmail ? userEmail.split('@')[0] : 'User'),
                     full_name: user.full_name || user.name || persisted.full_name,
                     email: user.email || credentials.email,
-                    role: (user.role || credentials.role || persisted.role || 'member').toUpperCase(),
+                    role: resolvedRole,
+                    redirect_url: targetRedirect,
                     phone: user.phone || persisted.phone || '+91 98765 43210',
                     gender: user.gender || persisted.gender || 'Female',
                     dob: user.dob || persisted.dob || '1998-04-12',
@@ -137,7 +145,7 @@ export const LoginService = {
                 localStorage.setItem('user', JSON.stringify(formattedUser));
                 localStorage.setItem('user_role', formattedUser.role);
 
-                return { success: true, data: payload };
+                return { success: true, data: { ...payload, user: formattedUser, redirect_url: targetRedirect } };
             }
 
         } catch (error) {
@@ -169,9 +177,22 @@ export const LoginService = {
             console.warn('Backend server unreachable. Falling back to offline demo mode.', error);
 
             // Demo Fallback Mode for immediate presentation testing
-            const role = (credentials.role || 'member').toLowerCase();
             const userEmail = (credentials.email || '').toLowerCase().trim();
             const persisted = getPersistedProfile(userEmail) || {};
+
+            let detectedRole = (credentials.role || persisted.role || '').toLowerCase();
+            if (!detectedRole) {
+                if (userEmail.includes('admin')) {
+                    detectedRole = 'admin';
+                } else if (userEmail.includes('trainer') || userEmail.includes('vikram') || userEmail.includes('rathore') || userEmail.includes('marcus')) {
+                    detectedRole = 'trainer';
+                } else {
+                    detectedRole = 'member';
+                }
+            }
+
+            const role = detectedRole;
+            const targetRedirect = role === 'admin' ? '/admin-dashboard' : role === 'trainer' ? '/trainer-dashboard' : '/member-dashboard';
 
             // Check if registered user is still pending approval
             if (persisted.status === 'Pending Approval' || persisted.status === 'Pending' || persisted.isPendingApproval) {
@@ -207,6 +228,7 @@ export const LoginService = {
                 full_name: displayName || 'Alex Mercer',
                 email: credentials.email,
                 role: role.toUpperCase(),
+                redirect_url: targetRedirect,
                 phone: persisted.phone || '+91 98765 43210',
                 gender: persisted.gender || 'Female',
                 dob: persisted.dob || '1998-04-12',
@@ -225,6 +247,7 @@ export const LoginService = {
                 access: 'mock_jwt_access_token_' + Date.now(),
                 refresh: 'mock_jwt_refresh_token_' + Date.now(),
                 user: mockUser,
+                redirect_url: targetRedirect
             };
 
             localStorage.setItem('access_token', mockResponse.access);
@@ -241,7 +264,20 @@ export const LoginService = {
      */
     async loginWithGoogle(googleUserData = {}) {
         const email = (googleUserData.email || 'jagan@gmail.com').toLowerCase().trim();
-        const role = (googleUserData.role || localStorage.getItem('user_role') || 'member').toLowerCase();
+        const persisted = getPersistedProfile(email) || {};
+
+        let role = (googleUserData.role || persisted.role || '').toLowerCase();
+        if (!role) {
+            if (email.includes('admin')) {
+                role = 'admin';
+            } else if (email.includes('trainer') || email.includes('vikram') || email.includes('marcus')) {
+                role = 'trainer';
+            } else {
+                role = 'member';
+            }
+        }
+
+        const targetRedirect = role === 'admin' ? '/admin-dashboard' : role === 'trainer' ? '/trainer-dashboard' : '/member-dashboard';
         const rawName = googleUserData.name || (email.split('@')[0]);
         const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
         
@@ -258,8 +294,6 @@ export const LoginService = {
                 };
             }
         } catch (e) {}
-
-        const persisted = getPersistedProfile(email) || {};
 
         // If user registered with pending status, prevent login until approved
         if (persisted.status === 'Pending Approval' || persisted.status === 'Pending' || persisted.isPendingApproval) {
@@ -278,6 +312,7 @@ export const LoginService = {
             full_name: persisted.full_name || displayName,
             email: email,
             role: role.toUpperCase(),
+            redirect_url: targetRedirect,
             phone: persisted.phone || '+91 98765 43210',
             gender: persisted.gender || 'Male',
             dob: persisted.dob || '1998-04-12',
@@ -299,7 +334,7 @@ export const LoginService = {
         localStorage.setItem('user', JSON.stringify(googleUser));
         localStorage.setItem('user_role', role.toUpperCase());
 
-        return { success: true, data: { user: googleUser, access: token } };
+        return { success: true, data: { user: googleUser, access: token, redirect_url: targetRedirect } };
     },
 
     /**

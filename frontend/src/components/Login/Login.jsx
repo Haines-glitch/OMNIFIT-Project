@@ -11,7 +11,6 @@ const Login = () => {
     // Form State
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('member');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
@@ -59,27 +58,7 @@ const Login = () => {
         }
     }, []);
 
-    // Quick Demo Auto-fill Helper
-    const fillDemoCredentials = (demoRole) => {
-        setRole(demoRole);
-        if (demoRole === 'trainer') {
-            setEmail('trainer@omnifit.com');
-            setPassword('TrainerPass123!');
-        } else if (demoRole === 'admin') {
-            setEmail('admin@omnifit.com');
-            setPassword('AdminPass123!');
-        } else {
-            setEmail('member@omnifit.com');
-            setPassword('MemberPass123!');
-        }
-        setToast({
-            show: true,
-            message: `Selected ${demoRole.toUpperCase()} demo credentials`,
-            type: 'info'
-        });
-    };
-
-    // Form Submit Handler
+    // Form Submit Handler (Unified Single Sign-On)
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -97,27 +76,31 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const result = await LoginService.login({ email, password, role });
+            const result = await LoginService.login({ email: email.trim(), password });
 
             if (result.success) {
-                const user = LoginService.getCurrentUser();
+                const user = LoginService.getCurrentUser() || result.data?.user;
                 setCurrentUser(user);
-                const actualRole = (user?.role || role).toLowerCase();
+                
+                // Direct the user according to their authoritative credentials/role
+                const actualRole = (user?.role || '').toLowerCase();
+                const destination = user?.redirect_url || result.data?.redirect_url || (
+                    actualRole === 'admin' ? '/admin-dashboard' :
+                    actualRole === 'trainer' ? '/trainer-dashboard' :
+                    '/member-dashboard'
+                );
+
+                const roleBadge = actualRole === 'admin' ? 'Administrator' : actualRole === 'trainer' ? 'Coach' : 'Athlete';
+
                 setToast({
                     show: true,
-                    message: `Authentication successful! Welcome to OMNIFIT.`,
+                    message: `Authentication verified! Welcome, ${user?.name || 'User'} (${roleBadge}).`,
                     type: 'success'
                 });
 
                 setTimeout(() => {
-                    if (actualRole === 'admin') {
-                        navigate('/admin-dashboard');
-                    } else if (actualRole === 'trainer') {
-                        navigate('/trainer-dashboard');
-                    } else {
-                        navigate('/member-dashboard');
-                    }
-                }, 800);
+                    navigate(destination);
+                }, 600);
             } else if (result.isPendingApproval) {
                 setPendingApprovalData({
                     email: result.email || email,
@@ -132,14 +115,14 @@ const Login = () => {
             } else {
                 setToast({
                     show: true,
-                    message: result.error || 'Invalid email, password, or role mismatch.',
+                    message: result.error || 'Invalid email or password.',
                     type: 'error'
                 });
             }
         } catch (err) {
             setToast({
                 show: true,
-                message: err.response?.data?.message || 'Invalid email, password, or role mismatch.',
+                message: err.response?.data?.message || err.response?.data?.detail || 'Invalid email or password. Please verify your credentials.',
                 type: 'error'
             });
         } finally {
@@ -218,25 +201,29 @@ const Login = () => {
         setIsLoading(true);
         setShowGoogleModal(false);
         try {
-            const userEmail = selectedEmail || email || 'jagan@gmail.com';
+            const userEmail = selectedEmail || email || 'sarah.jenkins@omnifit.com';
             const userName = selectedName || (userEmail.split('@')[0]);
             const res = await LoginService.loginWithGoogle({
                 email: userEmail,
-                name: userName,
-                role: role
+                name: userName
             });
             if (res.success) {
+                const authedUser = LoginService.getCurrentUser() || res.data?.user;
+                const targetRole = (authedUser?.role || '').toLowerCase();
+                const destination = authedUser?.redirect_url || (
+                    targetRole === 'admin' ? '/admin-dashboard' :
+                    targetRole === 'trainer' ? '/trainer-dashboard' :
+                    '/member-dashboard'
+                );
+
                 setToast({
                     show: true,
-                    message: `Google Authentication Verified! Welcome, ${res.data.user.name}.`,
+                    message: `Google Authentication Verified! Welcome, ${authedUser?.name || 'User'}.`,
                     type: 'success'
                 });
                 setTimeout(() => {
-                    const targetRole = (res.data.user.role || role).toLowerCase();
-                    if (targetRole === 'admin') navigate('/admin-dashboard');
-                    else if (targetRole === 'trainer') navigate('/trainer-dashboard');
-                    else navigate('/member-dashboard');
-                }, 800);
+                    navigate(destination);
+                }, 600);
             } else if (res.isPendingApproval) {
                 setPendingApprovalData({
                     email: userEmail,
@@ -431,30 +418,7 @@ const Login = () => {
                             <h1 className="login-card-title">LOGIN</h1>
                             <p className="login-card-subtitle">Enter the performance zone</p>
 
-                            {/* DEMO ROLE SELECTION PILLS */}
-                            <div className="role-selector-pills mb-4">
-                                <button
-                                    type="button"
-                                    className={`role-pill ${role === 'member' ? 'active' : ''}`}
-                                    onClick={() => fillDemoCredentials('member')}
-                                >
-                                    <i className="bi bi-person-fill me-1"></i> Member
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`role-pill ${role === 'trainer' ? 'active' : ''}`}
-                                    onClick={() => fillDemoCredentials('trainer')}
-                                >
-                                    <i className="bi bi-lightning-charge-fill me-1"></i> Trainer
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`role-pill ${role === 'admin' ? 'active' : ''}`}
-                                    onClick={() => fillDemoCredentials('admin')}
-                                >
-                                    <i className="bi bi-shield-lock-fill me-1"></i> Admin
-                                </button>
-                            </div>
+
 
                             {/* LOGIN FORM */}
                             <form onSubmit={handleSubmit} noValidate>
