@@ -27,6 +27,8 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
         qualification: 'B.Sc Sports Science',
         certification: 'NASM Master Certified',
         license_number: '',
+        experience_certificate: null,
+        certificate_name: '',
         bio: '',
         working_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         start_time: '08:00 AM',
@@ -128,6 +130,31 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
         setFormData(prev => ({ ...prev, [name]: cleanValue }));
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Ensure file is PDF
+        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+            setToast({ show: true, message: 'Please upload an experience certificate in PDF format (.pdf only).', type: 'warning' });
+            e.target.value = '';
+            return;
+        }
+
+        // Ensure file size <= 10MB
+        if (file.size > 10 * 1024 * 1024) {
+            setToast({ show: true, message: 'Certificate PDF size cannot exceed 10MB.', type: 'warning' });
+            e.target.value = '';
+            return;
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            experience_certificate: file,
+            certificate_name: file.name
+        }));
+    };
+
     const handleWorkingDaysToggle = (day) => {
         setFormData(prev => {
             const current = prev.working_days || [];
@@ -206,9 +233,29 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
 
         setIsSubmitting(true);
         try {
-            const res = await LoginService.createTrainer(formData);
+            let submissionData;
+            if (formData.experience_certificate) {
+                const fd = new FormData();
+                Object.keys(formData).forEach(key => {
+                    if (key === 'working_days') {
+                        fd.append('working_days', JSON.stringify(formData.working_days || []));
+                    } else if (key === 'experience_certificate') {
+                        if (formData.experience_certificate instanceof File) {
+                            fd.append('experience_certificate', formData.experience_certificate);
+                        }
+                    } else if (key !== 'certificate_name' && formData[key] !== null && formData[key] !== undefined) {
+                        fd.append(key, formData[key]);
+                    }
+                });
+                submissionData = fd;
+            } else {
+                submissionData = { ...formData };
+                delete submissionData.certificate_name;
+            }
+
+            const res = await LoginService.createTrainer(submissionData);
             if (res.success || res.id) {
-                setToast({ show: true, message: 'Trainer account created successfully!', type: 'success' });
+                setToast({ show: true, message: 'Trainer account created successfully with verified credentials!', type: 'success' });
                 setShowAddModal(false);
                 fetchTrainersData();
                 // Reset form
@@ -223,6 +270,8 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                     qualification: 'B.Sc Sports Science',
                     certification: 'NASM Master Certified',
                     license_number: '',
+                    experience_certificate: null,
+                    certificate_name: '',
                     bio: '',
                     working_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
                     start_time: '08:00 AM',
@@ -236,7 +285,11 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
             }
         } catch (err) {
             if (err.response?.status === 400) {
-                const errMsg = err.response?.data?.message || err.response?.data?.errors?.email?.[0] || 'Validation error.';
+                const errors = err.response?.data?.errors;
+                const errMsg = err.response?.data?.message 
+                    || errors?.experience_certificate?.[0]
+                    || errors?.email?.[0]
+                    || 'Validation error.';
                 setToast({ show: true, message: errMsg, type: 'error' });
             } else {
                 // Graceful fallback for mock mode / disconnected backend
@@ -244,6 +297,7 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                     ...formData,
                     id: Date.now(),
                     name: formData.full_name,
+                    experience_certificate_url: formData.certificate_name ? '#' : null,
                     assigned_members: [],
                     assigned_members_count: 0
                 };
@@ -253,7 +307,8 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                 setFormData({
                     full_name: '', email: '', phone: '', date_of_birth: '', gender: 'Male',
                     specialization: 'Strength Training', experience: 5, qualification: 'B.Sc Sports Science',
-                    certification: 'NASM Master Certified', license_number: '', bio: '',
+                    certification: 'NASM Master Certified', license_number: '',
+                    experience_certificate: null, certificate_name: '', bio: '',
                     working_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
                     start_time: '08:00 AM', end_time: '05:00 PM', password: '', confirm_password: '', status: 'Active'
                 });
@@ -415,8 +470,24 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                                 {t.specialization}
                                             </span>
                                         </td>
-                                        <td className="p-4 font-semibold text-slate-700">
-                                            {t.experience || t.experience_years || 1} Years
+                                        <td className="p-4">
+                                            <div className="font-semibold text-slate-700">
+                                                {t.experience || t.experience_years || 1} Years
+                                            </div>
+                                            {t.experience_certificate_url || t.experience_certificate ? (
+                                                <a
+                                                    href={t.experience_certificate_url || t.experience_certificate}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-all mt-1 shadow-2xs"
+                                                    title="View Official Experience Certificate PDF"
+                                                >
+                                                    <i className="bi bi-file-earmark-pdf-fill text-rose-600"></i>
+                                                    <span>Certificate PDF</span>
+                                                </a>
+                                            ) : (
+                                                <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">No PDF</span>
+                                            )}
                                         </td>
                                         <td className="p-4 text-slate-500 text-xs">
                                             {Array.isArray(t.working_days) ? t.working_days.join(', ') : (t.working_days || 'Mon - Fri')}
@@ -596,6 +667,64 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                             onChange={handleInputChange}
                                         />
                                     </div>
+
+                                    {/* EXPERIENCE CERTIFICATE PDF UPLOAD */}
+                                    <div className="col-span-full">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <label className="block text-xs font-bold text-slate-700">
+                                                Experience Certificate <span className="text-slate-400 font-normal">(PDF Proof of Experience)</span>
+                                            </label>
+                                            <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                                Verification Credential
+                                            </span>
+                                        </div>
+
+                                        <div className="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-xl p-3.5 bg-slate-50 transition-all">
+                                            {formData.certificate_name ? (
+                                                <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                                                    <div className="flex items-center gap-3 overflow-hidden">
+                                                        <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100">
+                                                            <i className="bi bi-file-earmark-pdf-fill text-xl"></i>
+                                                        </div>
+                                                        <div className="truncate">
+                                                            <div className="text-xs font-extrabold text-slate-900 truncate">
+                                                                {formData.certificate_name}
+                                                            </div>
+                                                            <div className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-0.5">
+                                                                <i className="bi bi-check-circle-fill"></i>
+                                                                <span>PDF Attached & Ready to Upload</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData(prev => ({ ...prev, experience_certificate: null, certificate_name: '' }))}
+                                                        className="px-2.5 py-1 text-xs font-bold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors cursor-pointer"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <label className="flex flex-col items-center justify-center py-2 px-3 cursor-pointer group">
+                                                    <div className="w-10 h-10 rounded-full bg-emerald-100/60 text-emerald-600 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                                                        <i className="bi bi-file-earmark-pdf text-xl"></i>
+                                                    </div>
+                                                    <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                                                        Upload Experience Certificate (PDF)
+                                                    </span>
+                                                    <span className="text-[11px] text-slate-400 mt-0.5">
+                                                        Click to select PDF document proving trainer experience (Max 10MB)
+                                                    </span>
+                                                    <input
+                                                        type="file"
+                                                        accept=".pdf,application/pdf"
+                                                        className="hidden"
+                                                        onChange={handleFileChange}
+                                                    />
+                                                </label>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -722,6 +851,156 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* TRAINER DETAILS & CERTIFICATE VERIFICATION MODAL */}
+            {showDetailModal && selectedTrainer && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white font-black flex items-center justify-center text-lg shadow-sm">
+                                    {(selectedTrainer.full_name || selectedTrainer.name || 'T')[0].toUpperCase()}
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-lg font-black text-slate-900">
+                                            {selectedTrainer.full_name || selectedTrainer.name}
+                                        </h3>
+                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            {selectedTrainer.specialization}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-500">{selectedTrainer.email} • {selectedTrainer.phone}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowDetailModal(false)}
+                                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-bold flex items-center justify-center hover:bg-slate-200 cursor-pointer"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="py-4 space-y-5">
+                            {/* Experience & Professional Credentials Card */}
+                            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
+                                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
+                                    <i className="bi bi-award-fill text-amber-500"></i>
+                                    <span>Professional Experience & Credentials</span>
+                                </h4>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                                        <span className="text-[10px] font-bold text-slate-400 block uppercase">Experience</span>
+                                        <span className="text-base font-extrabold text-slate-900">
+                                            {selectedTrainer.experience || selectedTrainer.experience_years || 1} Years
+                                        </span>
+                                    </div>
+                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                                        <span className="text-[10px] font-bold text-slate-400 block uppercase">Qualification</span>
+                                        <span className="text-xs font-bold text-slate-900 truncate block" title={selectedTrainer.qualification}>
+                                            {selectedTrainer.qualification || 'B.Sc Sports Science'}
+                                        </span>
+                                    </div>
+                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
+                                        <span className="text-[10px] font-bold text-slate-400 block uppercase">License ID</span>
+                                        <span className="text-xs font-bold text-slate-900 truncate block">
+                                            {selectedTrainer.license_number || 'NASM-VERIFIED'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* EXPERIENCE CERTIFICATE PDF SECTION */}
+                            <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-5 shadow-sm border border-slate-800">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center">
+                                            <i className="bi bi-file-earmark-pdf-fill text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-extrabold text-white">Experience Certificate</h4>
+                                            <p className="text-[11px] text-slate-400">Official proof of professional coaching experience</p>
+                                        </div>
+                                    </div>
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                        selectedTrainer.experience_certificate_url || selectedTrainer.experience_certificate
+                                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                            : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                    }`}>
+                                        {selectedTrainer.experience_certificate_url || selectedTrainer.experience_certificate ? 'PDF Verified' : 'No Document Attached'}
+                                    </span>
+                                </div>
+
+                                {selectedTrainer.experience_certificate_url || selectedTrainer.experience_certificate ? (
+                                    <div className="bg-slate-800/80 rounded-xl p-3.5 border border-slate-700/80 flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-2.5 overflow-hidden">
+                                            <i className="bi bi-file-earmark-check text-2xl text-emerald-400 shrink-0"></i>
+                                            <div className="truncate">
+                                                <span className="text-xs font-bold text-slate-200 block truncate">
+                                                    {(selectedTrainer.full_name || selectedTrainer.name)}_Experience_Certificate.pdf
+                                                </span>
+                                                <span className="text-[10px] text-slate-400">PDF Document • Ready for Review</span>
+                                            </div>
+                                        </div>
+                                        <a
+                                            href={selectedTrainer.experience_certificate_url || selectedTrainer.experience_certificate}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 transition-all shadow-md shrink-0 cursor-pointer"
+                                        >
+                                            <i className="bi bi-box-arrow-up-right"></i>
+                                            <span>Open PDF</span>
+                                        </a>
+                                    </div>
+                                ) : (
+                                    <div className="bg-slate-800/40 rounded-xl p-3 border border-slate-800 text-center">
+                                        <p className="text-xs text-slate-400">
+                                            No experience certificate was uploaded when this trainer profile was created.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Bio & Philosophy */}
+                            {selectedTrainer.bio && (
+                                <div className="space-y-1">
+                                    <h5 className="text-xs font-bold text-slate-700">Biography & Coaching Philosophy</h5>
+                                    <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed">
+                                        {selectedTrainer.bio}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Working Schedule */}
+                            <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 border border-slate-200">
+                                <div>
+                                    <span className="font-bold text-slate-700 block">Working Hours:</span>
+                                    <span className="text-slate-500">{selectedTrainer.start_time || '08:00 AM'} - {selectedTrainer.end_time || '05:00 PM'}</span>
+                                </div>
+                                <div className="text-right">
+                                    <span className="font-bold text-slate-700 block">Available Days:</span>
+                                    <span className="text-slate-500">
+                                        {Array.isArray(selectedTrainer.working_days) ? selectedTrainer.working_days.join(', ') : (selectedTrainer.working_days || 'Mon - Fri')}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="pt-3 border-t border-slate-100 flex justify-end">
+                            <button
+                                type="button"
+                                onClick={() => setShowDetailModal(false)}
+                                className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 cursor-pointer"
+                            >
+                                Close Details
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

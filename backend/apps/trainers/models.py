@@ -24,6 +24,7 @@ class Trainer(models.Model):
     qualification = models.CharField(max_length=255, blank=True, null=True, default='B.Sc Sports Science')
     certification = models.CharField(max_length=255, blank=True, null=True, default='NASM Master Certified')
     license_number = models.CharField(max_length=100, blank=True, null=True, default='NASM-98421')
+    experience_certificate = models.FileField(upload_to='trainer_certificates/', blank=True, null=True, help_text="PDF document verifying trainer's work experience")
     bio = models.TextField(blank=True, null=True, default='Certified Master Trainer specializing in biomechanics, strength conditioning, and personalized endurance programs.')
     
     date_of_birth = models.DateField(blank=True, null=True)

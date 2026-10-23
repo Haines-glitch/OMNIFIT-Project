@@ -1,6 +1,7 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db import models
 from django.core.mail import send_mail
@@ -29,10 +30,11 @@ def standard_response(success=True, message="", data=None, errors=None, status_c
 
 class TrainerListCreateView(APIView):
     permission_classes = [IsAuthenticated, IsAdminRole]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get(self, request):
         trainers = Trainer.objects.select_related('user').all().order_by('-created_at')
-        serializer = TrainerSerializer(trainers, many=True)
+        serializer = TrainerSerializer(trainers, many=True, context={'request': request})
         return standard_response(
             success=True,
             message="Trainers retrieved successfully.",
@@ -59,13 +61,14 @@ class TrainerListCreateView(APIView):
         return standard_response(
             success=True,
             message="Trainer account created successfully.",
-            data=TrainerSerializer(trainer).data,
+            data=TrainerSerializer(trainer, context={'request': request}).data,
             status_code=status.HTTP_201_CREATED
         )
 
 
 class TrainerDetailView(APIView):
     permission_classes = [IsAuthenticated, IsAdminRole]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_object(self, pk):
         try:
@@ -81,7 +84,7 @@ class TrainerDetailView(APIView):
                 message="Trainer not found.",
                 status_code=status.HTTP_404_NOT_FOUND
             )
-        serializer = TrainerSerializer(trainer)
+        serializer = TrainerSerializer(trainer, context={'request': request})
         return standard_response(
             success=True,
             message="Trainer details retrieved successfully.",
@@ -115,12 +118,16 @@ class TrainerDetailView(APIView):
         for field in ['specialization', 'experience', 'qualification', 'certification', 'license_number', 'bio', 'working_days', 'start_time', 'end_time', 'date_of_birth', 'gender']:
             if field in request.data:
                 setattr(trainer, field, request.data[field])
+
+        if 'experience_certificate' in request.FILES:
+            trainer.experience_certificate = request.FILES['experience_certificate']
+
         trainer.save()
 
         return standard_response(
             success=True,
             message="Trainer updated successfully.",
-            data=TrainerSerializer(trainer).data
+            data=TrainerSerializer(trainer, context={'request': request}).data
         )
 
     def delete(self, request, pk):

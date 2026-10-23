@@ -537,7 +537,12 @@ export const LoginService = {
     },
 
     async createTrainer(trainerData) {
-        const res = await api.post('/trainers/', trainerData, { baseURL: '/api' });
+        const isFormData = typeof FormData !== 'undefined' && trainerData instanceof FormData;
+        const config = { baseURL: '/api' };
+        if (isFormData) {
+            config.headers = { 'Content-Type': 'multipart/form-data' };
+        }
+        const res = await api.post('/trainers/', trainerData, config);
         return res.data;
     },
 
@@ -547,7 +552,12 @@ export const LoginService = {
     },
 
     async updateTrainer(id, data) {
-        const res = await api.patch(`/trainers/${id}/`, data, { baseURL: '/api' });
+        const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
+        const config = { baseURL: '/api' };
+        if (isFormData) {
+            config.headers = { 'Content-Type': 'multipart/form-data' };
+        }
+        const res = await api.patch(`/trainers/${id}/`, data, config);
         return res.data;
     },
 

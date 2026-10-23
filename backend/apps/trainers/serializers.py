@@ -1,3 +1,5 @@
+import os
+import json
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from apps.trainers.models import Trainer
@@ -22,6 +24,7 @@ class TrainerSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='user.email', read_only=True)
     phone = serializers.CharField(source='user.phone', read_only=True)
     user_status = serializers.CharField(source='user.status', read_only=True)
+    experience_certificate_url = serializers.SerializerMethodField()
     assigned_members = serializers.SerializerMethodField()
     assigned_members_count = serializers.SerializerMethodField()
 
@@ -31,10 +34,19 @@ class TrainerSerializer(serializers.ModelSerializer):
             'id', 'user_id', 'full_name', 'name', 'email', 'phone',
             'specialization', 'experience', 'experience_years',
             'qualification', 'certification', 'license_number', 'bio',
+            'experience_certificate', 'experience_certificate_url',
             'date_of_birth', 'gender', 'working_days', 'start_time', 'end_time',
             'rating', 'status', 'user_status', 'assigned_members', 'assigned_members_count',
             'created_at', 'updated_at'
         ]
+
+    def get_experience_certificate_url(self, obj):
+        if obj.experience_certificate:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.experience_certificate.url)
+            return obj.experience_certificate.url
+        return None
 
     def get_assigned_members(self, obj):
         members = Member.objects.filter(assigned_trainer=obj.user)
@@ -57,6 +69,7 @@ class TrainerCreateSerializer(serializers.Serializer):
     qualification = serializers.CharField(required=False, allow_blank=True, default='')
     certification = serializers.CharField(required=False, allow_blank=True, default='')
     license_number = serializers.CharField(required=False, allow_blank=True, default='')
+    experience_certificate = serializers.FileField(required=False, allow_null=True)
     bio = serializers.CharField(required=False, allow_blank=True, default='')
     
     working_days = serializers.ListField(
@@ -70,6 +83,24 @@ class TrainerCreateSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, required=True, min_length=8)
     confirm_password = serializers.CharField(write_only=True, required=False)
     status = serializers.CharField(required=False, default='Active')
+
+    def to_internal_value(self, data):
+        mutable_data = data.copy() if hasattr(data, 'copy') else dict(data)
+        if 'working_days' in mutable_data and isinstance(mutable_data['working_days'], str):
+            try:
+                mutable_data['working_days'] = json.loads(mutable_data['working_days'])
+            except Exception:
+                mutable_data['working_days'] = [d.strip() for d in mutable_data['working_days'].split(',') if d.strip()]
+        return super().to_internal_value(mutable_data)
+
+    def validate_experience_certificate(self, value):
+        if value:
+            ext = os.path.splitext(value.name)[1].lower()
+            if ext != '.pdf':
+                raise serializers.ValidationError("Experience certificate must be a PDF file (.pdf).")
+            if value.size > 10 * 1024 * 1024:
+                raise serializers.ValidationError("Certificate file size cannot exceed 10MB.")
+        return value
 
     def validate_email(self, value):
         email = value.lower().strip()
@@ -109,6 +140,7 @@ class TrainerCreateSerializer(serializers.Serializer):
             qualification=validated_data.get('qualification', ''),
             certification=validated_data.get('certification', ''),
             license_number=validated_data.get('license_number', ''),
+            experience_certificate=validated_data.get('experience_certificate'),
             bio=validated_data.get('bio', ''),
             date_of_birth=validated_data.get('date_of_birth'),
             gender=validated_data.get('gender', 'Male'),
