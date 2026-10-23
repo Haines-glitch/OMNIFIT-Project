@@ -641,7 +641,7 @@ const Register = () => {
                                 <button type="button" className="btn-close btn-close-white" onClick={() => setShowGoogleModal(false)}></button>
                             </div>
 
-                            <p className="small text-secondary mb-3">
+                            <p className="small text-zinc-300 mb-3">
                                 Choose an account to register with <strong>OMNIFIT</strong>
                             </p>
 
@@ -650,7 +650,7 @@ const Register = () => {
                                 <div id="google-signup-button-slot" className="w-100 d-flex justify-content-center"></div>
                             </div>
 
-                            <div className="d-flex align-items-center gap-2 mb-3 text-secondary">
+                            <div className="d-flex align-items-center gap-2 mb-3 text-zinc-400">
                                 <div className="border-top border-secondary border-opacity-25 flex-grow-1"></div>
                                 <span style={{ fontSize: '10px', letterSpacing: '0.05em' }} className="fw-bold text-uppercase">Or Select Demo Account</span>
                                 <div className="border-top border-secondary border-opacity-25 flex-grow-1"></div>
@@ -669,9 +669,9 @@ const Register = () => {
                                     </div>
                                     <div className="flex-grow-1 overflow-hidden">
                                         <div className="text-white fw-bold small">Jagan</div>
-                                        <div className="text-secondary small text-truncate">jagan@gmail.com</div>
+                                        <div className="text-zinc-300 small text-truncate">jagan@gmail.com</div>
                                     </div>
-                                    <i className="bi bi-chevron-right text-secondary small"></i>
+                                    <i className="bi bi-chevron-right text-zinc-400 small"></i>
                                 </button>
 
                                 {email && email.toLowerCase() !== 'jagan@gmail.com' && (
@@ -686,16 +686,16 @@ const Register = () => {
                                         </div>
                                         <div className="flex-grow-1 overflow-hidden">
                                             <div className="text-white fw-bold small">{fullName || email.split('@')[0]}</div>
-                                            <div className="text-secondary small text-truncate">{email}</div>
+                                            <div className="text-zinc-300 small text-truncate">{email}</div>
                                         </div>
-                                        <i className="bi bi-chevron-right text-secondary small"></i>
+                                        <i className="bi bi-chevron-right text-zinc-400 small"></i>
                                     </button>
                                 )}
                             </div>
 
                             {/* Custom Email Input */}
                             <div className="pt-2 border-top border-secondary border-opacity-25">
-                                <label className="text-secondary small mb-1 block">Or use another Gmail address:</label>
+                                <label className="text-zinc-300 small mb-1 block">Or use another Gmail address:</label>
                                 <div className="input-group input-group-sm mb-3">
                                     <input
                                         type="email"

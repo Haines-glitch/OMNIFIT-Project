@@ -289,4 +289,70 @@ optgroup {
   background-color: #121217 !important;
   color: #FF1E28 !important;
   font-weight: bold;
-}
+}
+
+/* ==========================================================================
+   GLOBAL HIGH-CONTRAST READABILITY OVERRIDES FOR DARK THEMES
+   ========================================================================== */
+
+/* Fix all dark-mode muted and secondary text */
+.text-muted,
+.text-secondary {
+  color: #A1A1AA !important; /* Crisp zinc-400 silver */
+}
+
+/* Form labels across all forms and modules */
+.form-label,
+label.form-label,
+label.text-muted,
+.form-label.text-muted,
+.form-label.text-secondary {
+  color: #E4E4E7 !important; /* Zinc-200 / Bright, easily readable label */
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+}
+
+/* Table Headers, Dates, & Meta Subtext */
+th,
+th.text-muted,
+thead.text-muted,
+thead.text-muted th,
+table thead th,
+.table thead th {
+  color: #D4D4D8 !important; /* Zinc-300 / Crisp header */
+  font-weight: 700 !important;
+}
+
+td.text-muted,
+td.text-secondary,
+td .text-muted,
+td .text-secondary,
+table tbody tr td.text-muted,
+table tbody tr td.text-secondary {
+  color: #CBD5E1 !important; /* Slate-300 / High-contrast, completely readable date/time */
+}
+
+/* Ensure inputs and selects display bright text */
+.form-control,
+.form-select {
+  color: #FFFFFF !important;
+}
+
+/* Card Subtitles, Meta Text, and Glass Container Subtexts */
+.card-subtitle,
+.card-subtitle.text-muted,
+.glass-card .text-muted,
+.glass-panel .text-muted,
+.role-card .text-muted {
+  color: #CBD5E1 !important;
+}
+
+/* Crisp legible placeholders across all dark inputs */
+::placeholder,
+::-webkit-input-placeholder,
+::-moz-placeholder,
+:-ms-input-placeholder {
+  color: #A1A1AA !important;
+  opacity: 1 !important;
+}
+

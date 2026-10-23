@@ -11,7 +11,7 @@ const Unauthorized = () => {
                     <i className="bi bi-shield-lock-fill"></i>
                 </div>
                 <h2 className="fw-bold text-white mb-2">Access Restricted</h2>
-                <p className="text-muted small mb-4">
+                <p className="text-zinc-300 small mb-4">
                     You do not have the required security permissions or role to view this OMNIFIT module.
                 </p>
                 <button onClick={() => navigate('/')} className="btn btn-emerald w-100">

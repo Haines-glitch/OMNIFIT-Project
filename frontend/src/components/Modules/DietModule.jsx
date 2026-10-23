@@ -207,7 +207,7 @@ const DietModule = ({ role, theme = 'light' }) => {
         : { background: '#1E293B', border: '1px solid #334155', borderRadius: '10px' };
 
     const textPrimary = isLight ? '#0F172A' : '#F8FAFC';
-    const textSecondary = isLight ? '#64748B' : '#94A3B8';
+    const textSecondary = isLight ? '#64748B' : '#CBD5E1';
 
     return (
         <div className="vstack gap-4 animate-fade-in">
@@ -292,7 +292,7 @@ const DietModule = ({ role, theme = 'light' }) => {
                                                 </div>
                                                 <div>
                                                     <h5 className="fw-bold mb-0" style={{ color: textPrimary }}>
-                                                        {meal.name} <span className="small fw-normal text-muted">({meal.time})</span>
+                                                        {meal.name} <span className="small fw-normal text-zinc-300">({meal.time})</span>
                                                     </h5>
                                                     <span className="small" style={{ color: textSecondary }}>
                                                         {meal.items.length} Food Item{meal.items.length !== 1 ? 's' : ''} Included
@@ -353,7 +353,7 @@ const DietModule = ({ role, theme = 'light' }) => {
                                             ))}
 
                                             {meal.items.length === 0 && (
-                                                <div className="text-center py-3 text-muted small">
+                                                <div className="text-center py-3 text-zinc-300 small">
                                                     No food items added to {meal.name} yet. Click <strong>+ Add Food Item</strong> to include foods!
                                                 </div>
                                             )}

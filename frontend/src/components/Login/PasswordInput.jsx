@@ -38,14 +38,14 @@ const PasswordInput = ({ value, onChange, placeholder = "Enter your password", r
             <label className="form-label text-light fw-medium d-flex justify-content-between">
                 <span><i className="bi bi-lock-fill text-white me-2"></i>Password</span>
                 {value && (
-                    <span className="small text-muted" style={{ fontSize: '0.8rem' }}>
+                    <span className="small text-zinc-300 font-medium" style={{ fontSize: '0.8rem' }}>
                         Strength: <strong style={{ color: strength.color }}>{strength.text}</strong>
                     </span>
                 )}
             </label>
 
             <div className="input-group">
-                <span className="input-group-text bg-dark border-secondary text-muted">
+                <span className="input-group-text bg-dark border-secondary text-zinc-300">
                     <i className="bi bi-key-fill text-white"></i>
                 </span>
                 <input

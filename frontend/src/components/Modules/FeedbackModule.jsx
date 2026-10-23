@@ -94,7 +94,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                         <h3 className="fw-bold mb-1" style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>
                             Member Feedback & Support Hub
                         </h3>
-                        <p className="small mb-0" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>
+                        <p className="small mb-0" style={{ color: isLight ? '#64748B' : '#E4E4E7' }}>
                             Share your feedback on assigned trainers, AI recommendations, or club facilities to help us serve you better.
                         </p>
                     </div>
@@ -132,7 +132,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                                 </div>
                             )}
                             <div>
-                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>Feedback Category</label>
+                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#E4E4E7' }}>Feedback Category</label>
                                 <select
                                     className="form-select rounded-3 p-2.5"
                                     value={category}
@@ -149,7 +149,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                             </div>
 
                             <div>
-                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>Rating</label>
+                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#E4E4E7' }}>Rating</label>
                                 <div className="d-flex align-items-center gap-2">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button
@@ -171,7 +171,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                             </div>
 
                             <div>
-                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>Subject / Headline</label>
+                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#E4E4E7' }}>Subject / Headline</label>
                                 <input
                                     type="text"
                                     className="form-control rounded-3 p-2.5"
@@ -184,7 +184,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                             </div>
 
                             <div>
-                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>Detailed Comments</label>
+                                <label className="form-label small fw-semibold" style={{ color: isLight ? '#64748B' : '#E4E4E7' }}>Detailed Comments</label>
                                 <textarea
                                     className="form-control rounded-3 p-2.5"
                                     rows="4"
@@ -214,7 +214,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                             <h5 className="fw-bold mb-0" style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}>
                                 <i className="bi bi-clock-history me-2" style={{ color: '#10B981' }}></i>My Submitted Feedbacks
                             </h5>
-                            <span className="small text-uppercase fw-semibold" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>
+                            <span className="small text-uppercase fw-semibold" style={{ color: isLight ? '#64748B' : '#CBD5E1' }}>
                                 {feedbacks.length} Submissions
                             </span>
                         </div>
@@ -227,7 +227,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                                             <span className="badge rounded-pill fw-semibold me-2 px-2.5 py-1" style={{ background: '#ECFDF5', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
                                                 {fb.category}
                                             </span>
-                                            <span className="small text-muted">{fb.id} • {fb.date}</span>
+                                            <span className="small text-zinc-300 font-medium">{fb.id} • {fb.date}</span>
                                         </div>
                                         <span
                                             className="badge rounded-pill px-2.5 py-1 fw-semibold"
@@ -251,11 +251,11 @@ const FeedbackModule = ({ theme = 'light' }) => {
                                                 style={{ color: i < fb.rating ? '#F59E0B' : (isLight ? '#CBD5E1' : '#475569') }}
                                             ></i>
                                         ))}
-                                        <span className="small ms-1" style={{ color: isLight ? '#64748B' : '#94A3B8' }}>({fb.rating}/5)</span>
+                                        <span className="small ms-1" style={{ color: isLight ? '#64748B' : '#CBD5E1' }}>({fb.rating}/5)</span>
                                     </div>
 
                                     {fb.response && (
-                                        <div className="p-2.5 rounded-3 mt-2 small" style={{ background: isLight ? '#FFFFFF' : '#1E293B', borderLeft: '3px solid #10B981', color: isLight ? '#475569' : '#94A3B8', border: isLight ? '1px solid #E2E8F0' : 'none', borderLeftColor: '#10B981' }}>
+                                        <div className="p-2.5 rounded-3 mt-2 small" style={{ background: isLight ? '#FFFFFF' : '#1E293B', borderLeft: '3px solid #10B981', color: isLight ? '#475569' : '#CBD5E1', border: isLight ? '1px solid #E2E8F0' : 'none', borderLeftColor: '#10B981' }}>
                                             <strong style={{ color: isLight ? '#0F172A' : '#F8FAFC' }}><i className="bi bi-reply-fill me-1" style={{ color: '#10B981' }}></i>Management Response: </strong>
                                             {fb.response}
                                         </div>

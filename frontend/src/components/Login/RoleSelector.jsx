@@ -29,13 +29,13 @@ const RoleSelector = ({ selectedRole, onSelectRole }) => {
                                     userSelect: 'none'
                                 }}
                             >
-                                <div className={`icon-wrapper mb-1 ${isSelected ? 'text-white' : 'text-muted'}`}>
+                                <div className={`icon-wrapper mb-1 ${isSelected ? 'text-white' : 'text-zinc-400'}`}>
                                     <i className={`bi ${role.icon} fs-4`}></i>
                                 </div>
-                                <div className={`fw-bold small ${isSelected ? 'text-white' : 'text-light'}`}>
+                                <div className={`fw-bold small ${isSelected ? 'text-white' : 'text-zinc-200'}`}>
                                     {role.title}
                                 </div>
-                                <div className="text-muted" style={{ fontSize: '0.68rem' }}>
+                                <div className={isSelected ? 'text-zinc-200' : 'text-zinc-400'} style={{ fontSize: '0.68rem' }}>
                                     {role.desc}
                                 </div>
                             </div>

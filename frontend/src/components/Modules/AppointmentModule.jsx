@@ -68,7 +68,7 @@ const AppointmentModule = ({ role }) => {
                     <h5 className="fw-bold text-white mb-3"><i className="bi bi-calendar-plus-fill text-accent me-2"></i>Schedule 1-on-1 AI Trainer Session</h5>
                     <form onSubmit={handleBook} className="row g-3">
                         <div className="col-md-3">
-                            <label className="form-label text-muted small">Select Certified Trainer</label>
+                            <label className="form-label text-zinc-200 font-semibold small">Select Certified Trainer</label>
                             <select
                                 className="form-select bg-dark text-white border-secondary"
                                 value={booking.trainer}
@@ -81,7 +81,7 @@ const AppointmentModule = ({ role }) => {
                         </div>
 
                         <div className="col-md-3">
-                            <label className="form-label text-muted small">Session Date</label>
+                            <label className="form-label text-zinc-200 font-semibold small">Session Date</label>
                             <input
                                 type="date"
                                 min={new Date().toISOString().split('T')[0]}
@@ -92,7 +92,7 @@ const AppointmentModule = ({ role }) => {
                         </div>
 
                         <div className="col-md-3">
-                            <label className="form-label text-muted small">Time Slot</label>
+                            <label className="form-label text-zinc-200 font-semibold small">Time Slot</label>
                             <select
                                 className="form-select bg-dark text-white border-secondary"
                                 value={booking.time}
@@ -106,7 +106,7 @@ const AppointmentModule = ({ role }) => {
                         </div>
 
                         <div className="col-md-3">
-                            <label className="form-label text-muted small">Purpose / Focus</label>
+                            <label className="form-label text-zinc-200 font-semibold small">Purpose / Focus</label>
                             <input
                                 type="text"
                                 className="form-control bg-dark text-white border-secondary"
@@ -128,23 +128,23 @@ const AppointmentModule = ({ role }) => {
                 <h5 className="fw-bold text-white mb-3"><i className="bi bi-clock-history text-accent me-2"></i>Appointments & Consultations</h5>
                 <div className="table-responsive">
                     <table className="table table-dark table-hover align-middle mb-0" style={{ background: 'transparent' }}>
-                        <thead className="text-muted small text-uppercase">
+                        <thead className="text-zinc-300 small text-uppercase">
                             <tr>
-                                <th className="bg-transparent">Trainer</th>
-                                <th className="bg-transparent">Member</th>
-                                <th className="bg-transparent">Date & Time</th>
-                                <th className="bg-transparent">Purpose</th>
-                                <th className="bg-transparent">Status</th>
-                                {(role === 'TRAINER' || role === 'ADMIN') && <th className="bg-transparent">Actions</th>}
+                                <th className="bg-transparent text-zinc-300">Trainer</th>
+                                <th className="bg-transparent text-zinc-300">Member</th>
+                                <th className="bg-transparent text-zinc-300">Date & Time</th>
+                                <th className="bg-transparent text-zinc-300">Purpose</th>
+                                <th className="bg-transparent text-zinc-300">Status</th>
+                                {(role === 'TRAINER' || role === 'ADMIN') && <th className="bg-transparent text-zinc-300">Actions</th>}
                             </tr>
                         </thead>
                         <tbody>
                             {appointments.map((a) => (
                                 <tr key={a.id} className="border-secondary border-opacity-50">
                                     <td className="bg-transparent text-white fw-bold">{a.trainer}</td>
-                                    <td className="bg-transparent text-white">{a.member}</td>
-                                    <td className="bg-transparent text-muted small">{a.date} @ {a.time}</td>
-                                    <td className="bg-transparent text-white small">{a.purpose}</td>
+                                    <td className="bg-transparent text-zinc-100 font-medium">{a.member}</td>
+                                    <td className="bg-transparent text-zinc-200 font-semibold small">{a.date} @ {a.time}</td>
+                                    <td className="bg-transparent text-zinc-200 small">{a.purpose}</td>
                                     <td className="bg-transparent">
                                         <span className={`badge ${a.status === 'Approved' ? 'bg-success' : a.status === 'Pending' ? 'bg-warning text-dark' : 'bg-danger'}`}>
                                             {a.status}

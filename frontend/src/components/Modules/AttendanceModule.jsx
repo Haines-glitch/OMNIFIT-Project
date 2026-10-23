@@ -53,7 +53,7 @@ const AttendanceModule = () => {
                             <span className="badge bg-dark border border-secondary text-info">99.8% Match Accuracy</span>
                         </div>
                         <h4 className="fw-bold text-white mb-2">Automated Contactless Gym Access</h4>
-                        <p className="text-muted small mb-3">
+                        <p className="text-zinc-300 small mb-3">
                             Step in front of the terminal camera at the club entrance to automatically log your attendance and unlock smart lockers.
                         </p>
                         <button className="btn btn-accent" onClick={triggerFacialCheckIn}>
@@ -65,7 +65,7 @@ const AttendanceModule = () => {
                         <div style={{ height: '160px' }}>
                             <AttendanceDoughnutChart percent={94.5} />
                         </div>
-                        <span className="text-muted small">Overall Attendance: <strong className="text-accent">94.5%</strong></span>
+                        <span className="text-zinc-300 small">Overall Attendance: <strong className="text-accent">94.5%</strong></span>
                     </div>
                 </div>
             </div>
