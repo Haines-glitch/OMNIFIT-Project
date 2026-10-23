@@ -14,7 +14,8 @@ from .views import (
     NotificationsView,
     NotificationMarkReadView,
     AdminDashboardView,
-    MemberDashboardDataView
+    MemberDashboardDataView,
+    CheckApprovalStatusView
 )
 
 urlpatterns = [
@@ -22,6 +23,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='auth_register'),
     path('login/', LoginView.as_view(), name='auth_login'),
     path('logout/', LogoutView.as_view(), name='auth_logout'),
+    path('approval-status/', CheckApprovalStatusView.as_view(), name='check_approval_status'),
     path('user-profile/', UserProfileView.as_view(), name='user_profile'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

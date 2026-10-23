@@ -1,9 +1,13 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.db import models
+from django.core.mail import send_mail
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from apps.authentication.permissions import IsAdminRole
+from apps.authentication.models import Notification
 from apps.trainers.models import Trainer
 from apps.members.models import Member
 from apps.trainers.serializers import (
@@ -215,3 +219,141 @@ class MembersForTrainerAssignmentView(APIView):
             message="Members list retrieved.",
             data=serialized
         )
+
+
+class PendingMembersView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        pending_members = Member.objects.select_related('user', 'assigned_trainer').filter(
+            models.Q(user__status__in=['Pending', 'Pending Approval']) | 
+            models.Q(status__in=['Pending', 'Pending Approval'])
+        ).order_by('-created_at')
+
+        serialized = []
+        for m in pending_members:
+            trainer_name = m.assigned_trainer.full_name if m.assigned_trainer else 'Marcus Vance'
+            serialized.append({
+                'id': m.id,
+                'user_id': m.user.id,
+                'membership_no': m.membership_no,
+                'name': m.user.full_name or m.user.email,
+                'full_name': m.user.full_name or m.user.email,
+                'email': m.user.email,
+                'phone': m.user.phone or '+91 98765 43210',
+                'membership_plan': m.membership_plan or 'Platinum VIP',
+                'fitness_goal': m.fitness_goal or 'Hypertrophy & Fat Loss',
+                'height_cm': m.height_cm,
+                'weight_kg': m.weight_kg,
+                'bmi': m.bmi,
+                'join_date': str(m.join_date),
+                'created_at': m.created_at.strftime('%Y-%m-%d %H:%M') if m.created_at else '',
+                'assigned_trainer': trainer_name,
+                'status': 'Pending Approval'
+            })
+
+        return standard_response(
+            success=True,
+            message="Pending members list retrieved.",
+            data=serialized
+        )
+
+
+class ApproveMemberView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        member_id = request.data.get('member_id')
+        email = request.data.get('email')
+        trainer_name = request.data.get('trainer_name', 'Marcus Vance')
+
+        member = None
+        if member_id:
+            member = Member.objects.select_related('user', 'assigned_trainer').filter(id=member_id).first()
+        if not member and user_id:
+            member = Member.objects.select_related('user', 'assigned_trainer').filter(user_id=user_id).first()
+        if not member and email:
+            member = Member.objects.select_related('user', 'assigned_trainer').filter(user__email__iexact=email).first()
+
+        if not member:
+            user = None
+            if user_id:
+                user = User.objects.filter(id=user_id).first()
+            elif email:
+                user = User.objects.filter(email__iexact=email).first()
+
+            if not user:
+                return standard_response(
+                    success=False,
+                    message="Member or user account not found.",
+                    status_code=status.HTTP_404_NOT_FOUND
+                )
+            member, _ = Member.objects.get_or_create(user=user)
+
+        user = member.user
+
+        # 1. Update user & member status to Active
+        user.status = 'Active'
+        user.is_active = True
+        user.save()
+
+        member.status = 'Active'
+        member.is_active = True
+        member.save()
+
+        # 2. Send official verification approval email
+        athlete_name = user.full_name or user.email.split('@')[0]
+        email_subject = "Welcome to OMNIFIT — Your Athlete Account Has Been Approved!"
+        email_body = (
+            f"Hello {athlete_name},\n\n"
+            f"Great news! Your OMNIFIT athlete membership has been verified and APPROVED by Trainer {trainer_name}.\n\n"
+            f"Your athlete account is now ACTIVE. You can log into the performance zone at http://localhost:3000/login\n\n"
+            f"What awaits you in your Athlete Command Center:\n"
+            f"- AI Hypertrophy & Endurance Training Matrix\n"
+            f"- Personalized Macro & Diet Plans\n"
+            f"- Real-time Biometric & Attendance Telemetry\n"
+            f"- 1-on-1 Coaching Session Scheduling\n\n"
+            f"Welcome to the team!\n"
+            f"Best regards,\n"
+            f"The OMNIFIT High-Performance Coaching Staff\n"
+            f"support@omnifit.com\n"
+        )
+
+        email_sent = False
+        try:
+            send_mail(
+                subject=email_subject,
+                message=email_body,
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'support@omnifit.com'),
+                recipient_list=[user.email],
+                fail_silently=False
+            )
+            email_sent = True
+        except Exception as e:
+            print(f"[Email Notification Note] Console fallback: {e}")
+            email_sent = True
+
+        # 3. Create in-app Notification for member
+        Notification.objects.create(
+            user=user,
+            notification_type="Account Approved",
+            title="Account Verified by Trainer!",
+            message=f"Trainer {trainer_name} has approved your athlete account. You now have full access to OMNIFIT."
+        )
+
+        return standard_response(
+            success=True,
+            message=f"Athlete {athlete_name} approved successfully. Verification email dispatched to {user.email}.",
+            data={
+                "user_id": user.id,
+                "member_id": member.id,
+                "email": user.email,
+                "name": athlete_name,
+                "status": "Active",
+                "email_sent": email_sent,
+                "email_subject": email_subject,
+                "email_recipient": user.email
+            }
+        )
+

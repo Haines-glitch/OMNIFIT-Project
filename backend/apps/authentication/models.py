@@ -8,6 +8,8 @@ class Role(models.TextChoices):
 
 class Status(models.TextChoices):
     ACTIVE = 'Active', 'Active'
+    PENDING = 'Pending Approval', 'Pending Approval'
+    PENDING_ALT = 'Pending', 'Pending'
     INACTIVE = 'Inactive', 'Inactive'
     SUSPENDED = 'Suspended', 'Suspended'
 

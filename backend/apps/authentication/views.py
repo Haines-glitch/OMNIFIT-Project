@@ -52,8 +52,21 @@ class LoginView(TokenObtainPairView):
             )
         except Exception as exc:
             error_details = getattr(exc, 'detail', str(exc))
+            err_str = str(error_details).lower()
+            # Check for 403 Pending Trainer Approval case
+            if "awaiting verification" in err_str or "pending" in err_str:
+                return standard_response(
+                    success=False,
+                    message="Account is pending verification and approval by your assigned trainer.",
+                    data={
+                        "status": "PENDING_APPROVAL",
+                        "email": request.data.get('email'),
+                    },
+                    errors=error_details,
+                    status_code=status.HTTP_403_FORBIDDEN
+                )
             # Check for 403 Forbidden suspension/inactive case
-            if "suspended or inactive" in str(error_details):
+            if "suspended or inactive" in err_str:
                 return standard_response(
                     success=False,
                     message="Account is inactive or suspended.",
@@ -94,10 +107,17 @@ class RegisterView(generics.CreateAPIView):
 
         user = serializer.save()
         user.role = 'member'
+        user.status = 'Pending Approval'
         user.save()
 
         # Create/Update Member profile with extended details if supplied
         member, _ = Member.objects.get_or_create(user=user)
+        member.status = 'Pending'
+
+        default_trainer = User.objects.filter(role='trainer').first()
+        if default_trainer:
+            member.assigned_trainer = default_trainer
+
         if 'date_of_birth' in request.data:
             member.date_of_birth = request.data.get('date_of_birth')
         if 'gender' in request.data:
@@ -129,23 +149,65 @@ class RegisterView(generics.CreateAPIView):
             member.address = request.data.get('address')
         member.save()
 
-        # Create welcome notification
+        # Create notification for athlete
         Notification.objects.create(
             user=user,
             notification_type="AI Alert",
-            title="Welcome to OMNIFIT Ecosystem",
-            message=f"Welcome {user.full_name or user.email}! Your AI Athlete profile is active."
+            title="Registration Awaiting Trainer Approval",
+            message=f"Welcome {user.full_name or user.email}! Your registration has been received and is awaiting review by your trainer. You will receive an email once approved."
         )
 
+        # Create notification for assigned trainer
+        if default_trainer:
+            Notification.objects.create(
+                user=default_trainer,
+                notification_type="Member Registration",
+                title=f"New Athlete Awaiting Approval: {user.full_name or user.email}",
+                message=f"Athlete {user.full_name or user.email} has registered and requires your approval before accessing the facility."
+            )
+
         return Response({
-            "message": "Member registration successful",
+            "message": "Member registration successful. Awaiting trainer approval.",
+            "status": "PENDING_APPROVAL",
             "user": {
                 "id": user.id,
                 "name": user.full_name or user.email,
                 "email": user.email,
-                "role": "MEMBER"
+                "role": "MEMBER",
+                "status": "Pending Approval"
             }
         }, status=status.HTTP_201_CREATED)
+
+
+class CheckApprovalStatusView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        email = request.query_params.get('email', '').strip().lower()
+        if not email:
+            return standard_response(
+                success=False,
+                message="Email query parameter is required.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            return standard_response(
+                success=False,
+                message="User not found.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+        is_approved = user.status == 'Active' and user.is_active
+        return standard_response(
+            success=True,
+            message="Status retrieved.",
+            data={
+                "email": user.email,
+                "name": user.full_name or user.email,
+                "status": user.status,
+                "is_approved": is_approved
+            }
+        )
 
 
 class LogoutView(APIView):

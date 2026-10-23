@@ -68,7 +68,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             phone=validated_data.get('phone', ''),
             role='member',
-            status='Active'
+            status='Pending Approval'
         )
         return user
 
@@ -76,6 +76,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         
+        # Check trainer approval status
+        if self.user.status in ['Pending', 'Pending Approval']:
+            raise serializers.ValidationError({
+                "account": "Your registration is awaiting verification and approval by your assigned trainer. You will gain full access once verified.",
+                "status": "PENDING_APPROVAL",
+                "email": self.user.email,
+                "name": self.user.full_name or self.user.email
+            })
+
         # Check active status
         if self.user.status != 'Active' or not self.user.is_active:
             raise serializers.ValidationError({

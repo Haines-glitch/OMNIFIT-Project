@@ -49,21 +49,22 @@ const Register = () => {
         try {
             const userEmail = selectedEmail || email || 'jagan@gmail.com';
             const userName = selectedName || fullName || (userEmail.split('@')[0]);
-            const res = await LoginService.loginWithGoogle({
+            const res = await LoginService.register({
+                full_name: userName,
                 email: userEmail,
-                name: userName,
-                role: 'member'
+                phone: '+91 98765 43210',
+                fitness_goal: fitnessGoal || 'Hypertrophy & Fat Loss',
+                password: 'GoogleOAuthUser@123'
             });
-            if (res.success) {
-                setToast({
-                    show: true,
-                    message: `Account created with Google! Welcome to OMNIFIT, ${res.data.user.name}.`,
-                    type: 'success'
-                });
-                setTimeout(() => {
-                    navigate('/member-dashboard');
-                }, 800);
-            }
+            setShowGoogleModal(false);
+            setToast({
+                show: true,
+                message: `Registration submitted via Google! Your account is awaiting trainer verification.`,
+                type: 'success'
+            });
+            setTimeout(() => {
+                navigate(`/login?registered=pending&email=${encodeURIComponent(userEmail)}`);
+            }, 1000);
         } catch (err) {
             setToast({ show: true, message: 'Google Registration failed. Please try again.', type: 'danger' });
         } finally {
@@ -180,10 +181,10 @@ const Register = () => {
                     message: result.message || "Registration successful. Please login.",
                     type: 'success'
                 });
-                // Redirect newly registered member to /login
+                // Redirect newly registered member to /login with pending screen
                 setTimeout(() => {
-                    navigate('/login');
-                }, 1500);
+                    navigate(`/login?registered=pending&email=${encodeURIComponent(email)}`);
+                }, 1200);
             } else {
                 setToast({
                     show: true,

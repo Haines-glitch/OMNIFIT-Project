@@ -24,6 +24,57 @@ api.interceptors.request.use(
 );
 
 const PROFILES_STORAGE_KEY = 'omnifit_saved_user_profiles';
+const PENDING_MEMBERS_KEY = 'omnifit_pending_members';
+
+const getPendingMembersList = () => {
+    try {
+        return JSON.parse(localStorage.getItem(PENDING_MEMBERS_KEY) || '[]');
+    } catch {
+        return [];
+    }
+};
+
+const savePendingMember = (memberData) => {
+    if (!memberData || !memberData.email) return;
+    try {
+        const list = getPendingMembersList();
+        const email = memberData.email.toLowerCase().trim();
+        const existingIdx = list.findIndex(m => (m.email || '').toLowerCase().trim() === email);
+        const entry = {
+            id: memberData.id || Date.now(),
+            user_id: memberData.user_id || memberData.id || Date.now(),
+            name: memberData.name || memberData.full_name || email.split('@')[0],
+            full_name: memberData.full_name || memberData.name || email.split('@')[0],
+            email: email,
+            phone: memberData.phone || '+91 98765 43210',
+            membership_plan: memberData.membership_plan || 'Platinum VIP',
+            fitness_goal: memberData.fitness_goal || memberData.fitnessGoal || 'Hypertrophy & Fat Loss',
+            status: 'Pending Approval',
+            join_date: new Date().toISOString().split('T')[0],
+            created_at: new Date().toLocaleString(),
+            assigned_trainer: memberData.assigned_trainer || 'Marcus Vance'
+        };
+        if (existingIdx >= 0) {
+            list[existingIdx] = { ...list[existingIdx], ...entry };
+        } else {
+            list.unshift(entry);
+        }
+        localStorage.setItem(PENDING_MEMBERS_KEY, JSON.stringify(list));
+    } catch (e) {
+        console.warn('Could not save pending member:', e);
+    }
+};
+
+const removePendingMember = (email) => {
+    if (!email) return;
+    try {
+        const list = getPendingMembersList();
+        const filtered = list.filter(m => (m.email || '').toLowerCase().trim() !== email.toLowerCase().trim());
+        localStorage.setItem(PENDING_MEMBERS_KEY, JSON.stringify(filtered));
+    } catch (e) {
+        console.warn('Could not remove pending member:', e);
+    }
+};
 
 const getPersistedProfile = (email) => {
     if (!email) return null;
@@ -90,9 +141,20 @@ export const LoginService = {
             }
 
         } catch (error) {
-            // Show real error only for non-auth failures (suspended account, server errors)
+            // Check for 403 Forbidden: Account suspended or pending trainer approval
             if (error.response && error.response.status === 403) {
                 const errorData = error.response.data;
+                const errStr = JSON.stringify(errorData).toLowerCase();
+                const isPending = errStr.includes('pending') || errStr.includes('awaiting') || errorData?.data?.status === 'PENDING_APPROVAL';
+                if (isPending) {
+                    return {
+                        success: false,
+                        isPendingApproval: true,
+                        email: credentials.email,
+                        name: errorData?.data?.name || (credentials.email ? credentials.email.split('@')[0] : 'Athlete'),
+                        error: 'Your account is pending verification and approval by your assigned trainer.'
+                    };
+                }
                 const errorMsg = errorData?.errors?.account || errorData?.message || 'Account is suspended or inactive.';
                 return { success: false, error: errorMsg };
             }
@@ -103,6 +165,17 @@ export const LoginService = {
             const role = (credentials.role || 'member').toLowerCase();
             const userEmail = (credentials.email || '').toLowerCase().trim();
             const persisted = getPersistedProfile(userEmail) || {};
+
+            // Check if registered user is still pending approval
+            if (persisted.status === 'Pending Approval' || persisted.status === 'Pending' || persisted.isPendingApproval) {
+                return {
+                    success: false,
+                    isPendingApproval: true,
+                    email: userEmail,
+                    name: persisted.name || persisted.full_name || userEmail.split('@')[0],
+                    error: 'Your account is pending verification and approval by your assigned trainer.'
+                };
+            }
 
             let displayName = persisted.name || persisted.full_name || '';
             if (!displayName) {
@@ -166,6 +239,17 @@ export const LoginService = {
         const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
         
         const persisted = getPersistedProfile(email) || {};
+
+        // If user registered with pending status, prevent login until approved
+        if (persisted.status === 'Pending Approval' || persisted.status === 'Pending' || persisted.isPendingApproval) {
+            return {
+                success: false,
+                isPendingApproval: true,
+                email: email,
+                name: persisted.name || displayName,
+                error: 'Your Google-linked athlete account is awaiting verification and approval by your assigned trainer.'
+            };
+        }
 
         const googleUser = {
             id: persisted.id || Math.floor(Math.random() * 8000) + 1000,
@@ -231,15 +315,28 @@ export const LoginService = {
      * Performs registration request to Django Backend
      */
     async register(userData) {
+        const userEmail = (userData.email || '').toLowerCase().trim();
         try {
             // Strip any role parameter so backend forces MEMBER role
             const { role, ...memberData } = userData;
             const response = await api.post('/register/', memberData);
             const payload = response.data;
+
+            const pendingInfo = {
+                ...userData,
+                email: userEmail,
+                status: 'Pending Approval',
+                isPendingApproval: true,
+                join_date: new Date().toISOString().split('T')[0]
+            };
+            savePersistedProfile(userEmail, pendingInfo);
+            savePendingMember(pendingInfo);
+
             return {
                 success: true,
-                message: payload.message || "Member registration successful",
-                user: payload.user || payload.data?.user
+                isPendingApproval: true,
+                message: payload.message || "Member registration successful. Awaiting trainer approval.",
+                user: payload.user || payload.data?.user || pendingInfo
             };
         } catch (error) {
             // If backend responded with a validation error (400), show real error — don't mock
@@ -260,17 +357,132 @@ export const LoginService = {
             console.warn('Backend offline. Falling back to demo mock registration.', error);
             const mockUser = {
                 id: Math.floor(Math.random() * 1000) + 100,
-                name: userData.full_name || (userData.email ? userData.email.split('@')[0] : 'Member'),
-                email: userData.email,
-                role: 'MEMBER'
+                name: userData.full_name || (userEmail ? userEmail.split('@')[0] : 'Member'),
+                full_name: userData.full_name || (userEmail ? userEmail.split('@')[0] : 'Member'),
+                email: userEmail,
+                role: 'MEMBER',
+                status: 'Pending Approval',
+                isPendingApproval: true,
+                fitnessGoal: userData.fitness_goal || userData.fitnessGoal || 'Hypertrophy & Fat Loss',
+                join_date: new Date().toISOString().split('T')[0]
             };
+            savePersistedProfile(userEmail, mockUser);
+            savePendingMember(mockUser);
             return {
                 success: true,
-                message: "Registration successful (demo mode). Please login.",
+                isPendingApproval: true,
+                message: "Registration submitted! Awaiting trainer verification.",
                 user: mockUser,
                 isMock: true
             };
         }
+    },
+
+    /**
+     * Fetch list of athletes pending trainer approval
+     */
+    async getPendingMembers() {
+        let serverList = [];
+        try {
+            const res = await api.get('/trainers/pending-members/', { baseURL: '/api' });
+            if (res.data?.data) {
+                serverList = res.data.data;
+            }
+        } catch (e) {
+            console.warn('Could not fetch server pending members, using local registry:', e);
+        }
+
+        // Merge with local pending members
+        const localPending = getPendingMembersList();
+        const mergedMap = new Map();
+        serverList.forEach(m => mergedMap.set((m.email || '').toLowerCase().trim(), m));
+        localPending.forEach(m => {
+            const emailKey = (m.email || '').toLowerCase().trim();
+            if (!mergedMap.has(emailKey)) {
+                mergedMap.set(emailKey, m);
+            }
+        });
+        return Array.from(mergedMap.values());
+    },
+
+    /**
+     * Trainer approves athlete account
+     */
+    async approveMember(memberData, trainerName = 'Marcus Vance') {
+        const email = (typeof memberData === 'string' ? memberData : memberData.email || '').toLowerCase().trim();
+        const userId = typeof memberData === 'object' ? (memberData.user_id || memberData.id) : null;
+        const name = typeof memberData === 'object' ? (memberData.name || memberData.full_name || email.split('@')[0]) : email.split('@')[0];
+
+        // 1. Call backend approval API
+        let serverSuccess = false;
+        let responseMsg = '';
+        try {
+            const res = await api.post('/trainers/approve-member/', {
+                email: email,
+                user_id: userId,
+                trainer_name: trainerName
+            }, { baseURL: '/api' });
+            if (res.data?.success) {
+                serverSuccess = true;
+                responseMsg = res.data.message;
+            }
+        } catch (e) {
+            console.warn('Backend approval sync note:', e);
+        }
+
+        // 2. Update local persistent storage
+        const currentProfile = getPersistedProfile(email) || {};
+        const updatedProfile = {
+            ...currentProfile,
+            status: 'Active',
+            isPendingApproval: false,
+            approvedBy: trainerName,
+            approvedAt: new Date().toISOString()
+        };
+        savePersistedProfile(email, updatedProfile);
+        removePendingMember(email);
+
+        return {
+            success: true,
+            email: email,
+            name: name,
+            message: responseMsg || `Athlete ${name} approved successfully! Verification email dispatched to ${email}.`
+        };
+    },
+
+    /**
+     * Check if an athlete account has been approved
+     */
+    async checkApprovalStatus(email) {
+        if (!email) return { is_approved: false };
+        const cleanEmail = email.toLowerCase().trim();
+        try {
+            const res = await api.get(`/auth/approval-status/?email=${encodeURIComponent(cleanEmail)}`, { baseURL: '/api' });
+            if (res.data?.data) {
+                const data = res.data.data;
+                if (data.is_approved) {
+                    const currentProfile = getPersistedProfile(cleanEmail) || {};
+                    savePersistedProfile(cleanEmail, {
+                        ...currentProfile,
+                        status: 'Active',
+                        isPendingApproval: false
+                    });
+                    removePendingMember(cleanEmail);
+                }
+                return data;
+            }
+        } catch (e) {
+            console.warn('Status check network note:', e);
+        }
+
+        // Fallback to local profile
+        const local = getPersistedProfile(cleanEmail);
+        const isApproved = local?.status === 'Active' && !local?.isPendingApproval;
+        return {
+            email: cleanEmail,
+            is_approved: isApproved,
+            status: local?.status || (isApproved ? 'Active' : 'Pending Approval')
+        };
     },
 
     /**

@@ -21,6 +21,10 @@ const Login = () => {
     // Active Session State
     const [currentUser, setCurrentUser] = useState(() => LoginService.getCurrentUser());
 
+    // Pending Trainer Approval State
+    const [pendingApprovalData, setPendingApprovalData] = useState(null);
+    const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+
     // Forgot Password Modal State
     const [showForgotModal, setShowForgotModal] = useState(false);
     const [forgotEmail, setForgotEmail] = useState('');
@@ -32,6 +36,26 @@ const Login = () => {
     useEffect(() => {
         if (LoginService.isAuthenticated()) {
             setCurrentUser(LoginService.getCurrentUser());
+        }
+
+        // Check if redirected from registration as pending approval
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('registered') === 'pending') {
+                const regEmail = params.get('email') || '';
+                setPendingApprovalData({
+                    email: regEmail,
+                    name: regEmail.split('@')[0] || 'Athlete',
+                    trainer: 'Marcus Vance'
+                });
+                setToast({
+                    show: true,
+                    message: 'Registration received! Your account is currently awaiting trainer approval.',
+                    type: 'warning'
+                });
+            }
+        } catch (e) {
+            console.warn('URL param parse error:', e);
         }
     }, []);
 
@@ -94,6 +118,17 @@ const Login = () => {
                         navigate('/member-dashboard');
                     }
                 }, 800);
+            } else if (result.isPendingApproval) {
+                setPendingApprovalData({
+                    email: result.email || email,
+                    name: result.name || (email ? email.split('@')[0] : 'Athlete'),
+                    trainer: 'Marcus Vance'
+                });
+                setToast({
+                    show: true,
+                    message: 'Your athlete account is awaiting verification by your assigned trainer.',
+                    type: 'warning'
+                });
             } else {
                 setToast({
                     show: true,
@@ -112,6 +147,39 @@ const Login = () => {
         }
     };
 
+    // Check Approval Status Handler
+    const handleCheckStatus = async () => {
+        if (!pendingApprovalData?.email) return;
+        setIsCheckingStatus(true);
+        try {
+            const res = await LoginService.checkApprovalStatus(pendingApprovalData.email);
+            if (res.is_approved) {
+                setToast({
+                    show: true,
+                    message: '🎉 Athlete account approved by your coach! Accessing performance zone...',
+                    type: 'success'
+                });
+                await LoginService.loginWithGoogle({
+                    email: pendingApprovalData.email,
+                    name: pendingApprovalData.name,
+                    role: 'member'
+                });
+                setTimeout(() => {
+                    navigate('/member-dashboard');
+                }, 1000);
+            } else {
+                setToast({
+                    show: true,
+                    message: '⏳ Account is still under review by Coach Marcus Vance. Please check back shortly.',
+                    type: 'warning'
+                });
+            }
+        } catch (e) {
+            setToast({ show: true, message: 'Status check failed. Please try again.', type: 'error' });
+        } finally {
+            setIsCheckingStatus(false);
+        }
+    };
 
     // Logout Handler
     const handleLogout = () => {
@@ -169,6 +237,23 @@ const Login = () => {
                     else if (targetRole === 'trainer') navigate('/trainer-dashboard');
                     else navigate('/member-dashboard');
                 }, 800);
+            } else if (res.isPendingApproval) {
+                setPendingApprovalData({
+                    email: userEmail,
+                    name: res.name || userName,
+                    trainer: 'Marcus Vance'
+                });
+                setToast({
+                    show: true,
+                    message: 'Your Google-linked athlete account is awaiting approval by your assigned trainer.',
+                    type: 'warning'
+                });
+            } else {
+                setToast({
+                    show: true,
+                    message: res.error || 'Google authentication failed.',
+                    type: 'error'
+                });
             }
         } catch (err) {
             setToast({ show: true, message: 'Google Authentication failed. Please retry.', type: 'danger' });
@@ -256,6 +341,86 @@ const Login = () => {
                                     data-testid="logout-btn"
                                 >
                                     LOGOUT SESSION
+                                </button>
+                            </div>
+                        </div>
+                    ) : pendingApprovalData ? (
+                        /* PENDING TRAINER APPROVAL SCREEN */
+                        <div className="pending-approval-view animate-fade-in text-center py-2" data-testid="pending-approval-screen">
+                            {/* Animated Clock / Verification Icon */}
+                            <div className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-400 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                                <i className="bi bi-clock-history animate-pulse"></i>
+                            </div>
+
+                            {/* Badge */}
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[10px] font-black uppercase tracking-widest mb-2.5">
+                                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                                Awaiting Trainer Approval
+                            </div>
+
+                            <h1 className="login-card-title mb-1 text-2xl font-black text-white">ACCOUNT UNDER REVIEW</h1>
+                            <p className="login-card-subtitle text-xs text-slate-400 mb-4">
+                                Welcome, <strong className="text-white">{pendingApprovalData.name || 'Athlete'}</strong>! Your registration is currently awaiting verification by your assigned coach before you can access the OMNIFIT Performance Zone.
+                            </p>
+
+                            {/* Verification Summary Card */}
+                            <div className="p-3.5 mb-3 rounded-2xl bg-[#121212] border border-slate-800 text-start space-y-2">
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="text-slate-400 font-semibold">Registered Email:</span>
+                                    <span className="text-white font-bold">{pendingApprovalData.email}</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="text-slate-400 font-semibold">Assigned Trainer:</span>
+                                    <span className="text-[#00F29D] font-bold">Marcus Vance</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                    <span className="text-slate-400 font-semibold">Clearance Status:</span>
+                                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-black">
+                                        ⏳ Pending Trainer Approval
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Email Dispatch Notice */}
+                            <div className="p-3 mb-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-start gap-3 text-start">
+                                <div className="w-8 h-8 rounded-lg bg-[#00F29D]/15 border border-[#00F29D]/30 text-[#00F29D] flex items-center justify-center shrink-0 text-base mt-0.5">
+                                    <i className="bi bi-envelope-check-fill"></i>
+                                </div>
+                                <div className="text-[11px] text-slate-300 leading-snug">
+                                    <strong className="text-white block font-bold">Automated Email Notification</strong>
+                                    You will receive a confirmation email at <strong>{pendingApprovalData.email}</strong> the moment your trainer approves your account.
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="space-y-2">
+                                <button
+                                    type="button"
+                                    onClick={handleCheckStatus}
+                                    disabled={isCheckingStatus}
+                                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00F29D] to-[#00c982] hover:from-[#00F29D] hover:to-[#00F29D] text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,242,157,0.3)] transition-all cursor-pointer"
+                                    data-testid="check-approval-btn"
+                                >
+                                    {isCheckingStatus ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-1" role="status"></span>
+                                            Checking Approval Status...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="bi bi-arrow-repeat text-sm font-black"></i>
+                                            Check Approval Status
+                                        </>
+                                    )}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPendingApprovalData(null)}
+                                    className="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold transition-all cursor-pointer"
+                                    data-testid="back-to-login-btn"
+                                >
+                                    ← Back to Login Screen
                                 </button>
                             </div>
                         </div>
