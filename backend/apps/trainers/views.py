@@ -322,11 +322,12 @@ class ApproveMemberView(APIView):
 
         email_sent = False
         email_error = None
+        from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
         try:
             send_mail(
                 subject=email_subject,
                 message=email_body,
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'support@omnifit.com'),
+                from_email=from_email,
                 recipient_list=[user.email],
                 fail_silently=False
             )
