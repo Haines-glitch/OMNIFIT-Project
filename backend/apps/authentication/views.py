@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.utils import timezone
 from datetime import datetime, timedelta
 
@@ -87,10 +88,27 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
+    @transaction.atomic
     def create(self, request, *args, **kwargs):
         # Force role to MEMBER regardless of request body
         data = request.data.copy()
         data['role'] = 'member'
+        raw_email = (data.get('email') or '').lower().strip()
+
+        # If user already registered with this email and is pending approval, gracefully return pending status
+        existing_user = User.objects.filter(email=raw_email).first()
+        if existing_user and existing_user.status in ['Pending Approval', 'Pending']:
+            return Response({
+                "message": "This account is already registered and is awaiting trainer approval.",
+                "status": "PENDING_APPROVAL",
+                "user": {
+                    "id": existing_user.id,
+                    "name": existing_user.full_name or existing_user.email,
+                    "email": existing_user.email,
+                    "role": "MEMBER",
+                    "status": "Pending Approval"
+                }
+            }, status=status.HTTP_200_OK)
 
         serializer = self.get_serializer(data=data)
         if not serializer.is_valid():
@@ -118,10 +136,22 @@ class RegisterView(generics.CreateAPIView):
         if default_trainer:
             member.assigned_trainer = default_trainer
 
-        if 'date_of_birth' in request.data:
-            member.date_of_birth = request.data.get('date_of_birth')
-        if 'gender' in request.data:
-            member.gender = request.data.get('gender')
+        # Safely parse date_of_birth (avoid invalid date string crash)
+        raw_dob = request.data.get('date_of_birth')
+        if raw_dob and str(raw_dob).strip():
+            try:
+                from datetime import datetime as dt
+                cleaned_dob = str(raw_dob).strip().split('T')[0]
+                member.date_of_birth = dt.strptime(cleaned_dob, '%Y-%m-%d').date()
+            except (ValueError, TypeError):
+                member.date_of_birth = None
+        else:
+            member.date_of_birth = None
+
+        raw_gender = request.data.get('gender')
+        if raw_gender and str(raw_gender).strip():
+            member.gender = str(raw_gender).strip()
+
         if 'age' in request.data and request.data.get('age'):
             try:
                 parsed_age = int(request.data.get('age'))
@@ -129,6 +159,7 @@ class RegisterView(generics.CreateAPIView):
                     member.age = parsed_age
             except (ValueError, TypeError):
                 pass
+
         if 'height' in request.data and request.data.get('height'):
             try:
                 parsed_h = float(str(request.data.get('height')).replace('cm', '').strip())
@@ -136,6 +167,7 @@ class RegisterView(generics.CreateAPIView):
                     member.height_cm = parsed_h
             except (ValueError, TypeError):
                 pass
+
         if 'weight' in request.data and request.data.get('weight'):
             try:
                 parsed_w = float(str(request.data.get('weight')).replace('kg', '').strip())
@@ -143,11 +175,21 @@ class RegisterView(generics.CreateAPIView):
                     member.weight_kg = parsed_w
             except (ValueError, TypeError):
                 pass
+
         if 'fitness_goal' in request.data or 'fitnessGoal' in request.data:
-            member.fitness_goal = request.data.get('fitness_goal') or request.data.get('fitnessGoal')
-        if 'address' in request.data:
-            member.address = request.data.get('address')
-        member.save()
+            goal = request.data.get('fitness_goal') or request.data.get('fitnessGoal')
+            if goal and str(goal).strip():
+                member.fitness_goal = str(goal).strip()
+
+        if 'address' in request.data and request.data.get('address'):
+            member.address = str(request.data.get('address')).strip()
+
+        try:
+            member.save()
+        except Exception:
+            # Fallback if any constraint fails on custom fields
+            member.date_of_birth = None
+            member.save()
 
         # Create notification for athlete
         Notification.objects.create(

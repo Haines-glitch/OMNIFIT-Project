@@ -163,27 +163,27 @@ const Register = () => {
             const userData = {
                 full_name: fullName.trim(),
                 email: email.trim(),
-                phone: phone.trim(),
-                date_of_birth: dateOfBirth,
-                gender,
-                age,
-                height,
-                weight,
-                fitness_goal: fitnessGoal,
+                phone: phone.trim() || undefined,
+                date_of_birth: dateOfBirth ? dateOfBirth.trim() : null,
+                gender: gender || null,
+                age: age ? parseInt(age, 10) : null,
+                height: height ? parseFloat(height) : null,
+                weight: weight ? parseFloat(weight) : null,
+                fitness_goal: fitnessGoal || 'General Fitness',
                 password
             };
 
             const result = await LoginService.register(userData);
 
-            if (result.success) {
+            if (result.success || result.isPendingApproval || result.status === 'PENDING_APPROVAL') {
                 setToast({
                     show: true,
-                    message: result.message || "Registration successful. Please login.",
+                    message: result.message || "Registration received. Awaiting trainer approval.",
                     type: 'success'
                 });
                 // Redirect newly registered member to /login with pending screen
                 setTimeout(() => {
-                    navigate(`/login?registered=pending&email=${encodeURIComponent(email)}`);
+                    navigate(`/login?registered=pending&email=${encodeURIComponent(email.trim())}`);
                 }, 1200);
             } else {
                 setToast({

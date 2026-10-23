@@ -339,9 +339,26 @@ export const LoginService = {
                 user: payload.user || payload.data?.user || pendingInfo
             };
         } catch (error) {
-            // If backend responded with a validation error (400), show real error — don't mock
+            // If backend responded with an error, check if it's actually an existing pending account
             if (error.response) {
                 const errorData = error.response.data;
+                if (errorData?.status === 'PENDING_APPROVAL') {
+                    const pendingInfo = {
+                        ...userData,
+                        email: userEmail,
+                        status: 'Pending Approval',
+                        isPendingApproval: true,
+                        join_date: new Date().toISOString().split('T')[0]
+                    };
+                    savePersistedProfile(userEmail, pendingInfo);
+                    savePendingMember(pendingInfo);
+                    return {
+                        success: true,
+                        isPendingApproval: true,
+                        message: errorData.message || "This account is already registered and awaiting trainer approval.",
+                        user: errorData.user || pendingInfo
+                    };
+                }
                 let errorMsg = errorData?.message || errorData?.detail || 'Registration failed.';
                 // Extract specific field errors if available
                 if (errorData?.errors) {
