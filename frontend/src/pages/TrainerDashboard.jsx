@@ -171,14 +171,14 @@ const TrainerDashboard = () => {
     // Render Pending Approvals Card Widget
     const renderPendingApprovalsSection = () => {
         return (
-            <div className="p-6 bg-[#121217]/90 backdrop-blur-xl border border-[#1f1f28] rounded-2xl shadow-xl space-y-4" data-testid="pending-approvals-panel">
+            <div className="p-4 sm:p-5 bg-[#121217]/90 backdrop-blur-xl border border-[#1f1f28] rounded-2xl shadow-xl space-y-3.5" data-testid="pending-approvals-panel">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1f1f28]">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center text-lg">
+                        <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center text-base">
                             <i className="bi bi-person-check-fill"></i>
                         </div>
                         <div>
-                            <h3 className="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+                            <h3 className="text-sm sm:text-base font-extrabold text-white tracking-tight flex items-center gap-2">
                                 Pending Athlete Registrations
                                 {pendingMembers.length > 0 && (
                                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
@@ -204,7 +204,7 @@ const TrainerDashboard = () => {
 
                 {/* Email Sent Toast Alert Banner */}
                 {approvalAlert && (
-                    <div className={`p-4 rounded-xl border flex items-start gap-3 transition-all animate-fade-in ${
+                    <div className={`p-3.5 rounded-xl border flex items-start gap-2.5 transition-all animate-fade-in ${
                         approvalAlert.type === 'success'
                             ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                             : approvalAlert.type === 'warning'
@@ -232,8 +232,8 @@ const TrainerDashboard = () => {
 
                 {/* Pending Members List */}
                 {pendingMembers.length === 0 ? (
-                    <div className="py-8 text-center rounded-xl bg-[#16161f] border border-[#22222d] border-dashed">
-                        <div className="w-12 h-12 rounded-full bg-red-600/15 border border-red-500/30 text-[#FF1E28] flex items-center justify-center mx-auto mb-2 text-xl shadow-[0_0_12px_rgba(229,9,20,0.25)]">
+                    <div className="py-6 text-center rounded-xl bg-[#16161f] border border-[#22222d] border-dashed">
+                        <div className="w-10 h-10 rounded-full bg-red-600/15 border border-red-500/30 text-[#FF1E28] flex items-center justify-center mx-auto mb-2 text-lg shadow-[0_0_12px_rgba(229,9,20,0.25)]">
                             <i className="bi bi-check2-circle"></i>
                         </div>
                         <h4 className="text-sm font-bold text-white">All Registrations Approved</h4>
@@ -242,17 +242,17 @@ const TrainerDashboard = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                         {pendingMembers.map((member) => {
                             const emailKey = (member.email || '').toLowerCase().trim();
                             const loading = isApproving[emailKey];
                             return (
                                 <div
                                     key={member.id || member.email}
-                                    className="p-4 rounded-xl border border-[#22222e] bg-[#16161f] hover:border-red-500/40 transition-all flex flex-col justify-between gap-3 shadow-md"
+                                    className="p-3.5 rounded-xl border border-[#22222e] bg-[#16161f] hover:border-red-500/40 transition-all flex flex-col justify-between gap-2.5 shadow-md"
                                 >
                                     <div className="flex items-start gap-3">
-                                        <div className="w-11 h-11 rounded-xl bg-red-600/15 border border-red-500/30 text-[#FF1E28] font-black flex items-center justify-center text-sm shrink-0">
+                                        <div className="w-10 h-10 rounded-xl bg-red-600/15 border border-red-500/30 text-[#FF1E28] font-black flex items-center justify-center text-xs shrink-0">
                                             {(member.name || member.full_name || 'A').charAt(0).toUpperCase()}
                                         </div>
 
@@ -356,36 +356,36 @@ const TrainerDashboard = () => {
             case 'dashboard':
             default:
                 return (
-                    <div className="space-y-6">
+                    <div className="space-y-5">
                         {/* Command Center Hero */}
-                        <div className="relative overflow-hidden p-6 sm:p-8 bg-[#121217]/90 backdrop-blur-xl border border-[#1f1f28] rounded-2xl shadow-xl transition-all">
+                        <div className="relative overflow-hidden p-4 sm:p-5 bg-[#121217]/90 backdrop-blur-xl border border-[#1f1f28] rounded-2xl shadow-xl transition-all">
                             {/* Ambient background glow effect */}
                             <div className="absolute -right-20 -top-20 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 relative z-10">
                                 <div>
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-red-600/15 text-[#FF1E28] border border-red-500/30 tracking-wider uppercase mb-3 shadow-[0_0_10px_rgba(229,9,20,0.2)]">
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-red-600/15 text-[#FF1E28] border border-red-500/30 tracking-wider uppercase mb-2 shadow-[0_0_10px_rgba(229,9,20,0.2)]">
                                         <i className="bi bi-patch-check-fill text-xs"></i>
                                         NASM MASTER CERTIFIED
                                     </span>
-                                    <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">
+                                    <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-1">
                                         Trainer Command Center
                                     </h2>
-                                    <p className="text-xs sm:text-sm font-medium text-zinc-400">
+                                    <p className="text-xs text-zinc-400 font-medium">
                                         Managing {activeMembersList.length + 39} Active Athletes • {pendingMembers.length} Registration(s) Awaiting Review
                                     </p>
                                 </div>
 
-                                <div className="flex flex-wrap items-center gap-3">
+                                <div className="flex flex-wrap items-center gap-2.5">
                                     <button
-                                        className="px-5 py-2.5 bg-[#E50914] hover:bg-[#FF1E28] text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer"
+                                        className="px-4 py-2 bg-[#E50914] hover:bg-[#FF1E28] text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer"
                                         onClick={() => setActiveTab('members')}
                                     >
                                         <i className="bi bi-person-check-fill text-sm"></i>
                                         Review Member Approvals ({pendingMembers.length})
                                     </button>
                                     <button
-                                        className="px-5 py-2.5 bg-[#181822] hover:bg-[#20202d] border border-[#2c2c3d] text-white font-semibold text-xs rounded-xl flex items-center gap-2 transition-all cursor-pointer"
+                                        className="px-4 py-2 bg-[#181822] hover:bg-[#20202d] border border-[#2c2c3d] text-white font-semibold text-xs rounded-xl flex items-center gap-2 transition-all cursor-pointer"
                                         onClick={() => setActiveTab('workout')}
                                     >
                                         <i className="bi bi-plus-circle-fill text-sm text-[#FF1E28]"></i>
@@ -396,7 +396,7 @@ const TrainerDashboard = () => {
                         </div>
 
                         {/* 4x KPI Stat Cards Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                             <StatCard
                                 title="Active Assigned Athletes"
                                 value={`${activeMembersList.length + 39} Members`}
@@ -433,7 +433,7 @@ const TrainerDashboard = () => {
                         {renderPendingApprovalsSection()}
 
                         {/* Dashboard Main Grid: Recent Table (2-col) + Live Activity & Alerts (1-col) */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
                             <div className="lg:col-span-2">
                                 <DataTable
                                     title="Recent Active Client Roster"

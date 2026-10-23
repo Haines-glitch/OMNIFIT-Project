@@ -96,32 +96,32 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
     };
 
     return (
-        <div className="space-y-6 animate-fade-in font-sans text-white">
+        <div className="space-y-5 animate-fade-in font-sans text-white">
             {/* Header Control Hub */}
-            <div className="p-6 sm:p-8 bg-[#121217] border border-[#22222a] rounded-3xl shadow-2xl relative overflow-hidden">
+            <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl relative overflow-hidden">
                 <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#E50914]/12 rounded-full blur-3xl pointer-events-none"></div>
 
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
-                    <div className="space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E50914]/15 border border-[#E50914]/40 shadow-[0_0_12px_rgba(229,9,20,0.25)]">
-                            <span className="w-2 h-2 rounded-full bg-[#FF1E28] animate-pulse shadow-[0_0_8px_#FF1E28]"></span>
-                            <span className="text-[10px] font-black text-[#FF1E28] uppercase tracking-widest">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 relative z-10">
+                    <div className="space-y-1.5">
+                        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#E50914]/15 border border-[#E50914]/40 shadow-[0_0_12px_rgba(229,9,20,0.25)]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#FF1E28] animate-pulse shadow-[0_0_8px_#FF1E28]"></span>
+                            <span className="text-[9px] font-black text-[#FF1E28] uppercase tracking-widest">
                                 TRAINER WORKSPACE CONFIGURATION
                             </span>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                        <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                             Coaching Policies & Portal Settings
                         </h2>
-                        <p className="text-xs sm:text-sm text-zinc-400 font-medium">
+                        <p className="text-xs text-zinc-400 font-medium">
                             Manage session availability, member alerts, email notifications, and active specializations for <strong className="text-white">{trainerName}</strong>.
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2.5 shrink-0">
                         <button
                             type="button"
                             onClick={handleReset}
-                            className="px-4 py-2.5 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#2a2a38] text-zinc-300 hover:text-white font-bold text-xs transition-all cursor-pointer"
+                            className="px-3.5 py-2 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#2a2a38] text-zinc-300 hover:text-white font-bold text-xs transition-all cursor-pointer"
                         >
                             <i className="bi bi-arrow-counterclockwise me-1.5"></i>
                             Reset
@@ -130,7 +130,7 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             type="button"
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-black text-xs flex items-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer disabled:opacity-60"
+                            className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-black text-xs flex items-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer disabled:opacity-60"
                         >
                             {isSaving ? (
                                 <>
@@ -150,9 +150,9 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
 
             {/* Success Toast / Notification Banner (Green Theme!) */}
             {toastMessage && (
-                <div className="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 font-bold flex items-center justify-between shadow-[0_0_15px_rgba(16,185,129,0.25)] animate-fade-in">
-                    <div className="flex items-center gap-3">
-                        <i className="bi bi-check-circle-fill text-emerald-400 text-lg"></i>
+                <div className="p-3.5 sm:p-4 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 font-bold flex items-center justify-between shadow-[0_0_15px_rgba(16,185,129,0.25)] animate-fade-in">
+                    <div className="flex items-center gap-2.5">
+                        <i className="bi bi-check-circle-fill text-emerald-400 text-base"></i>
                         <span className="text-xs">{toastMessage}</span>
                     </div>
                     <button
@@ -165,11 +165,11 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
             )}
 
             {/* Main Settings Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
                 {/* 1. Coaching Availability & Booking Limits */}
-                <div className="p-6 bg-[#121217] border border-[#22222a] rounded-3xl shadow-xl space-y-5">
+                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-4">
                     <div className="flex items-center gap-3 pb-3 border-b border-[#1f1f28]">
-                        <div className="w-10 h-10 rounded-2xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-lg">
+                        <div className="w-9 h-9 rounded-xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-base">
                             <i className="bi bi-calendar-check-fill"></i>
                         </div>
                         <div>
@@ -278,9 +278,9 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                 </div>
 
                 {/* 2. Athlete Telemetry & Notification Channels */}
-                <div className="p-6 bg-[#121217] border border-[#22222a] rounded-3xl shadow-xl space-y-5">
+                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-4">
                     <div className="flex items-center gap-3 pb-3 border-b border-[#1f1f28]">
-                        <div className="w-10 h-10 rounded-2xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-lg">
+                        <div className="w-9 h-9 rounded-xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-base">
                             <i className="bi bi-bell-fill"></i>
                         </div>
                         <div>
@@ -289,8 +289,8 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                         </div>
                     </div>
 
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#181820] border border-[#262634]">
+                    <div className="space-y-2.5">
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-[#181820] border border-[#262634]">
                             <div>
                                 <span className="text-xs font-bold text-white block">Workout Routine Completion</span>
                                 <span className="text-[11px] text-zinc-400">Notify when an assigned member logs all prescribed sets</span>
@@ -303,7 +303,7 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#181820] border border-[#262634]">
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-[#181820] border border-[#262634]">
                             <div>
                                 <span className="text-xs font-bold text-white block">Member Registration Approval</span>
                                 <span className="text-[11px] text-zinc-400">Notify when newly registered members await your review</span>
@@ -316,7 +316,7 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#181820] border border-[#262634]">
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-[#181820] border border-[#262634]">
                             <div>
                                 <span className="text-xs font-bold text-white block">1-on-1 Coaching Session Requests</span>
                                 <span className="text-[11px] text-zinc-400">Receive alert when an athlete requests a coaching slot</span>
@@ -329,7 +329,7 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                             />
                         </div>
 
-                        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#181820] border border-[#262634]">
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-[#181820] border border-[#262634]">
                             <div>
                                 <span className="text-xs font-bold text-white block">SMTP Email Dispatch</span>
                                 <span className="text-[11px] text-zinc-400">Send confirmation notices to <strong className="text-white">{trainerEmail}</strong></span>
@@ -345,9 +345,9 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                 </div>
 
                 {/* 3. Training Specializations */}
-                <div className="p-6 bg-[#121217] border border-[#22222a] rounded-3xl shadow-xl space-y-4">
+                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-3.5">
                     <div className="flex items-center gap-3 pb-3 border-b border-[#1f1f28]">
-                        <div className="w-10 h-10 rounded-2xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-lg">
+                        <div className="w-9 h-9 rounded-xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-base">
                             <i className="bi bi-award-fill"></i>
                         </div>
                         <div>
@@ -358,7 +358,7 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
 
                     <div className="space-y-2">
                         <p className="text-xs text-zinc-400">Athletes can match with you based on these focus disciplines:</p>
-                        <div className="flex flex-wrap gap-2 pt-1">
+                        <div className="flex flex-wrap gap-2 pt-0.5">
                             {allSpecialties.map((spec) => {
                                 const active = settings.specialties.includes(spec);
                                 return (
@@ -366,7 +366,7 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                                         key={spec}
                                         type="button"
                                         onClick={() => toggleSpecialty(spec)}
-                                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                                             active
                                                 ? 'bg-[#E50914]/15 text-[#FF1E28] border border-[#E50914]/50 shadow-[0_0_10px_rgba(229,9,20,0.2)]'
                                                 : 'bg-[#181820] text-zinc-400 hover:text-white border border-[#262634]'
@@ -382,9 +382,9 @@ const TrainerSettingsModule = ({ theme = 'dark' }) => {
                 </div>
 
                 {/* 4. Trainer Account & Security Reference */}
-                <div className="p-6 bg-[#121217] border border-[#22222a] rounded-3xl shadow-xl space-y-4">
+                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-3.5">
                     <div className="flex items-center gap-3 pb-3 border-b border-[#1f1f28]">
-                        <div className="w-10 h-10 rounded-2xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-lg">
+                        <div className="w-9 h-9 rounded-xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-base">
                             <i className="bi bi-shield-lock-fill"></i>
                         </div>
                         <div>

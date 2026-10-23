@@ -326,9 +326,9 @@ const WorkoutModule = ({
     const completionPct = totalAssigned > 0 ? Math.round((completedAssigned / totalAssigned) * 100) : 0;
 
     return (
-        <div className="space-y-6 animate-fade-in font-sans antialiased text-white">
+        <div className="space-y-5 animate-fade-in font-sans antialiased text-white">
             {/* Top Navigation / Tab Switcher */}
-            <div className="p-6 bg-[#121217] border border-[#22222a] rounded-3xl shadow-xl space-y-4">
+            <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-3">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -447,49 +447,49 @@ const WorkoutModule = ({
 
             {/* MEMBER VIEW: TODAY'S ASSIGNED ROUTINE HERO & CHECKLIST */}
             {!isTrainerOrAdmin && activeTab === 'assigned' && (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-5">
                     {isLoadingRoutine ? (
-                        <div className="p-12 rounded-3xl bg-[#121217] border border-[#22222a] text-center space-y-3">
+                        <div className="p-10 rounded-2xl bg-[#121217] border border-[#22222a] text-center space-y-3">
                             <span className="spinner-border text-[#FF1E28]" role="status"></span>
                             <p className="text-xs text-zinc-400 font-bold uppercase tracking-wider">Synchronizing Assigned Daily Routine...</p>
                         </div>
                     ) : totalAssigned > 0 ? (
                         <>
                             {/* Assigned Routine Hero Header Card */}
-                            <div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl bg-[#121217] border border-[#22222a] shadow-2xl">
+                            <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-[#121217] border border-[#22222a] shadow-xl">
                                 <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#E50914]/15 rounded-full blur-3xl pointer-events-none"></div>
                                 
-                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-                                    <div className="space-y-3 max-w-2xl">
-                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E50914]/15 border border-[#E50914]/40 shadow-[0_0_12px_rgba(229,9,20,0.25)]">
-                                            <span className="w-2 h-2 rounded-full bg-[#FF1E28] animate-pulse shadow-[0_0_8px_#FF1E28]"></span>
-                                            <span className="text-[10px] font-black text-[#FF1E28] uppercase tracking-widest">
+                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 relative z-10">
+                                    <div className="space-y-2 max-w-2xl">
+                                        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-[#E50914]/15 border border-[#E50914]/40 shadow-[0_0_12px_rgba(229,9,20,0.25)]">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-[#FF1E28] animate-pulse shadow-[0_0_8px_#FF1E28]"></span>
+                                            <span className="text-[9px] font-black text-[#FF1E28] uppercase tracking-widest">
                                                 COACH-PRESCRIBED DAILY ROUTINE
                                             </span>
                                         </div>
 
-                                        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                                        <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                                             {memberRoutine?.routine_title || memberRoutine?.title || 'Personalized Overload Routine'}
                                         </h2>
 
-                                        <p className="text-xs sm:text-sm text-zinc-300 font-medium leading-relaxed">
+                                        <p className="text-xs text-zinc-300 font-medium leading-relaxed">
                                             {memberRoutine?.description || "Engineered specifically for your target muscle groups and overload targets."}
                                         </p>
 
-                                        <div className="flex flex-wrap items-center gap-3 pt-2">
-                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
+                                        <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
                                                 <i className="bi bi-person-badge text-[#FF1E28]"></i>
                                                 <span className="text-zinc-400">Coach:</span>
                                                 <span className="font-extrabold text-white">{memberRoutine?.coach || 'Marcus Vance'}</span>
                                             </div>
 
-                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
                                                 <i className="bi bi-speedometer2 text-amber-400"></i>
                                                 <span className="text-zinc-400">Difficulty:</span>
                                                 <span className="font-extrabold text-amber-300">{memberRoutine?.difficulty || 'Intermediate'}</span>
                                             </div>
 
-                                            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
                                                 <i className="bi bi-calendar-event text-zinc-400"></i>
                                                 <span className="text-zinc-400">Assigned:</span>
                                                 <span className="font-extrabold text-white">{memberRoutine?.assigned_date || 'Today'}</span>
@@ -498,13 +498,13 @@ const WorkoutModule = ({
                                     </div>
 
                                     {/* Completion Meter */}
-                                    <div className="p-5 rounded-2xl bg-[#181820] border border-[#262634] lg:w-72 space-y-3">
+                                    <div className="p-3.5 sm:p-4 rounded-xl bg-[#181820] border border-[#262634] lg:w-64 space-y-2.5 shrink-0">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Today's Progress</span>
+                                            <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Today's Progress</span>
                                             <span className="text-xs font-black text-[#FF1E28]">{completionPct}% Done</span>
                                         </div>
 
-                                        <div className="w-full h-2.5 rounded-full bg-[#121217] overflow-hidden p-0.5 border border-[#262634]">
+                                        <div className="w-full h-2 rounded-full bg-[#121217] overflow-hidden p-0.5 border border-[#262634]">
                                             <div 
                                                 className="h-full rounded-full bg-gradient-to-r from-[#B80710] to-[#FF1E28] shadow-[0_0_12px_rgba(229,9,20,0.5)] transition-all duration-500" 
                                                 style={{ width: `${completionPct}%` }}
@@ -517,7 +517,7 @@ const WorkoutModule = ({
                                         </div>
 
                                         {completionPct === 100 && (
-                                            <div className="p-2 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-[10px] font-black text-center flex items-center justify-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                                            <div className="p-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-[10px] font-black text-center flex items-center justify-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
                                                 <i className="bi bi-trophy-fill text-amber-400"></i>
                                                 <span>ALL EXERCISES COMPLETED TODAY!</span>
                                             </div>
@@ -527,45 +527,45 @@ const WorkoutModule = ({
                             </div>
 
                             {/* Assigned Exercise Checklist Cards */}
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <div className="flex items-center justify-between px-1">
-                                    <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                                    <h4 className="text-xs sm:text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
                                         <i className="bi bi-list-check text-[#FF1E28]"></i>
                                         Prescribed Exercise Execution Checklist ({totalAssigned})
                                     </h4>
-                                    <span className="text-xs text-zinc-400">Click button to complete or revert set</span>
+                                    <span className="text-[11px] text-zinc-400">Click button to complete or revert set</span>
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-1 gap-3">
                                     {routineExercises.map((ex, idx) => {
                                         const isCompleted = ex.status === 'Completed';
                                         return (
                                             <div 
                                                 key={ex.id || idx}
-                                                className={`p-5 rounded-3xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl ${
+                                                className={`p-3.5 sm:p-4 rounded-2xl border transition-all flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-md ${
                                                     isCompleted 
                                                         ? 'bg-[#121217]/80 border-emerald-900/40 hover:border-emerald-500/40' 
                                                         : 'bg-[#121217] border-[#22222a] hover:border-[#E50914]/40'
                                                 }`}
                                             >
                                                 {/* Exercise Title and Coach Instructions */}
-                                                <div className="flex items-start gap-4">
-                                                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 transition-all ${
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs shrink-0 transition-all ${
                                                         isCompleted 
                                                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-[0_0_12px_rgba(16,185,129,0.3)]' 
                                                             : 'bg-[#E50914]/15 text-[#FF1E28] border border-[#E50914]/40'
                                                     }`}>
-                                                        {isCompleted ? <i className="bi bi-check2 text-lg"></i> : `0${idx + 1}`}
+                                                        {isCompleted ? <i className="bi bi-check2 text-base"></i> : `0${idx + 1}`}
                                                     </div>
 
-                                                    <div className="space-y-1">
+                                                    <div className="space-y-0.5">
                                                         <div className="flex items-center gap-2 flex-wrap">
-                                                            <h5 className={`text-base font-extrabold tracking-tight ${
+                                                            <h5 className={`text-sm sm:text-base font-extrabold tracking-tight ${
                                                                 isCompleted ? 'text-zinc-300 line-through' : 'text-white'
                                                             }`}>
                                                                 {ex.name}
                                                             </h5>
-                                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
                                                                 isCompleted 
                                                                     ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/40' 
                                                                     : 'bg-amber-500/15 text-amber-400 border border-amber-500/40'
@@ -575,8 +575,8 @@ const WorkoutModule = ({
                                                         </div>
 
                                                         {ex.notes && (
-                                                            <p className="text-xs text-zinc-400 flex items-center gap-1.5 pt-0.5">
-                                                                <i className="bi bi-chat-quote-fill text-[#FF1E28] text-[11px]"></i>
+                                                            <p className="text-[11px] text-zinc-400 flex items-center gap-1.5 pt-0.5">
+                                                                <i className="bi bi-chat-quote-fill text-[#FF1E28] text-[10px]"></i>
                                                                 <span>Coach Form Cue: <strong className="text-zinc-300">{ex.notes}</strong></span>
                                                             </p>
                                                         )}
@@ -584,15 +584,15 @@ const WorkoutModule = ({
                                                 </div>
 
                                                 {/* Target Specs & Interactive Completion Action */}
-                                                <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-[#1f1f28] flex-wrap">
+                                                <div className="flex items-center justify-between md:justify-end gap-2.5 shrink-0 pt-2.5 md:pt-0 border-t md:border-t-0 border-[#1f1f28] flex-wrap">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="px-3 py-1.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-center">
-                                                            <span className="block text-[8px] font-bold text-zinc-400 uppercase tracking-widest">SETS x REPS</span>
+                                                        <div className="px-2.5 py-1 rounded-lg bg-[#181820] border border-[#2a2a38] text-center">
+                                                            <span className="block text-[7px] font-bold text-zinc-400 uppercase tracking-widest">SETS x REPS</span>
                                                             <span className="text-xs font-black text-white">{ex.setsReps || ex.sets_reps || '4 x 10'}</span>
                                                         </div>
 
-                                                        <div className="px-3 py-1.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-center">
-                                                            <span className="block text-[8px] font-bold text-zinc-400 uppercase tracking-widest">TARGET LOAD</span>
+                                                        <div className="px-2.5 py-1 rounded-lg bg-[#181820] border border-[#2a2a38] text-center">
+                                                            <span className="block text-[7px] font-bold text-zinc-400 uppercase tracking-widest">TARGET LOAD</span>
                                                             <span className="text-xs font-black text-[#FF1E28]">{ex.targetLoad || ex.target_load || '20 kg'}</span>
                                                         </div>
                                                     </div>
@@ -602,10 +602,10 @@ const WorkoutModule = ({
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleOpenViewerModal(ex, 'You')}
-                                                                className="px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm transition-all"
+                                                                className="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1 cursor-pointer shadow-sm transition-all"
                                                                 title="Watch recorded workout proof video"
                                                             >
-                                                                <i className="bi bi-camera-video-fill text-emerald-400"></i>
+                                                                <i className="bi bi-camera-video-fill text-emerald-400 text-xs"></i>
                                                                 <span>Watch Proof</span>
                                                             </button>
                                                         )}
@@ -613,17 +613,17 @@ const WorkoutModule = ({
                                                         <button
                                                             type="button"
                                                             onClick={() => handleOpenProofModal(ex)}
-                                                            className="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white shadow-[0_0_15px_rgba(229,9,20,0.35)]"
+                                                            className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white shadow-[0_0_12px_rgba(229,9,20,0.3)]"
                                                         >
                                                             <i className="bi bi-camera text-xs"></i>
-                                                            <span>{ex.video_proof_url ? 'Re-Record Proof' : 'Record / Upload Proof'}</span>
+                                                            <span>{ex.video_proof_url ? 'Re-Record' : 'Record Proof'}</span>
                                                         </button>
 
                                                         <button
                                                             type="button"
                                                             onClick={() => handleToggleExercise(ex.id)}
                                                             title={isCompleted ? "Mark as pending" : "Toggle complete without camera"}
-                                                            className={`p-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center cursor-pointer border ${
+                                                            className={`p-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center cursor-pointer border ${
                                                                 isCompleted
                                                                     ? 'bg-[#181820] hover:bg-zinc-800 text-zinc-400 hover:text-white border-[#2c2c3d]'
                                                                     : 'bg-[#181820] hover:bg-zinc-800 text-zinc-400 hover:text-emerald-400 border-[#2c2c3d]'
@@ -664,10 +664,10 @@ const WorkoutModule = ({
 
             {/* TRAINER VIEW: REVIEW ATHLETE WORKOUT VIDEO PROOFS */}
             {isTrainerOrAdmin && trainerTab === 'review_proofs' && (
-                <div className="p-6 bg-[#121217] border border-[#22222a] rounded-3xl shadow-2xl space-y-6">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#1f1f28]">
+                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#1f1f28]">
                         <div className="flex items-center gap-3">
-                            <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-xl shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-lg shadow-[0_0_12px_rgba(16,185,129,0.2)]">
                                 <i className="bi bi-camera-video-fill"></i>
                             </div>
                             <div>
@@ -885,10 +885,10 @@ const WorkoutModule = ({
 
             {/* TRAINER ASSIGNMENT BUILDER: Prescribe Routine to Specific Athlete */}
             {isTrainerOrAdmin && trainerTab === 'prescribe' && (
-                <div className="p-6 bg-[#121217] border border-[#22222a] rounded-3xl shadow-2xl space-y-5">
+                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1f1f28]">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-2xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-lg">
+                            <div className="w-10 h-10 rounded-xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-lg">
                                 <i className="bi bi-journal-plus"></i>
                             </div>
                             <div>

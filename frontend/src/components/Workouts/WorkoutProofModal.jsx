@@ -302,23 +302,23 @@ const WorkoutProofModal = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in font-sans">
-            <div className="w-full max-w-2xl bg-[#121217] border border-[#2a2a38] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in font-sans">
+            <div className="w-full max-w-xl sm:max-w-2xl bg-[#121217] border border-[#2a2a38] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]">
                 
                 {/* Header */}
-                <div className="p-6 border-b border-[#1f1f28] flex items-center justify-between relative bg-gradient-to-r from-[#16161f] to-[#121217]">
-                    <div className="space-y-1">
-                        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#E50914]/15 border border-[#E50914]/40">
+                <div className="px-5 py-3 border-b border-[#1f1f28] flex items-center justify-between relative bg-gradient-to-r from-[#16161f] to-[#121217]">
+                    <div className="space-y-0.5">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#E50914]/15 border border-[#E50914]/40">
                             <span className="w-2 h-2 rounded-full bg-[#FF1E28] animate-pulse"></span>
-                            <span className="text-[10px] font-black text-[#FF1E28] uppercase tracking-widest">
+                            <span className="text-[9px] font-black text-[#FF1E28] uppercase tracking-widest">
                                 VERIFIED WORKOUT EXECUTION
                             </span>
                         </div>
-                        <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+                        <h3 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
                             <span>Proof of Workout:</span>
                             <span className="text-[#FF1E28]">{exercise.name}</span>
                         </h3>
-                        <p className="text-xs text-zinc-400 font-medium">
+                        <p className="text-[11px] text-zinc-400 font-medium">
                             Target: <strong className="text-white">{exercise.setsReps || exercise.sets_reps || '4 x 10'}</strong> @ <strong className="text-white">{exercise.targetLoad || exercise.target_load || '20 kg'}</strong>
                         </p>
                     </div>
@@ -326,14 +326,14 @@ const WorkoutProofModal = ({
                     <button
                         onClick={handleClose}
                         disabled={isUploading}
-                        className="w-10 h-10 rounded-2xl bg-[#181820] hover:bg-[#252532] border border-[#2c2c3d] text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer"
+                        className="w-9 h-9 rounded-xl bg-[#181820] hover:bg-[#252532] border border-[#2c2c3d] text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer"
                     >
-                        <i className="bi bi-x-lg text-sm"></i>
+                        <i className="bi bi-x-lg text-xs"></i>
                     </button>
                 </div>
 
                 {/* Mode Selector Tabs */}
-                <div className="flex border-b border-[#1f1f28] bg-[#0e0e13] p-2 gap-2">
+                <div className="flex border-b border-[#1f1f28] bg-[#0e0e13] p-1.5 gap-2">
                     <button
                         type="button"
                         onClick={() => {
@@ -341,13 +341,13 @@ const WorkoutProofModal = ({
                             resetRecording();
                         }}
                         disabled={recordingStatus === 'recording' || isUploading}
-                        className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        className={`flex-1 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
                             mode === 'camera'
                                 ? 'bg-gradient-to-r from-[#E50914] to-[#B80710] text-white shadow-[0_0_12px_rgba(229,9,20,0.35)]'
                                 : 'text-zinc-400 hover:text-white hover:bg-[#181820]'
                         }`}
                     >
-                        <i className="bi bi-camera-video-fill text-sm"></i>
+                        <i className="bi bi-camera-video-fill text-xs"></i>
                         <span>Live Camera Session</span>
                     </button>
 
@@ -358,30 +358,31 @@ const WorkoutProofModal = ({
                             stopCameraStream();
                         }}
                         disabled={recordingStatus === 'recording' || isUploading}
-                        className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        className={`flex-1 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2 cursor-pointer ${
                             mode === 'upload'
                                 ? 'bg-gradient-to-r from-[#E50914] to-[#B80710] text-white shadow-[0_0_12px_rgba(229,9,20,0.35)]'
                                 : 'text-zinc-400 hover:text-white hover:bg-[#181820]'
                         }`}
                     >
-                        <i className="bi bi-cloud-arrow-up-fill text-sm"></i>
+                        <i className="bi bi-cloud-arrow-up-fill text-xs"></i>
                         <span>Upload Video File</span>
                     </button>
                 </div>
 
                 {/* Modal Body */}
-                <div className="p-6 overflow-y-auto space-y-4">
+                <div className="p-4 sm:p-5 overflow-y-auto space-y-3">
                     {/* CAMERA MODE */}
                     {mode === 'camera' && (
-                        <div className="space-y-4">
-                            {/* Live Viewport or Recorded Preview */}
-                            <div className="relative aspect-video rounded-2xl bg-black border border-[#262634] overflow-hidden flex items-center justify-center shadow-inner">
+                        <div className="space-y-3">
+                            {/* Live Viewport or Recorded Preview with Constrained Max-Height */}
+                            <div className="relative aspect-video max-h-[34vh] sm:max-h-[270px] w-auto mx-auto rounded-2xl bg-black border border-[#262634] overflow-hidden flex items-center justify-center shadow-inner">
                                 {recordingStatus === 'preview' ? (
                                     <video
                                         ref={recordedVideoRef}
                                         src={recordedUrl}
                                         controls
                                         autoPlay
+                                        playsInline
                                         className="w-full h-full object-contain"
                                     />
                                 ) : (
@@ -391,23 +392,23 @@ const WorkoutProofModal = ({
                                             autoPlay
                                             playsInline
                                             muted
-                                            className={`w-full h-full object-cover ${recordingStatus === 'recording' ? 'scale-100' : ''}`}
+                                            className={`w-full h-full object-contain bg-black ${recordingStatus === 'recording' ? 'ring-2 ring-[#FF1E28]' : ''}`}
                                         />
 
                                         {/* Camera Error Notice with Demo Fallback */}
                                         {cameraError && (
-                                            <div className="absolute inset-0 bg-black/90 p-6 flex flex-col items-center justify-center text-center space-y-3 z-20">
-                                                <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-400 flex items-center justify-center text-xl">
+                                            <div className="absolute inset-0 bg-black/90 p-4 flex flex-col items-center justify-center text-center space-y-2 z-20">
+                                                <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-400 flex items-center justify-center text-lg">
                                                     <i className="bi bi-camera-video-off-fill"></i>
                                                 </div>
-                                                <div className="max-w-sm space-y-1">
-                                                    <h5 className="text-sm font-black text-white">Camera Feed Unavailable</h5>
-                                                    <p className="text-xs text-zinc-400 leading-relaxed">{cameraError}</p>
+                                                <div className="max-w-sm space-y-0.5">
+                                                    <h5 className="text-xs font-black text-white">Camera Feed Unavailable</h5>
+                                                    <p className="text-[11px] text-zinc-400 leading-snug">{cameraError}</p>
                                                 </div>
                                                 <button
                                                     type="button"
                                                     onClick={handleSelectDemoClip}
-                                                    className="px-4 py-2 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#FF1E28]/40 text-[#FF1E28] hover:text-white text-xs font-extrabold flex items-center gap-2 cursor-pointer shadow-md transition-all"
+                                                    className="px-3.5 py-1.5 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#FF1E28]/40 text-[#FF1E28] hover:text-white text-xs font-extrabold flex items-center gap-1.5 cursor-pointer shadow-md transition-all"
                                                 >
                                                     <i className="bi bi-play-circle-fill"></i>
                                                     <span>Load Gym Overload Demo Clip</span>
@@ -417,9 +418,9 @@ const WorkoutProofModal = ({
 
                                         {/* Recording Indicator & Timer Overlay */}
                                         {recordingStatus === 'recording' && (
-                                            <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/80 border border-red-500/50 backdrop-blur-md">
-                                                <span className="w-2.5 h-2.5 rounded-full bg-[#FF1E28] animate-ping"></span>
-                                                <span className="text-xs font-black text-white uppercase tracking-wider">
+                                            <div className="absolute top-3 left-3 flex items-center gap-2 px-3 py-1 rounded-full bg-black/85 border border-red-500/50 backdrop-blur-md">
+                                                <span className="w-2 h-2 rounded-full bg-[#FF1E28] animate-ping"></span>
+                                                <span className="text-[11px] font-black text-white uppercase tracking-wider">
                                                     REC {formatTimer(recordingTime)}
                                                 </span>
                                             </div>
@@ -429,14 +430,14 @@ const WorkoutProofModal = ({
                             </div>
 
                             {/* Camera Action Buttons */}
-                            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
                                 {recordingStatus === 'idle' && (
                                     <>
                                         <button
                                             type="button"
                                             onClick={startRecording}
                                             disabled={!!cameraError}
-                                            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-black text-xs flex items-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer disabled:opacity-50"
+                                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-black text-xs flex items-center gap-2 shadow-[0_0_12px_rgba(229,9,20,0.35)] transition-all cursor-pointer disabled:opacity-50"
                                         >
                                             <i className="bi bi-record-circle-fill text-sm"></i>
                                             <span>Start Live Recording</span>
@@ -445,7 +446,7 @@ const WorkoutProofModal = ({
                                         <button
                                             type="button"
                                             onClick={handleSelectDemoClip}
-                                            className="px-4 py-2.5 rounded-xl bg-[#181820] hover:bg-[#22222e] border border-[#2a2a38] text-zinc-300 hover:text-white font-bold text-xs flex items-center gap-2 cursor-pointer transition-all"
+                                            className="px-3.5 py-2 rounded-xl bg-[#181820] hover:bg-[#22222e] border border-[#2a2a38] text-zinc-300 hover:text-white font-bold text-xs flex items-center gap-2 cursor-pointer transition-all"
                                         >
                                             <i className="bi bi-film"></i>
                                             <span>Use Sample Overload Clip</span>
@@ -457,9 +458,9 @@ const WorkoutProofModal = ({
                                     <button
                                         type="button"
                                         onClick={stopRecording}
-                                        className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(229,9,20,0.5)] transition-all cursor-pointer animate-pulse"
+                                        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.5)] transition-all cursor-pointer animate-pulse"
                                     >
-                                        <i className="bi bi-stop-circle-fill text-base"></i>
+                                        <i className="bi bi-stop-circle-fill text-sm"></i>
                                         <span>Stop & Finalize Workout Recording ({formatTimer(recordingTime)})</span>
                                     </button>
                                 )}
@@ -470,7 +471,7 @@ const WorkoutProofModal = ({
                                             type="button"
                                             onClick={resetRecording}
                                             disabled={isUploading}
-                                            className="px-4 py-2.5 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#2a2a38] text-zinc-400 hover:text-white font-bold text-xs flex items-center gap-2 cursor-pointer transition-all"
+                                            className="px-3.5 py-2 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#2a2a38] text-zinc-400 hover:text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all"
                                         >
                                             <i className="bi bi-arrow-counterclockwise"></i>
                                             <span>Discard & Re-Record</span>
@@ -488,36 +489,37 @@ const WorkoutProofModal = ({
 
                     {/* FILE UPLOAD MODE */}
                     {mode === 'upload' && (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {!filePreviewUrl ? (
-                                <label className="block border-2 border-dashed border-[#2a2a38] hover:border-[#E50914]/60 rounded-2xl p-8 text-center cursor-pointer transition-all bg-[#101015] group">
+                                <label className="block border-2 border-dashed border-[#2a2a38] hover:border-[#E50914]/60 rounded-2xl p-6 text-center cursor-pointer transition-all bg-[#101015] group">
                                     <input
                                         type="file"
                                         accept="video/*"
                                         onChange={handleFileSelect}
                                         className="hidden"
                                     />
-                                    <div className="w-14 h-14 rounded-2xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                    <div className="w-12 h-12 rounded-xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-xl mx-auto mb-2 group-hover:scale-110 transition-transform">
                                         <i className="bi bi-cloud-arrow-up-fill"></i>
                                     </div>
-                                    <h5 className="text-sm font-extrabold text-white mb-1">
+                                    <h5 className="text-xs sm:text-sm font-extrabold text-white mb-0.5">
                                         Click to Upload or Drag Workout Video Here
                                     </h5>
-                                    <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+                                    <p className="text-[11px] text-zinc-400 max-w-sm mx-auto">
                                         Accepts MP4, WebM, MOV, or phone camera recording files (Recommended: Under 100MB).
                                     </p>
                                 </label>
                             ) : (
-                                <div className="space-y-3">
-                                    <div className="aspect-video rounded-2xl bg-black border border-[#262634] overflow-hidden flex items-center justify-center shadow-inner">
+                                <div className="space-y-2.5">
+                                    <div className="aspect-video max-h-[34vh] sm:max-h-[270px] w-auto mx-auto rounded-2xl bg-black border border-[#262634] overflow-hidden flex items-center justify-center shadow-inner">
                                         <video
                                             src={filePreviewUrl}
                                             controls
+                                            playsInline
                                             className="w-full h-full object-contain"
                                         />
                                     </div>
 
-                                    <div className="flex items-center justify-between text-xs">
+                                    <div className="flex items-center justify-between text-xs px-1">
                                         <span className="text-zinc-300 font-semibold truncate max-w-xs">
                                             {selectedFile?.name || 'Workout_Proof_Clip.mp4'}
                                         </span>
@@ -535,11 +537,11 @@ const WorkoutProofModal = ({
                                 </div>
                             )}
 
-                            <div className="pt-2 flex justify-end">
+                            <div className="pt-1 flex justify-end">
                                 <button
                                     type="button"
                                     onClick={handleSelectDemoClip}
-                                    className="px-4 py-2 rounded-xl bg-[#181820] hover:bg-[#22222e] border border-[#2a2a38] text-zinc-300 hover:text-white font-bold text-xs flex items-center gap-2 cursor-pointer transition-all"
+                                    className="px-3.5 py-1.5 rounded-xl bg-[#181820] hover:bg-[#22222e] border border-[#2a2a38] text-zinc-300 hover:text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all"
                                 >
                                     <i className="bi bi-film"></i>
                                     <span>Use Sample Gym Overload Clip</span>
@@ -550,18 +552,18 @@ const WorkoutProofModal = ({
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-5 border-t border-[#1f1f28] bg-[#0e0e13] flex items-center justify-between">
-                    <p className="text-[11px] text-zinc-400">
+                <div className="px-5 py-3 border-t border-[#1f1f28] bg-[#0e0e13] flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <p className="text-[11px] text-zinc-400 flex items-center">
                         <i className="bi bi-shield-lock-fill text-[#FF1E28] me-1"></i>
-                        Uploaded video will be instantly accessible to Coach <strong className="text-white">Vikram Rathore</strong> for form validation.
+                        Instantly accessible to Coach <strong className="text-white ms-1">Vikram Rathore</strong> for form validation.
                     </p>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto justify-end">
                         <button
                             type="button"
                             onClick={handleClose}
                             disabled={isUploading}
-                            className="px-4 py-2.5 rounded-xl bg-[#181820] hover:bg-[#20202a] border border-[#2c2c3d] text-zinc-300 hover:text-white font-bold text-xs cursor-pointer transition-all disabled:opacity-50"
+                            className="px-4 py-2 rounded-xl bg-[#181820] hover:bg-[#20202a] border border-[#2c2c3d] text-zinc-300 hover:text-white font-bold text-xs cursor-pointer transition-all disabled:opacity-50"
                         >
                             Cancel
                         </button>
@@ -570,7 +572,7 @@ const WorkoutProofModal = ({
                             type="button"
                             onClick={handleConfirmUpload}
                             disabled={isUploading || (mode === 'camera' && recordingStatus !== 'preview') || (mode === 'upload' && !filePreviewUrl)}
-                            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xs flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.35)] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xs flex items-center gap-2 shadow-[0_0_12px_rgba(16,185,129,0.35)] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                             {isUploading ? (
                                 <>
@@ -579,7 +581,7 @@ const WorkoutProofModal = ({
                                 </>
                             ) : (
                                 <>
-                                    <i className="bi bi-check2-circle text-base"></i>
+                                    <i className="bi bi-check2-circle text-sm"></i>
                                     <span>Submit Proof & Complete Exercise</span>
                                 </>
                             )}
