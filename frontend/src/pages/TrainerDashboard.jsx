@@ -206,13 +206,13 @@ const TrainerDashboard = () => {
                 {approvalAlert && (
                     <div className={`p-4 rounded-xl border flex items-start gap-3 transition-all animate-fade-in ${
                         approvalAlert.type === 'success'
-                            ? 'bg-red-950/40 border-red-500/40 text-red-200'
+                            ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                             : approvalAlert.type === 'warning'
                             ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
                             : 'bg-rose-950/40 border-rose-500/40 text-rose-200'
                     }`}>
                         <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                            approvalAlert.type === 'success' ? 'bg-red-600/20 text-[#FF1E28]' :
+                            approvalAlert.type === 'success' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
                             approvalAlert.type === 'warning' ? 'bg-amber-600/20 text-amber-400' : 'bg-rose-600/20 text-rose-400'
                         }`}>
                             <i className={`text-sm ${
@@ -344,6 +344,7 @@ const TrainerDashboard = () => {
                     <NotificationCenter
                         variant="panel"
                         onNavigateTab={setActiveTab}
+                        theme="dark"
                     />
                 );
             case 'reports':
@@ -445,6 +446,7 @@ const TrainerDashboard = () => {
                                 <NotificationCenter
                                     variant="panel"
                                     onNavigateTab={setActiveTab}
+                                    theme="dark"
                                 />
                             </div>
                         </div>

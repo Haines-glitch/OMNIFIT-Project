@@ -19,8 +19,9 @@ const PaymentModule = () => {
     return (
         <div className="vstack gap-4 animate-fade-in">
             {successMsg && (
-                <div className="alert alert-success bg-accent text-dark fw-bold rounded-3 p-3">
-                    <i className="bi bi-credit-card-2-front-fill me-2"></i>{successMsg}
+                <div className="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 font-bold flex items-center gap-3 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+                    <i className="bi bi-check-circle-fill text-emerald-400 text-lg"></i>
+                    <span>{successMsg}</span>
                 </div>
             )}
 

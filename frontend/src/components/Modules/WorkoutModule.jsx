@@ -511,13 +511,13 @@ const WorkoutModule = ({
                     {formFeedback && (
                         <div className={`p-4 rounded-xl border flex items-center gap-3 text-xs font-bold transition-all ${
                             formFeedback.type === 'success'
-                                ? 'bg-red-950/40 border-red-500/40 text-red-200'
+                                ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                                 : formFeedback.type === 'warning'
                                 ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
                                 : 'bg-rose-950/40 border-rose-500/40 text-rose-200'
                         }`}>
                             <i className={`text-base ${
-                                formFeedback.type === 'success' ? 'bi bi-check-circle-fill text-[#FF1E28]' : 'bi bi-exclamation-triangle-fill text-amber-400'
+                                formFeedback.type === 'success' ? 'bi bi-check-circle-fill text-emerald-400' : 'bi bi-exclamation-triangle-fill text-amber-400'
                             }`}></i>
                             <span>{formFeedback.message}</span>
                         </div>

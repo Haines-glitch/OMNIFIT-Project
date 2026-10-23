@@ -37,7 +37,7 @@ const defaultNotifications = [
         timestamp: '2h ago',
         isRead: false,
         icon: 'bi-trophy-fill',
-        accent: 'cyan',
+        accent: 'crimson',
     },
     {
         id: 4,
@@ -56,15 +56,13 @@ const NotificationCenter = ({
     variant = 'panel', // 'panel' | 'dropdown'
     onClose,
     onNavigateTab,
-    theme = 'light'
+    theme = 'dark'
 }) => {
-    const isLight = theme === 'light';
     const [notifications, setNotifications] = useState(defaultNotifications);
     const [activeFilter, setActiveFilter] = useState('All');
     const [statusMessage, setStatusMessage] = useState(null);
 
     const filters = ['All', 'AI Alerts', 'Appointments', 'Member Updates'];
-
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
     const filteredNotifications = notifications.filter(n => {
@@ -99,268 +97,59 @@ const NotificationCenter = ({
             onNavigateTab('profile');
         }
 
-        showToast(`${label} action processed for notification`);
+        showToast(`${label} action processed successfully`);
     };
 
     const showToast = (msg) => {
         setStatusMessage(msg);
-        setTimeout(() => setStatusMessage(null), 3000);
+        setTimeout(() => setStatusMessage(null), 3500);
     };
 
     const getIconStyles = (accent) => {
-        if (isLight) {
-            switch (accent) {
-                case 'amber':
-                    return 'bg-amber-50 border-amber-200 text-amber-600';
-                case 'mint':
-                    return 'bg-emerald-50 border-emerald-200 text-[#10B981]';
-                case 'cyan':
-                    return 'bg-cyan-50 border-cyan-200 text-cyan-600';
-                case 'slate':
-                default:
-                    return 'bg-slate-100 border-slate-200 text-slate-600';
-            }
-        }
         switch (accent) {
             case 'amber':
-                return 'bg-amber-500/15 border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.25)]';
+                return 'bg-amber-500/15 border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.2)]';
             case 'mint':
-                return 'bg-[#00F29D]/15 border-[#00F29D]/40 text-[#00F29D] shadow-[0_0_12px_rgba(0,242,157,0.25)]';
-            case 'cyan':
-                return 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.25)]';
+                return 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.2)]';
+            case 'crimson':
+                return 'bg-[#E50914]/15 border-[#E50914]/40 text-[#FF1E28] shadow-[0_0_12px_rgba(229,9,20,0.25)]';
             case 'slate':
             default:
-                return 'bg-slate-800/80 border-slate-700/60 text-slate-400';
+                return 'bg-[#181820] border-[#262634] text-zinc-400';
         }
     };
 
     const getTagStyles = (accent) => {
-        if (isLight) {
-            switch (accent) {
-                case 'amber':
-                    return 'bg-amber-50 border-amber-200 text-amber-700';
-                case 'mint':
-                    return 'bg-emerald-50 border-emerald-200 text-emerald-700';
-                case 'cyan':
-                    return 'bg-cyan-50 border-cyan-200 text-cyan-700';
-                case 'slate':
-                default:
-                    return 'bg-slate-100 border-slate-200 text-slate-700';
-            }
-        }
         switch (accent) {
             case 'amber':
                 return 'bg-amber-500/15 border-amber-500/30 text-amber-400';
             case 'mint':
-                return 'bg-[#00F29D]/15 border-[#00F29D]/30 text-[#00F29D]';
-            case 'cyan':
-                return 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400';
+                return 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400';
+            case 'crimson':
+                return 'bg-[#E50914]/15 border-[#E50914]/30 text-[#FF1E28]';
             case 'slate':
             default:
-                return 'bg-slate-800 border-slate-700 text-slate-400';
+                return 'bg-[#181820] border-[#262634] text-zinc-400';
         }
     };
 
     const isDropdown = variant === 'dropdown';
 
-    if (isLight) {
-        return (
-            <div className={`
-                bg-white border border-slate-200 rounded-2xl shadow-sm transition-all duration-300
-                ${isDropdown ? 'w-80 sm:w-96 max-h-[85vh] flex flex-col shadow-xl' : 'w-full p-6'}
-            `}>
-                {/* Header Area */}
-                <div className={`${isDropdown ? 'p-4 border-b border-slate-100' : 'mb-6'}`}>
-                    <div className="flex items-center justify-between gap-3 mb-3">
-                        <div className="flex items-center gap-2.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
-                            <h5 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                                {isDropdown ? 'Notifications' : 'Activity & Notifications'}
-                            </h5>
-                            {unreadCount > 0 && (
-                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-[#10B981] border border-emerald-500/30">
-                                    {unreadCount} New
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                            {unreadCount > 0 && (
-                                <button
-                                    onClick={handleMarkAllAsRead}
-                                    className="text-[11px] font-bold text-slate-500 hover:text-[#10B981] transition-colors"
-                                >
-                                    Mark all as read
-                                </button>
-                            )}
-                            {isDropdown && onClose && (
-                                <button
-                                    onClick={onClose}
-                                    className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-all"
-                                >
-                                    <i className="bi bi-x-lg text-xs"></i>
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Filter Pill Bar */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                        {filters.map((filter) => (
-                            <button
-                                key={filter}
-                                onClick={() => setActiveFilter(filter)}
-                                className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${activeFilter === filter
-                                    ? 'bg-emerald-50 text-[#10B981] border border-emerald-500/30'
-                                    : 'bg-slate-50 text-slate-600 hover:text-slate-900 border border-slate-200'
-                                    }`}
-                            >
-                                {filter}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Status Toast Message */}
-                {statusMessage && (
-                    <div className="mx-4 my-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-[#10B981] font-bold flex items-center gap-2 animate-fade-in">
-                        <i className="bi bi-check-circle-fill"></i>
-                        <span>{statusMessage}</span>
-                    </div>
-                )}
-
-                {/* Notification Feed Items */}
-                <div className={`
-                    space-y-3 overflow-y-auto pr-1
-                    ${isDropdown ? 'p-4 flex-1 max-h-[380px]' : ''}
-                `}>
-                    {filteredNotifications.length > 0 ? (
-                        filteredNotifications.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`
-                                    relative p-4 rounded-xl border transition-all duration-200 group
-                                    ${!item.isRead
-                                        ? 'bg-white border-slate-200 border-l-2 border-l-[#10B981] shadow-xs'
-                                        : 'bg-slate-50 border-slate-200 opacity-85 hover:opacity-100'}
-                                `}
-                            >
-                                <div className="flex items-start gap-3.5">
-                                    {/* Icon container */}
-                                    <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${getIconStyles(item.accent)}`}>
-                                        <i className={`bi ${item.icon} text-sm`}></i>
-                                    </div>
-
-                                    {/* Main Content */}
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between gap-2 mb-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold border uppercase tracking-wider ${getTagStyles(item.accent)}`}>
-                                                    {item.tag}
-                                                </span>
-                                                {!item.isRead && (
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-                                                )}
-                                            </div>
-                                            <span className="text-[11px] font-medium text-slate-400">{item.timestamp}</span>
-                                        </div>
-
-                                        <h6
-                                            className="text-xs font-bold text-slate-900 leading-snug mb-1 cursor-pointer hover:text-[#10B981] transition-colors"
-                                            onClick={() => handleToggleRead(item.id)}
-                                        >
-                                            {item.title}
-                                        </h6>
-
-                                        <p className="text-xs text-slate-600 leading-relaxed mb-2">
-                                            {item.message}
-                                        </p>
-
-                                        {/* Action Status if processed */}
-                                        {item.statusText && (
-                                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                                                <i className="bi bi-check2 text-[#10B981]"></i>
-                                                Status: {item.statusText}
-                                            </div>
-                                        )}
-
-                                        {/* Quick Actions if unprocessed */}
-                                        {!item.statusText && (
-                                            <div className="flex items-center gap-2 pt-1">
-                                                {item.actionType === 'review' && (
-                                                    <button
-                                                        onClick={() => handleAction(item.id, 'review', item.actionLabel)}
-                                                        className="px-3 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5"
-                                                    >
-                                                        <i className="bi bi-box-arrow-up-right text-[10px]"></i>
-                                                        {item.actionLabel}
-                                                    </button>
-                                                )}
-
-                                                {item.actionType === 'appointment' && (
-                                                    <>
-                                                        <button
-                                                            onClick={() => handleAction(item.id, 'appointment', item.actionAcceptLabel)}
-                                                            className="px-3.5 py-1 bg-[#10B981] hover:bg-[#0D9668] text-white font-bold text-xs rounded-lg shadow-xs transition-all flex items-center gap-1"
-                                                        >
-                                                            <i className="bi bi-check-lg"></i>
-                                                            {item.actionAcceptLabel}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleAction(item.id, 'appointment', item.actionDeclineLabel)}
-                                                            className="px-3.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 text-xs font-semibold rounded-lg transition-all flex items-center gap-1"
-                                                        >
-                                                            <i className="bi bi-x-lg text-[10px]"></i>
-                                                            {item.actionDeclineLabel}
-                                                        </button>
-                                                    </>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="py-8 text-center text-slate-400 text-xs">
-                            <i className="bi bi-bell-slash text-2xl block mb-2 opacity-50"></i>
-                            No notifications found for selected filter.
-                        </div>
-                    )}
-                </div>
-
-                {/* Footer Area */}
-                <div className={`${isDropdown ? 'p-3 border-t border-slate-100 text-center' : 'mt-4 pt-3 border-t border-slate-100'}`}>
-                    <button
-                        onClick={() => {
-                            if (onNavigateTab) onNavigateTab('notifications');
-                            if (onClose) onClose();
-                        }}
-                        className="text-xs font-extrabold text-slate-500 hover:text-[#10B981] transition-colors inline-flex items-center gap-1.5"
-                    >
-                        <span>View All Notifications Archive</span>
-                        <i className="bi bi-arrow-right text-xs"></i>
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className={`
-            bg-slate-900/95 backdrop-blur-2xl border border-slate-800/90 rounded-2xl shadow-2xl shadow-black/60 transition-all duration-300
-            ${isDropdown ? 'w-80 sm:w-96 max-h-[85vh] flex flex-col' : 'w-full p-6'}
+            bg-[#121217] border border-[#22222a] rounded-3xl shadow-2xl transition-all duration-300 font-sans text-white
+            ${isDropdown ? 'w-80 sm:w-96 max-h-[85vh] flex flex-col p-4 shadow-black/80' : 'w-full p-6'}
         `}>
             {/* Header Area */}
-            <div className={`${isDropdown ? 'p-4 border-b border-slate-800/80' : 'mb-6'}`}>
+            <div className={`${isDropdown ? 'pb-3 border-b border-[#1f1f28]' : 'mb-6 pb-4 border-b border-[#1f1f28]'}`}>
                 <div className="flex items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#00F29D] shadow-[0_0_10px_#00F29D]"></span>
+                        <span className="w-2.5 h-2.5 rounded-full bg-[#FF1E28] shadow-[0_0_10px_#FF1E28]"></span>
                         <h5 className="text-base font-black text-white tracking-tight flex items-center gap-2">
-                            {isDropdown ? 'Notifications' : 'Activity & Notifications'}
+                            {isDropdown ? 'Notifications' : 'Trainer Activity & Notifications'}
                         </h5>
                         {unreadCount > 0 && (
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#00F29D]/15 text-[#00F29D] border border-[#00F29D]/40 shadow-[0_0_8px_rgba(0,242,157,0.3)]">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-[#E50914]/15 text-[#FF1E28] border border-[#E50914]/40 shadow-[0_0_10px_rgba(229,9,20,0.25)]">
                                 {unreadCount} New
                             </span>
                         )}
@@ -370,15 +159,15 @@ const NotificationCenter = ({
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllAsRead}
-                                className="text-[11px] font-bold text-slate-400 hover:text-[#00F29D] transition-colors"
+                                className="text-[11px] font-bold text-zinc-400 hover:text-[#FF1E28] transition-colors cursor-pointer"
                             >
-                                Mark all as read
+                                Mark all read
                             </button>
                         )}
                         {isDropdown && onClose && (
                             <button
                                 onClick={onClose}
-                                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-all"
+                                className="text-zinc-400 hover:text-white p-1.5 rounded-xl hover:bg-[#181820] transition-all cursor-pointer"
                             >
                                 <i className="bi bi-x-lg text-xs"></i>
                             </button>
@@ -387,15 +176,16 @@ const NotificationCenter = ({
                 </div>
 
                 {/* Filter Pill Bar */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                     {filters.map((filter) => (
                         <button
                             key={filter}
                             onClick={() => setActiveFilter(filter)}
-                            className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${activeFilter === filter
-                                ? 'bg-[#00F29D]/15 text-[#00F29D] border border-[#00F29D]/40 shadow-[0_0_10px_rgba(0,242,157,0.2)]'
-                                : 'bg-slate-950/60 text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700'
-                                }`}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                                activeFilter === filter
+                                    ? 'bg-gradient-to-r from-[#E50914] to-[#B80710] text-white shadow-[0_0_12px_rgba(229,9,20,0.35)]'
+                                    : 'bg-[#181820] text-zinc-400 hover:text-white border border-[#262634]'
+                            }`}
                         >
                             {filter}
                         </button>
@@ -403,28 +193,25 @@ const NotificationCenter = ({
                 </div>
             </div>
 
-            {/* Status Toast Message */}
+            {/* Status Toast Message (Green Theme for Success!) */}
             {statusMessage && (
-                <div className="mx-4 my-2 px-3 py-1.5 bg-[#00F29D]/15 border border-[#00F29D]/40 rounded-xl text-xs text-[#00F29D] font-bold flex items-center gap-2 animate-fade-in">
-                    <i className="bi bi-check-circle-fill"></i>
+                <div className="mb-4 p-3 bg-emerald-950/50 border border-emerald-500/40 rounded-xl text-xs text-emerald-300 font-bold flex items-center gap-2 animate-fade-in shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+                    <i className="bi bi-check-circle-fill text-emerald-400"></i>
                     <span>{statusMessage}</span>
                 </div>
             )}
 
             {/* Notification Feed Items */}
-            <div className={`
-                space-y-3 overflow-y-auto pr-1
-                ${isDropdown ? 'p-4 flex-1 max-h-[380px]' : ''}
-            `}>
+            <div className={`space-y-3 overflow-y-auto pr-1 ${isDropdown ? 'max-h-[380px]' : ''}`}>
                 {filteredNotifications.length > 0 ? (
                     filteredNotifications.map((item) => (
                         <div
                             key={item.id}
                             className={`
-                                relative p-4 rounded-xl border transition-all duration-200 group
+                                relative p-4 rounded-2xl border transition-all duration-200 group
                                 ${!item.isRead
-                                    ? 'bg-slate-900/90 border-slate-800 border-l-2 border-l-[#00F29D] shadow-md shadow-black/30'
-                                    : 'bg-slate-950/40 border-slate-800/60 opacity-85 hover:opacity-100 hover:bg-slate-900/60'}
+                                    ? 'bg-[#181820] border-[#2e2e40] border-l-4 border-l-[#E50914] shadow-lg'
+                                    : 'bg-[#14141a]/60 border-[#1f1f28] opacity-75 hover:opacity-100 hover:bg-[#181820]'}
                             `}
                         >
                             <div className="flex items-start gap-3.5">
@@ -437,32 +224,32 @@ const NotificationCenter = ({
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-1">
                                         <div className="flex items-center gap-2">
-                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold border uppercase tracking-wider ${getTagStyles(item.accent)}`}>
+                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black border uppercase tracking-wider ${getTagStyles(item.accent)}`}>
                                                 {item.tag}
                                             </span>
                                             {!item.isRead && (
-                                                <span className="w-1.5 h-1.5 rounded-full bg-[#00F29D] shadow-[0_0_6px_#00F29D]"></span>
+                                                <span className="w-1.5 h-1.5 rounded-full bg-[#FF1E28] shadow-[0_0_6px_#FF1E28]"></span>
                                             )}
                                         </div>
-                                        <span className="text-[11px] font-medium text-slate-500">{item.timestamp}</span>
+                                        <span className="text-[11px] font-medium text-zinc-500">{item.timestamp}</span>
                                     </div>
 
                                     <h6
-                                        className="text-xs font-bold text-white leading-snug mb-1 cursor-pointer hover:text-[#00F29D] transition-colors"
+                                        className="text-xs font-bold text-white leading-snug mb-1 cursor-pointer hover:text-[#FF1E28] transition-colors"
                                         onClick={() => handleToggleRead(item.id)}
                                     >
                                         {item.title}
                                     </h6>
 
-                                    <p className="text-xs text-slate-300 leading-relaxed mb-2">
+                                    <p className="text-xs text-zinc-400 leading-relaxed mb-2">
                                         {item.message}
                                     </p>
 
                                     {/* Action Status if processed */}
                                     {item.statusText && (
-                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
-                                            <i className="bi bi-check2 text-[#00F29D]"></i>
-                                            Status: {item.statusText}
+                                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-950/40 text-emerald-300 border border-emerald-500/40">
+                                            <i className="bi bi-check2 text-emerald-400"></i>
+                                            <span>Status: {item.statusText}</span>
                                         </div>
                                     )}
 
@@ -472,10 +259,10 @@ const NotificationCenter = ({
                                             {item.actionType === 'review' && (
                                                 <button
                                                     onClick={() => handleAction(item.id, 'review', item.actionLabel)}
-                                                    className="px-3 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5"
+                                                    className="px-3 py-1.5 bg-[#181820] hover:bg-[#20202d] text-amber-300 hover:text-amber-200 border border-amber-500/30 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                                                 >
                                                     <i className="bi bi-box-arrow-up-right text-[10px]"></i>
-                                                    {item.actionLabel}
+                                                    <span>{item.actionLabel}</span>
                                                 </button>
                                             )}
 
@@ -483,17 +270,17 @@ const NotificationCenter = ({
                                                 <>
                                                     <button
                                                         onClick={() => handleAction(item.id, 'appointment', item.actionAcceptLabel)}
-                                                        className="px-3.5 py-1 bg-[#00F29D] hover:bg-[#00D88C] text-slate-950 font-bold text-xs rounded-lg shadow-sm shadow-[#00F29D]/20 transition-all flex items-center gap-1"
+                                                        className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs rounded-xl shadow-[0_0_12px_rgba(16,185,129,0.3)] transition-all flex items-center gap-1.5 cursor-pointer"
                                                     >
                                                         <i className="bi bi-check-lg"></i>
-                                                        {item.actionAcceptLabel}
+                                                        <span>{item.actionAcceptLabel}</span>
                                                     </button>
                                                     <button
                                                         onClick={() => handleAction(item.id, 'appointment', item.actionDeclineLabel)}
-                                                        className="px-3.5 py-1 bg-slate-950/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 hover:border-slate-700 text-xs font-semibold rounded-lg transition-all flex items-center gap-1"
+                                                        className="px-3.5 py-1.5 bg-[#181820] hover:bg-rose-950/40 text-zinc-400 hover:text-rose-300 border border-[#262634] hover:border-rose-500/40 text-xs font-semibold rounded-xl transition-all flex items-center gap-1 cursor-pointer"
                                                     >
                                                         <i className="bi bi-x-lg text-[10px]"></i>
-                                                        {item.actionDeclineLabel}
+                                                        <span>{item.actionDeclineLabel}</span>
                                                     </button>
                                                 </>
                                             )}
@@ -504,26 +291,28 @@ const NotificationCenter = ({
                         </div>
                     ))
                 ) : (
-                    <div className="py-8 text-center text-slate-500 text-xs">
+                    <div className="py-10 text-center text-zinc-500 text-xs">
                         <i className="bi bi-bell-slash text-2xl block mb-2 opacity-50"></i>
-                        No notifications found for selected filter.
+                        No notifications found in this category.
                     </div>
                 )}
             </div>
 
-            {/* Footer Area */}
-            <div className={`${isDropdown ? 'p-3 border-t border-slate-800/80 text-center' : 'mt-4 pt-3 border-t border-slate-800/60'}`}>
-                <button
-                    onClick={() => {
-                        if (onNavigateTab) onNavigateTab('notifications');
-                        if (onClose) onClose();
-                    }}
-                    className="text-xs font-extrabold text-slate-400 hover:text-[#00F29D] transition-colors inline-flex items-center gap-1.5"
-                >
-                    <span>View All Notifications Archive</span>
-                    <i className="bi bi-arrow-right text-xs"></i>
-                </button>
-            </div>
+            {/* Dropdown Footer Link */}
+            {isDropdown && (
+                <div className="mt-3 pt-3 border-t border-[#1f1f28] text-center">
+                    <button
+                        onClick={() => {
+                            if (onNavigateTab) onNavigateTab('notifications');
+                            if (onClose) onClose();
+                        }}
+                        className="text-xs font-extrabold text-zinc-400 hover:text-[#FF1E28] transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                        <span>Open Notifications Center</span>
+                        <i className="bi bi-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

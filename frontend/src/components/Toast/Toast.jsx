@@ -15,7 +15,7 @@ const Toast = ({ show, message, type = 'info', onClose, duration = 4000 }) => {
     const getTypeStyle = () => {
         switch (type) {
             case 'success':
-                return { icon: 'bi-check-circle-fill', border: '#FFFFFF', color: '#FFFFFF', title: 'Success' };
+                return { icon: 'bi-check-circle-fill', border: '#10B981', color: '#10B981', title: 'Success' };
             case 'error':
                 return { icon: 'bi-exclamation-octagon-fill', border: '#ef4444', color: '#f87171', title: 'Error' };
             case 'warning':
@@ -35,11 +35,13 @@ const Toast = ({ show, message, type = 'info', onClose, duration = 4000 }) => {
             <div
                 className="toast show align-items-center text-white border-0 shadow-lg animate-fade-in"
                 style={{
-                    background: 'rgba(17, 24, 39, 0.95)',
-                    backdropFilter: 'blur(12px)',
+                    background: 'rgba(18, 18, 23, 0.95)',
+                    backdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
                     borderLeft: `4px solid ${style.border}`,
-                    borderRadius: '12px',
-                    minWidth: '300px'
+                    borderRadius: '16px',
+                    minWidth: '320px',
+                    boxShadow: type === 'success' ? '0 10px 30px rgba(16, 185, 129, 0.25)' : '0 10px 30px rgba(0,0,0,0.6)'
                 }}
             >
                 <div className="d-flex p-3 align-items-center">

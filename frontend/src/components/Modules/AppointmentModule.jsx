@@ -52,10 +52,12 @@ const AppointmentModule = ({ role }) => {
     return (
         <div className="vstack gap-4 animate-fade-in">
             {msg && (
-                <div className={`alert fw-bold rounded-3 p-3 d-flex align-items-center ${
-                    msg.type === 'warning' ? 'alert-warning text-dark' : 'alert-success bg-accent text-dark'
+                <div className={`p-4 rounded-2xl border font-bold flex items-center gap-3 transition-all ${
+                    msg.type === 'warning' 
+                        ? 'bg-amber-950/40 border-amber-500/40 text-amber-200' 
+                        : 'bg-emerald-950/50 border-emerald-500/40 text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                 }`}>
-                    <i className={`bi me-2 ${msg.type === 'warning' ? 'bi-exclamation-triangle-fill text-warning' : 'bi-check-circle-fill'}`}></i>
+                    <i className={`text-lg ${msg.type === 'warning' ? 'bi bi-exclamation-triangle-fill text-amber-400' : 'bi bi-check-circle-fill text-emerald-400'}`}></i>
                     <span>{typeof msg === 'object' ? msg.text : msg}</span>
                 </div>
             )}

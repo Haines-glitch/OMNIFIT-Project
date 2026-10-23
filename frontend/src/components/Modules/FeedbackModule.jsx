@@ -107,10 +107,11 @@ const FeedbackModule = ({ theme = 'light' }) => {
             </div>
 
             {submittedAlert && (
-                <div className="alert alert-success d-flex align-items-center border-0 rounded-3 p-3 text-white" style={{ background: '#ECFDF5', color: '#065F46', border: '1px solid #10B981' }}>
-                    <i className="bi bi-check-circle-fill me-2 fs-5" style={{ color: '#10B981' }}></i>
+                <div className="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200 font-bold flex items-center gap-3 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+                    <i className="bi bi-check-circle-fill text-emerald-400 text-xl"></i>
                     <div>
-                        <strong>Feedback Submitted Successfully!</strong> Your review has been logged and sent to the management team.
+                        <strong className="text-white block">Feedback Submitted Successfully!</strong>
+                        <span className="text-xs text-emerald-300 font-medium">Your review has been logged and sent to the facility management team.</span>
                     </div>
                 </div>
             )}
