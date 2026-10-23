@@ -77,7 +77,7 @@ const AdminDashboard = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'trainers':
-                return <TrainerManagementModule theme="light" />;
+                return <TrainerManagementModule theme="dark" />;
             case 'members':
                 return (
                     <DataTable
@@ -89,36 +89,36 @@ const AdminDashboard = () => {
                             { key: 'date', label: 'Created Date' },
                         ]}
                         data={recentPaymentsData}
-                        theme="light"
+                        theme="dark"
                     />
                 );
             case 'attendance':
-                return <AttendanceModule theme="light" />;
+                return <AttendanceModule theme="dark" />;
             case 'payments':
             case 'membership':
-                return <PaymentModule theme="light" />;
+                return <PaymentModule theme="dark" />;
             case 'workout':
-                return <WorkoutModule role="ADMIN" theme="light" />;
+                return <WorkoutModule role="ADMIN" theme="dark" />;
             case 'diet':
-                return <DietModule role="ADMIN" theme="light" />;
+                return <DietModule role="ADMIN" theme="dark" />;
             case 'reports':
-                return <ReportModule theme="light" />;
+                return <ReportModule theme="dark" />;
             case 'profile':
-                return <ProfileModule user={adminInfo} onSaveUser={handleSaveUser} role="ADMIN" theme="light" />;
+                return <ProfileModule user={adminInfo} onSaveUser={handleSaveUser} role="ADMIN" theme="dark" />;
             case 'settings':
                 return (
                     <div
-                        className="p-4 shadow-sm"
+                        className="p-6 shadow-xl"
                         style={{
-                            background: '#FFFFFF',
-                            border: '1px solid #E2E8F0',
+                            background: '#121217',
+                            border: '1px solid #1f1f28',
                             borderRadius: '16px',
                         }}
                     >
-                        <h4 className="fw-bold mb-3" style={{ color: '#0F172A' }}>
-                            <i className="bi bi-sliders me-2" style={{ color: '#10B981' }}></i>Global Ecosystem Settings
+                        <h4 className="fw-bold mb-3 text-white">
+                            <i className="bi bi-sliders me-2 text-[#FF1E28]"></i>Global Ecosystem Settings
                         </h4>
-                        <p className="small mb-0" style={{ color: '#64748B' }}>Configure facial recognition AI terminals, PostgreSQL sync, and DRF API limits.</p>
+                        <p className="small mb-0 text-zinc-400">Configure facial recognition AI terminals, PostgreSQL sync, and DRF API limits.</p>
                     </div>
                 );
             case 'dashboard':
@@ -127,39 +127,40 @@ const AdminDashboard = () => {
                     <div className="vstack gap-4">
                         {/* Header Banner */}
                         <div
-                            className="p-4 shadow-sm"
+                            className="p-4 p-md-5 shadow-xl position-relative overflow-hidden"
                             style={{
-                                background: '#FFFFFF',
-                                border: '1px solid #E2E8F0',
+                                background: '#121217',
+                                border: '1px solid #1f1f28',
                                 borderRadius: '16px',
                             }}
                         >
-                            <div className="d-flex justify-content-between align-items-center">
+                            <div className="position-absolute" style={{ right: '-50px', top: '-50px', width: '220px', height: '220px', background: 'rgba(229, 9, 20, 0.12)', borderRadius: '50%', filter: 'blur(50px)', pointerEvents: 'none' }}></div>
+                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 position-relative z-1">
                                 <div>
-                                    <span className="small fw-semibold text-uppercase tracking-wider d-block mb-1" style={{ color: '#64748B' }}>
+                                    <span className="small fw-extrabold text-uppercase tracking-wider d-inline-block px-2.5 py-1 rounded-pill mb-2" style={{ background: 'rgba(229, 9, 20, 0.15)', color: '#FF1E28', border: '1px solid rgba(229, 9, 20, 0.3)' }}>
                                         SYSTEM EXECUTIVE OVERVIEW
                                     </span>
-                                    <h2 className="fw-bold mb-1" style={{ color: '#0F172A' }}>OMNIFIT Master Admin Portal</h2>
-                                    <p className="small mb-0" style={{ color: '#64748B' }}>Full Control over 1,248 Members, 34 Certified Trainers, & Facial Access Terminals</p>
+                                    <h2 className="fw-black mb-1 text-white">OMNIFIT Master Admin Portal</h2>
+                                    <p className="small mb-0 text-zinc-400">Full Control over 1,248 Members, 34 Certified Trainers, & Facial Access Terminals</p>
                                 </div>
 
                                 <div className="d-flex gap-2">
                                     <button
-                                        className="btn fw-bold px-4 py-2 d-flex align-items-center gap-2"
+                                        className="btn fw-bold px-4 py-2.5 d-flex align-items-center gap-2 cursor-pointer"
                                         onClick={() => setActiveTab('reports')}
                                         style={{
-                                            background: '#10B981',
+                                            background: '#E50914',
                                             color: '#FFFFFF',
                                             border: 'none',
-                                            borderRadius: '10px',
-                                            boxShadow: '0 2px 8px rgba(16, 185, 129, 0.2)',
+                                            borderRadius: '12px',
+                                            boxShadow: '0 0 15px rgba(229, 9, 20, 0.35)',
                                             transition: 'all 0.2s ease-in-out',
                                         }}
                                         onMouseEnter={(e) => {
-                                            e.currentTarget.style.background = '#059669';
+                                            e.currentTarget.style.background = '#FF1E28';
                                         }}
                                         onMouseLeave={(e) => {
-                                            e.currentTarget.style.background = '#10B981';
+                                            e.currentTarget.style.background = '#E50914';
                                         }}
                                     >
                                         <i className="bi bi-file-earmark-arrow-down fs-5"></i>
@@ -172,33 +173,33 @@ const AdminDashboard = () => {
                         {/* Stat Cards Row */}
                         <div className="row g-3">
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Total Club Members" value="1,248" subtext="Active Accounts" icon="bi-people-fill" trend="+14%" theme="light" />
+                                <StatCard title="Total Club Members" value="1,248" subtext="Active Accounts" icon="bi-people-fill" trend="+14%" theme="dark" />
                             </div>
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Total Certified Trainers" value="34 Trainers" subtext="Full-time Staff" icon="bi-person-badge-fill" theme="light" />
+                                <StatCard title="Total Certified Trainers" value="34 Trainers" subtext="Full-time Staff" icon="bi-person-badge-fill" theme="dark" />
                             </div>
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Monthly Revenue" value="$48,920" subtext="+18% vs Last Month" icon="bi-currency-dollar" trend="+18%" theme="light" />
+                                <StatCard title="Monthly Revenue" value="$48,920" subtext="+18% vs Last Month" icon="bi-currency-dollar" trend="+18%" theme="dark" />
                             </div>
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Today's Facial Check-Ins" value="342 Passes" subtext="Contactless verified" icon="bi-camera-fill" theme="light" />
+                                <StatCard title="Today's Facial Check-Ins" value="342 Passes" subtext="Contactless verified" icon="bi-camera-fill" theme="dark" />
                             </div>
                         </div>
 
                         {/* Revenue Chart */}
                         <div
-                            className="p-4 shadow-sm"
+                            className="p-4 shadow-xl"
                             style={{
-                                background: '#FFFFFF',
-                                border: '1px solid #E2E8F0',
+                                background: '#121217',
+                                border: '1px solid #1f1f28',
                                 borderRadius: '16px',
                             }}
                         >
-                            <h5 className="fw-bold mb-3" style={{ color: '#0F172A' }}>
-                                <i className="bi bi-graph-up me-2" style={{ color: '#10B981' }}></i>Monthly Revenue Engine ($ USD)
+                            <h5 className="fw-bold mb-3 text-white">
+                                <i className="bi bi-graph-up me-2 text-[#FF1E28]"></i>Monthly Revenue Engine ($ USD)
                             </h5>
                             <div style={{ height: '260px' }}>
-                                <RevenueGrowthChart theme="light" />
+                                <RevenueGrowthChart theme="dark" />
                             </div>
                         </div>
 
@@ -209,7 +210,7 @@ const AdminDashboard = () => {
                             data={recentPaymentsData}
                             onExportPDF={() => alert('Exporting Master Financial PDF...')}
                             onExportExcel={() => alert('Exporting Master Financial Excel...')}
-                            theme="light"
+                            theme="dark"
                         />
                     </div>
                 );
@@ -217,12 +218,12 @@ const AdminDashboard = () => {
     };
 
     return (
-        <div className="min-vh-100 d-flex" style={{ background: '#F8FAFC', color: '#0F172A' }}>
+        <div className="min-vh-100 d-flex bg-[#08080a] text-white">
             <Sidebar
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 role="ADMIN"
-                theme="light"
+                theme="dark"
                 isCollapsed={isCollapsed}
                 toggleSidebar={toggleSidebar}
             />
@@ -237,7 +238,7 @@ const AdminDashboard = () => {
                 <Navbar
                     title="Ecosystem Master Admin"
                     user={adminInfo}
-                    theme="light"
+                    theme="dark"
                     isCollapsed={isCollapsed}
                 />
                 {renderContent()}

@@ -300,13 +300,21 @@ class ApproveMemberView(APIView):
 
         user = member.user
 
-        # 1. Update user & member status to Active
+        # 1. Update user & member status to Active and assign trainer
+        trainer_user = None
+        if trainer_name:
+            trainer_user = User.objects.filter(full_name__icontains=trainer_name).first()
+        if not trainer_user:
+            trainer_user = User.objects.filter(role='trainer').first()
+
         user.status = 'Active'
         user.is_active = True
         user.save()
 
         member.status = 'Active'
         member.is_active = True
+        if trainer_user:
+            member.assigned_trainer = trainer_user
         member.save()
 
         # 2. Send official verification approval email

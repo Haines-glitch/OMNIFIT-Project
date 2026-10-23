@@ -9,13 +9,16 @@ from .views import (
     UserProfileUpdateView,
     TrainerOverviewView,
     TrainerAssignRoutineView,
+    TrainerDashboardDataView,
+    TrainerAssignedMembersView,
     MemberOverviewView,
     MemberTodayWorkoutView,
     NotificationsView,
     NotificationMarkReadView,
     AdminDashboardView,
     MemberDashboardDataView,
-    CheckApprovalStatusView
+    CheckApprovalStatusView,
+    ExerciseToggleStatusView
 )
 
 urlpatterns = [
@@ -32,10 +35,13 @@ urlpatterns = [
     # Trainer Endpoints
     path('trainer/overview/', TrainerOverviewView.as_view(), name='trainer_overview'),
     path('trainer/assign-routine/', TrainerAssignRoutineView.as_view(), name='trainer_assign_routine'),
+    path('trainer/assigned-members/', TrainerAssignedMembersView.as_view(), name='trainer_assigned_members'),
+    path('trainer-dashboard/', TrainerDashboardDataView.as_view(), name='trainer_dashboard_data'),
 
     # Member Endpoints
     path('member/overview/', MemberOverviewView.as_view(), name='member_overview'),
     path('member/today-workout/', MemberTodayWorkoutView.as_view(), name='member_today_workout'),
+    path('member/exercise/<int:pk>/toggle/', ExerciseToggleStatusView.as_view(), name='exercise_toggle_status'),
     path('member-dashboard/', MemberDashboardDataView.as_view(), name='member_dashboard_data'),
 
     # Notifications Endpoints

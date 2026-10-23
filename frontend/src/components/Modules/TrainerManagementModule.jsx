@@ -3,7 +3,8 @@ import LoginService from '../Login/LoginService';
 import Toast from '../Toast/Toast';
 import { validateName, validateEmail, validatePhone, validateDateOfBirth, validateNumericRange } from '../../utils/validation';
 
-const TrainerManagementModule = ({ theme = 'light' }) => {
+const TrainerManagementModule = ({ theme = 'dark' }) => {
+    const isDark = theme !== 'light';
     const [trainers, setTrainers] = useState([]);
     const [availableMembers, setAvailableMembers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -370,19 +371,23 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
             />
 
             {/* HEADER & TOP STATS */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl border shadow-sm ${
+                isDark ? 'bg-[#121217] border-[#1f1f28] text-white' : 'bg-white border-slate-200'
+            }`}>
                 <div>
                     <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 bg-emerald-50 text-[#10B981] font-bold text-xs rounded-full border border-emerald-500/30">
+                        <span className={`px-3 py-1 font-bold text-xs rounded-full border ${
+                            isDark ? 'bg-red-600/15 text-[#FF1E28] border-red-500/30' : 'bg-emerald-50 text-[#10B981] border-emerald-500/30'
+                        }`}>
                             ADMIN CONTROL PANEL
                         </span>
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 mt-2">Trainer Roster Management</h2>
-                    <p className="text-slate-500 text-sm">Add, manage, and assign club athletes to certified trainers.</p>
+                    <h2 className={`text-2xl font-black mt-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Trainer Roster Management</h2>
+                    <p className={`text-sm ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>Add, manage, and assign club athletes to certified trainers.</p>
                 </div>
                 <button
                     onClick={() => setShowAddModal(true)}
-                    className="px-5 py-3 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-md flex items-center justify-center gap-2"
+                    className="px-5 py-3 rounded-xl bg-[#E50914] text-white font-bold text-sm hover:bg-[#FF1E28] transition-all shadow-[0_0_15px_rgba(229,9,20,0.35)] flex items-center justify-center gap-2 cursor-pointer"
                 >
                     <i className="bi bi-person-plus-fill text-lg"></i>
                     + Add New Trainer
@@ -391,43 +396,45 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
 
             {/* STATS OVERVIEW */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">TOTAL TRAINERS</span>
-                    <div className="text-3xl font-black text-slate-900 mt-1">{trainers.length}</div>
-                    <span className="text-xs text-emerald-600 font-semibold mt-1 inline-block">● Authorized Staff</span>
+                <div className={`p-5 rounded-2xl border shadow-sm ${isDark ? 'bg-[#121217] border-[#1f1f28]' : 'bg-white border-slate-200'}`}>
+                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">TOTAL TRAINERS</span>
+                    <div className={`text-3xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>{trainers.length}</div>
+                    <span className="text-xs text-[#FF1E28] font-semibold mt-1 inline-block">● Authorized Staff</span>
                 </div>
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">ACTIVE ROSTER</span>
-                    <div className="text-3xl font-black text-slate-900 mt-1">
+                <div className={`p-5 rounded-2xl border shadow-sm ${isDark ? 'bg-[#121217] border-[#1f1f28]' : 'bg-white border-slate-200'}`}>
+                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">ACTIVE ROSTER</span>
+                    <div className={`text-3xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {trainers.filter(t => t.status === 'Active' || t.user_status === 'Active').length}
                     </div>
-                    <span className="text-xs text-emerald-600 font-semibold mt-1 inline-block">100% Operational</span>
+                    <span className="text-xs text-emerald-400 font-semibold mt-1 inline-block">100% Operational</span>
                 </div>
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">ASSIGNED MEMBERS</span>
-                    <div className="text-3xl font-black text-slate-900 mt-1">
+                <div className={`p-5 rounded-2xl border shadow-sm ${isDark ? 'bg-[#121217] border-[#1f1f28]' : 'bg-white border-slate-200'}`}>
+                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">ASSIGNED MEMBERS</span>
+                    <div className={`text-3xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {trainers.reduce((acc, t) => acc + (t.assigned_members_count || 0), 0)}
                     </div>
-                    <span className="text-xs text-slate-500 font-medium mt-1 inline-block">Active Client Subscriptions</span>
+                    <span className="text-xs text-zinc-400 font-medium mt-1 inline-block">Active Client Subscriptions</span>
                 </div>
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">AVERAGE RATING</span>
-                    <div className="text-3xl font-black text-slate-900 mt-1">4.95 ★</div>
-                    <span className="text-xs text-emerald-600 font-semibold mt-1 inline-block">Member Feedback Score</span>
+                <div className={`p-5 rounded-2xl border shadow-sm ${isDark ? 'bg-[#121217] border-[#1f1f28]' : 'bg-white border-slate-200'}`}>
+                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">AVERAGE RATING</span>
+                    <div className={`text-3xl font-black mt-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>4.95 ★</div>
+                    <span className="text-xs text-[#FF1E28] font-semibold mt-1 inline-block">Member Feedback Score</span>
                 </div>
             </div>
 
             {/* TRAINERS TABLE */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-                    <h3 className="font-extrabold text-slate-900 text-lg">Certified Trainers Roster</h3>
-                    <span className="text-xs text-slate-500 font-medium">{trainers.length} active records</span>
+            <div className={`rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-[#121217] border-[#1f1f28]' : 'bg-white border-slate-200'}`}>
+                <div className={`p-5 border-b flex items-center justify-between ${isDark ? 'border-[#1f1f28]' : 'border-slate-100'}`}>
+                    <h3 className={`font-extrabold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>Certified Trainers Roster</h3>
+                    <span className="text-xs text-zinc-400 font-medium">{trainers.length} active records</span>
                 </div>
 
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-slate-50 text-slate-500 text-xs font-extrabold uppercase border-b border-slate-200">
+                            <tr className={`text-xs font-extrabold uppercase border-b ${
+                                isDark ? 'bg-[#16161f] text-zinc-400 border-[#1f1f28]' : 'bg-slate-50 text-slate-500 border-slate-200'
+                            }`}>
                                 <th className="p-4">Trainer Name</th>
                                 <th className="p-4">Specialization</th>
                                 <th className="p-4">Experience</th>
@@ -437,41 +444,41 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                 <th className="p-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 text-sm">
+                        <tbody className={`divide-y text-sm ${isDark ? 'divide-[#1f1f28] text-zinc-200' : 'divide-slate-100 text-slate-800'}`}>
                             {isLoading ? (
                                 <tr>
-                                    <td colSpan="7" className="p-8 text-center text-slate-400">
+                                    <td colSpan="7" className="p-8 text-center text-zinc-400">
                                         <div className="spinner-border spinner-border-sm me-2"></div>
                                         Loading trainers roster...
                                     </td>
                                 </tr>
                             ) : trainers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="7" className="p-8 text-center text-slate-400">
+                                    <td colSpan="7" className="p-8 text-center text-zinc-400">
                                         No trainers registered. Click <strong>+ Add New Trainer</strong> to create one.
                                     </td>
                                 </tr>
                             ) : (
                                 trainers.map((t) => (
-                                    <tr key={t.id} className="hover:bg-slate-50 transition-colors">
+                                    <tr key={t.id} className={`${isDark ? 'hover:bg-zinc-800/40' : 'hover:bg-slate-50'} transition-colors`}>
                                         <td className="p-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-slate-900 text-white font-black flex items-center justify-center text-sm shadow-sm">
+                                                <div className="w-10 h-10 rounded-full bg-[#E50914] text-white font-black flex items-center justify-center text-sm shadow-[0_0_10px_rgba(229,9,20,0.3)]">
                                                     {(t.full_name || t.name || 'T')[0].toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <div className="font-extrabold text-slate-900">{t.full_name || t.name}</div>
-                                                    <div className="text-xs text-slate-400">{t.email}</div>
+                                                    <div className={`font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t.full_name || t.name}</div>
+                                                    <div className="text-xs text-zinc-400">{t.email}</div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-[#10B981] border border-emerald-500/20 font-bold text-xs">
+                                            <span className="px-2.5 py-1 rounded-lg bg-red-600/15 text-[#FF1E28] border border-red-500/20 font-bold text-xs">
                                                 {t.specialization}
                                             </span>
                                         </td>
                                         <td className="p-4">
-                                            <div className="font-semibold text-slate-700">
+                                            <div className={`font-semibold ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                                                 {t.experience || t.experience_years || 1} Years
                                             </div>
                                             {t.experience_certificate_url || t.experience_certificate ? (
@@ -479,10 +486,14 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                                     href={t.experience_certificate_url || t.experience_certificate}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition-all mt-1 shadow-2xs"
+                                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all mt-1 shadow-xs ${
+                                                        isDark 
+                                                            ? 'text-red-400 bg-red-950/40 border-red-800/60 hover:bg-red-900/50 hover:text-red-300' 
+                                                            : 'text-rose-700 bg-rose-50 border-rose-200 hover:bg-rose-100'
+                                                    }`}
                                                     title="View Official Experience Certificate PDF"
                                                 >
-                                                    <i className="bi bi-file-earmark-pdf-fill text-rose-600"></i>
+                                                    <i className="bi bi-file-earmark-pdf-fill text-[#FF1E28]"></i>
                                                     <span>Certificate PDF</span>
                                                 </a>
                                             ) : (
@@ -493,11 +504,15 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                             {Array.isArray(t.working_days) ? t.working_days.join(', ') : (t.working_days || 'Mon - Fri')}
                                         </td>
                                         <td className="p-4">
-                                            <span className="font-bold text-slate-900">{t.assigned_members_count || t.assigned_members?.length || 0}</span>
-                                            <span className="text-slate-400 text-xs ms-1">members</span>
+                                            <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t.assigned_members_count || t.assigned_members?.length || 0}</span>
+                                            <span className="text-zinc-400 text-xs ms-1">members</span>
                                         </td>
                                         <td className="p-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${t.status === 'Active' || t.user_status === 'Active' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'}`}>
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
+                                                t.status === 'Active' || t.user_status === 'Active' 
+                                                    ? (isDark ? 'bg-red-600/15 text-[#FF1E28] border-red-500/30' : 'bg-emerald-50 text-emerald-600 border-emerald-200')
+                                                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                                            }`}>
                                                 ● {t.status || 'Active'}
                                             </span>
                                         </td>
@@ -507,7 +522,9 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                                     setSelectedTrainer(t);
                                                     setShowDetailModal(true);
                                                 }}
-                                                className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs hover:bg-slate-200"
+                                                className={`px-3 py-1.5 rounded-lg font-bold text-xs cursor-pointer ${
+                                                    isDark ? 'bg-[#181822] text-zinc-300 hover:text-white border border-[#2c2c3d]' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                                }`}
                                             >
                                                 Details
                                             </button>
@@ -516,13 +533,15 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                                     setSelectedTrainer(t);
                                                     setShowAssignModal(true);
                                                 }}
-                                                className="px-3 py-1.5 rounded-lg bg-emerald-50 text-[#10B981] border border-emerald-200 font-bold text-xs hover:bg-emerald-100"
+                                                className="px-3 py-1.5 rounded-lg bg-[#E50914] text-white font-bold text-xs hover:bg-[#FF1E28] shadow-[0_0_10px_rgba(229,9,20,0.3)] cursor-pointer"
                                             >
                                                 Assign Member
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteTrainer(t.id)}
-                                                className="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 font-bold text-xs hover:bg-rose-100"
+                                                className={`px-3 py-1.5 rounded-lg font-bold text-xs cursor-pointer ${
+                                                    isDark ? 'bg-red-950/40 text-red-400 border border-red-900/50 hover:bg-red-900/60' : 'bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100'
+                                                }`}
                                             >
                                                 Delete
                                             </button>
@@ -537,16 +556,16 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
 
             {/* ADD TRAINER MODAL */}
             {showAddModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
-                    <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 my-8">
-                        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+                    <div className="bg-[#121217] rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-[#2a2a38] text-white my-8">
+                        <div className="flex items-center justify-between pb-4 border-b border-[#22222f]">
                             <div>
-                                <h3 className="text-xl font-black text-slate-900">Add New Certified Trainer</h3>
-                                <p className="text-xs text-slate-500">Admin-only endpoint creates User (role=TRAINER) + Trainer Profile</p>
+                                <h3 className="text-xl font-black text-white">Add New Certified Trainer</h3>
+                                <p className="text-xs text-zinc-400">Admin-only endpoint creates User (role=TRAINER) + Trainer Profile</p>
                             </div>
                             <button
                                 onClick={() => setShowAddModal(false)}
-                                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-bold flex items-center justify-center hover:bg-slate-200"
+                                className="w-8 h-8 rounded-full bg-[#181822] text-zinc-400 hover:text-white border border-[#2a2a38] font-bold flex items-center justify-center cursor-pointer"
                             >
                                 ✕
                             </button>
@@ -555,14 +574,14 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                         <form onSubmit={handleAddTrainerSubmit} className="mt-4 space-y-4">
                             {/* Personal Info */}
                             <div className="space-y-3">
-                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">1. Personal Information</h4>
+                                <h4 className="text-xs font-black text-zinc-400 uppercase tracking-wider">1. Personal Information</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Full Name *</label>
                                         <input
                                             type="text"
                                             name="full_name"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             placeholder="Marcus Vance"
                                             value={formData.full_name}
                                             onChange={handleInputChange}
@@ -570,11 +589,11 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Email Address *</label>
                                         <input
                                             type="email"
                                             name="email"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             placeholder="trainer@omnifit.com"
                                             value={formData.email}
                                             onChange={handleInputChange}
@@ -582,11 +601,11 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number *</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Phone Number *</label>
                                         <input
                                             type="text"
                                             name="phone"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             placeholder="+1 (555) 000-0000"
                                             value={formData.phone}
                                             onChange={handleInputChange}
@@ -594,74 +613,74 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Gender</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Gender</label>
                                         <select
                                             name="gender"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white focus:outline-none focus:border-[#E50914]"
                                             value={formData.gender}
                                             onChange={handleInputChange}
                                         >
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
+                                            <option value="Male" className="bg-[#181822] text-white">Male</option>
+                                            <option value="Female" className="bg-[#181822] text-white">Female</option>
+                                            <option value="Other" className="bg-[#181822] text-white">Other</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Professional Info */}
-                            <div className="space-y-3 pt-2 border-t border-slate-100">
-                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">2. Professional Credentials</h4>
+                            <div className="space-y-3 pt-2 border-t border-[#22222f]">
+                                <h4 className="text-xs font-black text-zinc-400 uppercase tracking-wider">2. Professional Credentials</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Specialization *</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Specialization *</label>
                                         <select
                                             name="specialization"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white focus:outline-none focus:border-[#E50914]"
                                             value={formData.specialization}
                                             onChange={handleInputChange}
                                         >
-                                            <option value="Weight Loss">Weight Loss</option>
-                                            <option value="Strength Training">Strength Training</option>
-                                            <option value="Bodybuilding">Bodybuilding</option>
-                                            <option value="Cardio">Cardio</option>
-                                            <option value="Yoga">Yoga</option>
-                                            <option value="CrossFit">CrossFit</option>
-                                            <option value="Functional Training">Functional Training</option>
-                                            <option value="General Fitness">General Fitness</option>
-                                            <option value="Nutrition">Nutrition</option>
+                                            <option value="Weight Loss" className="bg-[#181822] text-white">Weight Loss</option>
+                                            <option value="Strength Training" className="bg-[#181822] text-white">Strength Training</option>
+                                            <option value="Bodybuilding" className="bg-[#181822] text-white">Bodybuilding</option>
+                                            <option value="Cardio" className="bg-[#181822] text-white">Cardio</option>
+                                            <option value="Yoga" className="bg-[#181822] text-white">Yoga</option>
+                                            <option value="CrossFit" className="bg-[#181822] text-white">CrossFit</option>
+                                            <option value="Functional Training" className="bg-[#181822] text-white">Functional Training</option>
+                                            <option value="General Fitness" className="bg-[#181822] text-white">General Fitness</option>
+                                            <option value="Nutrition" className="bg-[#181822] text-white">Nutrition</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Experience (Years)</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Experience (Years)</label>
                                         <input
                                             type="number"
                                             name="experience"
                                             min="0"
                                             max="50"
                                             onKeyDown={(e) => { if (['-', '+', 'e', 'E'].includes(e.key)) e.preventDefault(); }}
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             value={formData.experience}
                                             onChange={handleInputChange}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Qualification</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Qualification</label>
                                         <input
                                             type="text"
                                             name="qualification"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             placeholder="B.Sc Sports Science"
                                             value={formData.qualification}
                                             onChange={handleInputChange}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Certification</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Certification</label>
                                         <input
                                             type="text"
                                             name="certification"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             placeholder="NASM Master Certified"
                                             value={formData.certification}
                                             onChange={handleInputChange}
@@ -671,26 +690,26 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                     {/* EXPERIENCE CERTIFICATE PDF UPLOAD */}
                                     <div className="col-span-full">
                                         <div className="flex items-center justify-between mb-1">
-                                            <label className="block text-xs font-bold text-slate-700">
-                                                Experience Certificate <span className="text-slate-400 font-normal">(PDF Proof of Experience)</span>
+                                            <label className="block text-xs font-bold text-zinc-300">
+                                                Experience Certificate <span className="text-zinc-400 font-normal">(PDF Proof of Experience)</span>
                                             </label>
-                                            <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                            <span className="text-[10px] font-semibold text-red-400 bg-red-950/40 px-2 py-0.5 rounded border border-red-800/60">
                                                 Verification Credential
                                             </span>
                                         </div>
 
-                                        <div className="border-2 border-dashed border-slate-200 hover:border-emerald-500 rounded-xl p-3.5 bg-slate-50 transition-all">
+                                        <div className="border-2 border-dashed border-[#2e2e40] hover:border-[#E50914] rounded-xl p-3.5 bg-[#161620] transition-all">
                                             {formData.certificate_name ? (
-                                                <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
+                                                <div className="flex items-center justify-between bg-[#121217] p-3 rounded-xl border border-[#2a2a38] shadow-sm">
                                                     <div className="flex items-center gap-3 overflow-hidden">
-                                                        <div className="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100">
+                                                        <div className="w-9 h-9 rounded-lg bg-red-950/40 text-[#FF1E28] flex items-center justify-center shrink-0 border border-red-800/60">
                                                             <i className="bi bi-file-earmark-pdf-fill text-xl"></i>
                                                         </div>
                                                         <div className="truncate">
-                                                            <div className="text-xs font-extrabold text-slate-900 truncate">
+                                                            <div className="text-xs font-extrabold text-white truncate">
                                                                 {formData.certificate_name}
                                                             </div>
-                                                            <div className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-0.5">
+                                                            <div className="text-[10px] text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
                                                                 <i className="bi bi-check-circle-fill"></i>
                                                                 <span>PDF Attached & Ready to Upload</span>
                                                             </div>
@@ -699,20 +718,20 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                                     <button
                                                         type="button"
                                                         onClick={() => setFormData(prev => ({ ...prev, experience_certificate: null, certificate_name: '' }))}
-                                                        className="px-2.5 py-1 text-xs font-bold text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors cursor-pointer"
+                                                        className="px-2.5 py-1 text-xs font-bold text-rose-400 hover:text-rose-300 bg-rose-950/40 hover:bg-rose-900/50 rounded-lg transition-colors cursor-pointer border border-rose-900/40"
                                                     >
                                                         Remove
                                                     </button>
                                                 </div>
                                             ) : (
                                                 <label className="flex flex-col items-center justify-center py-2 px-3 cursor-pointer group">
-                                                    <div className="w-10 h-10 rounded-full bg-emerald-100/60 text-emerald-600 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
+                                                    <div className="w-10 h-10 rounded-full bg-red-950/40 text-[#FF1E28] border border-red-800/40 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                                                         <i className="bi bi-file-earmark-pdf text-xl"></i>
                                                     </div>
-                                                    <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                                                    <span className="text-xs font-bold text-zinc-200 group-hover:text-[#FF1E28] transition-colors">
                                                         Upload Experience Certificate (PDF)
                                                     </span>
-                                                    <span className="text-[11px] text-slate-400 mt-0.5">
+                                                    <span className="text-[11px] text-zinc-400 mt-0.5">
                                                         Click to select PDF document proving trainer experience (Max 10MB)
                                                     </span>
                                                     <input
@@ -729,8 +748,8 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                             </div>
 
                             {/* Working Days & Schedule */}
-                            <div className="space-y-2 pt-2 border-t border-slate-100">
-                                <label className="block text-xs font-bold text-slate-700">Working Days Availability</label>
+                            <div className="space-y-2 pt-2 border-t border-[#22222f]">
+                                <label className="block text-xs font-bold text-zinc-300">Working Days Availability</label>
                                 <div className="flex flex-wrap gap-2">
                                     {dayList.map(day => {
                                         const isSelected = (formData.working_days || []).includes(day);
@@ -739,7 +758,11 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                                 type="button"
                                                 key={day}
                                                 onClick={() => handleWorkingDaysToggle(day)}
-                                                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold border transition-all ${isSelected ? 'bg-emerald-50 text-[#10B981] border-emerald-500' : 'bg-slate-50 text-slate-500 border-slate-200'}`}
+                                                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
+                                                    isSelected
+                                                        ? 'bg-[#E50914] text-white border-red-500 shadow-[0_0_8px_rgba(229,9,20,0.35)]'
+                                                        : 'bg-[#181822] text-zinc-400 border-[#2e2e40] hover:text-white'
+                                                }`}
                                             >
                                                 {day.slice(0, 3)}
                                             </button>
@@ -749,15 +772,15 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                             </div>
 
                             {/* Password Setup */}
-                            <div className="space-y-3 pt-2 border-t border-slate-100">
-                                <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">3. Account Credentials</h4>
+                            <div className="space-y-3 pt-2 border-t border-[#22222f]">
+                                <h4 className="text-xs font-black text-zinc-400 uppercase tracking-wider">3. Account Credentials</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Temporary Password *</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Temporary Password *</label>
                                         <input
                                             type="password"
                                             name="password"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             placeholder="Min 8 characters"
                                             value={formData.password}
                                             onChange={handleInputChange}
@@ -765,11 +788,11 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-700 mb-1">Confirm Password *</label>
+                                        <label className="block text-xs font-bold text-zinc-300 mb-1">Confirm Password *</label>
                                         <input
                                             type="password"
                                             name="confirm_password"
-                                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
                                             placeholder="Re-enter password"
                                             value={formData.confirm_password}
                                             onChange={handleInputChange}
@@ -779,18 +802,18 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#22222f]">
                                 <button
                                     type="button"
                                     onClick={() => setShowAddModal(false)}
-                                    className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200"
+                                    className="px-5 py-2.5 rounded-xl bg-[#181822] text-zinc-300 hover:text-white border border-[#2a2a38] font-bold text-sm cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-emerald-500 hover:text-slate-950 transition-all shadow-md"
+                                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] text-white font-bold text-sm hover:from-[#FF1E28] hover:to-[#E50914] transition-all shadow-[0_0_15px_rgba(229,9,20,0.35)] cursor-pointer"
                                 >
                                     {isSubmitting ? 'Creating Account...' : 'Create Trainer Account'}
                                 </button>
@@ -802,16 +825,16 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
 
             {/* ASSIGN MEMBER MODAL */}
             {showAssignModal && selectedTrainer && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
-                    <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-                        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div className="bg-[#121217] rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#2a2a38] text-white">
+                        <div className="flex items-center justify-between pb-4 border-b border-[#22222f]">
                             <div>
-                                <h3 className="text-lg font-black text-slate-900">Assign Member to Trainer</h3>
-                                <p className="text-xs text-slate-500">Assigning client to {selectedTrainer.full_name || selectedTrainer.name}</p>
+                                <h3 className="text-lg font-black text-white">Assign Member to Trainer</h3>
+                                <p className="text-xs text-zinc-400">Assigning client to {selectedTrainer.full_name || selectedTrainer.name}</p>
                             </div>
                             <button
                                 onClick={() => setShowAssignModal(false)}
-                                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-bold flex items-center justify-center hover:bg-slate-200"
+                                className="w-8 h-8 rounded-full bg-[#181822] text-zinc-400 hover:text-white border border-[#2a2a38] font-bold flex items-center justify-center cursor-pointer"
                             >
                                 ✕
                             </button>
@@ -819,33 +842,33 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
 
                         <form onSubmit={handleAssignMemberSubmit} className="mt-4 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 mb-1">Select Member Account *</label>
+                                <label className="block text-xs font-bold text-zinc-300 mb-1">Select Member Account *</label>
                                 <select
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500"
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white focus:outline-none focus:border-[#E50914]"
                                     value={selectedMemberId}
                                     onChange={(e) => setSelectedMemberId(e.target.value)}
                                     required
                                 >
-                                    <option value="">-- Choose Member --</option>
+                                    <option value="" className="bg-[#181822] text-zinc-400">-- Choose Member --</option>
                                     {availableMembers.map(m => (
-                                        <option key={m.id} value={m.id}>
+                                        <option key={m.id} value={m.id} className="bg-[#181822] text-white py-2">
                                             {m.full_name} ({m.membership_no || m.email}) - Current: {m.assigned_trainer_name || 'Unassigned'}
                                         </option>
                                     ))}
                                 </select>
                             </div>
 
-                            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#22222f]">
                                 <button
                                     type="button"
                                     onClick={() => setShowAssignModal(false)}
-                                    className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs"
+                                    className="px-4 py-2 rounded-xl bg-[#181822] text-zinc-300 hover:text-white border border-[#2a2a38] font-bold text-xs cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-5 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs hover:bg-emerald-400"
+                                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] text-white font-bold text-xs hover:from-[#FF1E28] hover:to-[#E50914] shadow-[0_0_12px_rgba(229,9,20,0.35)] cursor-pointer"
                                 >
                                     Confirm Assignment
                                 </button>
@@ -857,29 +880,29 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
 
             {/* TRAINER DETAILS & CERTIFICATE VERIFICATION MODAL */}
             {showDetailModal && selectedTrainer && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+                    <div className="bg-[#121217] rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-[#2a2a38] max-h-[90vh] overflow-y-auto text-white">
                         {/* Header */}
-                        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                        <div className="flex items-center justify-between pb-4 border-b border-[#22222f]">
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white font-black flex items-center justify-center text-lg shadow-sm">
+                                <div className="w-12 h-12 rounded-2xl bg-[#E50914] text-white font-black flex items-center justify-center text-lg shadow-[0_0_15px_rgba(229,9,20,0.35)]">
                                     {(selectedTrainer.full_name || selectedTrainer.name || 'T')[0].toUpperCase()}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-lg font-black text-slate-900">
+                                        <h3 className="text-lg font-black text-white">
                                             {selectedTrainer.full_name || selectedTrainer.name}
                                         </h3>
-                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-600/15 text-[#FF1E28] border border-red-500/30">
                                             {selectedTrainer.specialization}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-slate-500">{selectedTrainer.email} • {selectedTrainer.phone}</p>
+                                    <p className="text-xs text-zinc-400">{selectedTrainer.email} • {selectedTrainer.phone}</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setShowDetailModal(false)}
-                                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-bold flex items-center justify-center hover:bg-slate-200 cursor-pointer"
+                                className="w-8 h-8 rounded-full bg-[#181822] text-zinc-400 hover:text-white border border-[#2a2a38] font-bold flex items-center justify-center cursor-pointer"
                             >
                                 ✕
                             </button>
@@ -888,27 +911,27 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                         {/* Body */}
                         <div className="py-4 space-y-5">
                             {/* Experience & Professional Credentials Card */}
-                            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
-                                <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                                    <i className="bi bi-award-fill text-amber-500"></i>
+                            <div className="bg-[#181822] rounded-2xl p-4 border border-[#2a2a38]">
+                                <h4 className="text-xs font-black uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-1.5">
+                                    <i className="bi bi-award-fill text-[#FF1E28]"></i>
                                     <span>Professional Experience & Credentials</span>
                                 </h4>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
-                                        <span className="text-[10px] font-bold text-slate-400 block uppercase">Experience</span>
-                                        <span className="text-base font-extrabold text-slate-900">
+                                    <div className="bg-[#121217] p-3 rounded-xl border border-[#242432]">
+                                        <span className="text-[10px] font-bold text-zinc-400 block uppercase">Experience</span>
+                                        <span className="text-base font-extrabold text-white">
                                             {selectedTrainer.experience || selectedTrainer.experience_years || 1} Years
                                         </span>
                                     </div>
-                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
-                                        <span className="text-[10px] font-bold text-slate-400 block uppercase">Qualification</span>
-                                        <span className="text-xs font-bold text-slate-900 truncate block" title={selectedTrainer.qualification}>
+                                    <div className="bg-[#121217] p-3 rounded-xl border border-[#242432]">
+                                        <span className="text-[10px] font-bold text-zinc-400 block uppercase">Qualification</span>
+                                        <span className="text-xs font-bold text-white truncate block" title={selectedTrainer.qualification}>
                                             {selectedTrainer.qualification || 'B.Sc Sports Science'}
                                         </span>
                                     </div>
-                                    <div className="bg-white p-3 rounded-xl border border-slate-200">
-                                        <span className="text-[10px] font-bold text-slate-400 block uppercase">License ID</span>
-                                        <span className="text-xs font-bold text-slate-900 truncate block">
+                                    <div className="bg-[#121217] p-3 rounded-xl border border-[#242432]">
+                                        <span className="text-[10px] font-bold text-zinc-400 block uppercase">License ID</span>
+                                        <span className="text-xs font-bold text-white truncate block">
                                             {selectedTrainer.license_number || 'NASM-VERIFIED'}
                                         </span>
                                     </div>
@@ -916,18 +939,18 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                             </div>
 
                             {/* EXPERIENCE CERTIFICATE PDF SECTION */}
-                            <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-5 shadow-sm border border-slate-800">
+                            <div className="bg-[#181822] text-white rounded-2xl p-5 shadow-sm border border-[#2a2a38]">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center">
+                                        <div className="w-8 h-8 rounded-lg bg-red-950/40 text-[#FF1E28] border border-red-800/60 flex items-center justify-center">
                                             <i className="bi bi-file-earmark-pdf-fill text-lg"></i>
                                         </div>
                                         <div>
                                             <h4 className="text-sm font-extrabold text-white">Experience Certificate</h4>
-                                            <p className="text-[11px] text-slate-400">Official proof of professional coaching experience</p>
+                                            <p className="text-[11px] text-zinc-400">Official proof of professional coaching experience</p>
                                         </div>
                                     </div>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                                         selectedTrainer.experience_certificate_url || selectedTrainer.experience_certificate
                                             ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                                             : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
@@ -937,29 +960,29 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                                 </div>
 
                                 {selectedTrainer.experience_certificate_url || selectedTrainer.experience_certificate ? (
-                                    <div className="bg-slate-800/80 rounded-xl p-3.5 border border-slate-700/80 flex items-center justify-between gap-3">
+                                    <div className="bg-[#121217] rounded-xl p-3.5 border border-[#2a2a38] flex items-center justify-between gap-3">
                                         <div className="flex items-center gap-2.5 overflow-hidden">
                                             <i className="bi bi-file-earmark-check text-2xl text-emerald-400 shrink-0"></i>
                                             <div className="truncate">
-                                                <span className="text-xs font-bold text-slate-200 block truncate">
+                                                <span className="text-xs font-bold text-white block truncate">
                                                     {(selectedTrainer.full_name || selectedTrainer.name)}_Experience_Certificate.pdf
                                                 </span>
-                                                <span className="text-[10px] text-slate-400">PDF Document • Ready for Review</span>
+                                                <span className="text-[10px] text-zinc-400">PDF Document • Ready for Review</span>
                                             </div>
                                         </div>
                                         <a
                                             href={selectedTrainer.experience_certificate_url || selectedTrainer.experience_certificate}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 transition-all shadow-md shrink-0 cursor-pointer"
+                                            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-bold text-xs inline-flex items-center gap-1.5 transition-all shadow-[0_0_10px_rgba(229,9,20,0.35)] shrink-0 cursor-pointer"
                                         >
                                             <i className="bi bi-box-arrow-up-right"></i>
                                             <span>Open PDF</span>
                                         </a>
                                     </div>
                                 ) : (
-                                    <div className="bg-slate-800/40 rounded-xl p-3 border border-slate-800 text-center">
-                                        <p className="text-xs text-slate-400">
+                                    <div className="bg-[#121217] rounded-xl p-3 border border-[#242432] text-center">
+                                        <p className="text-xs text-zinc-400">
                                             No experience certificate was uploaded when this trainer profile was created.
                                         </p>
                                     </div>
@@ -969,22 +992,22 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                             {/* Bio & Philosophy */}
                             {selectedTrainer.bio && (
                                 <div className="space-y-1">
-                                    <h5 className="text-xs font-bold text-slate-700">Biography & Coaching Philosophy</h5>
-                                    <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed">
+                                    <h5 className="text-xs font-bold text-zinc-300">Biography & Coaching Philosophy</h5>
+                                    <p className="text-xs text-zinc-300 bg-[#181822] p-3 rounded-xl border border-[#2a2a38] leading-relaxed">
                                         {selectedTrainer.bio}
                                     </p>
                                 </div>
                             )}
 
                             {/* Working Schedule */}
-                            <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-slate-50 border border-slate-200">
+                            <div className="flex items-center justify-between text-xs p-3 rounded-xl bg-[#181822] border border-[#2a2a38]">
                                 <div>
-                                    <span className="font-bold text-slate-700 block">Working Hours:</span>
-                                    <span className="text-slate-500">{selectedTrainer.start_time || '08:00 AM'} - {selectedTrainer.end_time || '05:00 PM'}</span>
+                                    <span className="font-bold text-zinc-300 block">Working Hours:</span>
+                                    <span className="text-zinc-400">{selectedTrainer.start_time || '08:00 AM'} - {selectedTrainer.end_time || '05:00 PM'}</span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="font-bold text-slate-700 block">Available Days:</span>
-                                    <span className="text-slate-500">
+                                    <span className="font-bold text-zinc-300 block">Available Days:</span>
+                                    <span className="text-zinc-400">
                                         {Array.isArray(selectedTrainer.working_days) ? selectedTrainer.working_days.join(', ') : (selectedTrainer.working_days || 'Mon - Fri')}
                                     </span>
                                 </div>
@@ -992,11 +1015,11 @@ const TrainerManagementModule = ({ theme = 'light' }) => {
                         </div>
 
                         {/* Footer */}
-                        <div className="pt-3 border-t border-slate-100 flex justify-end">
+                        <div className="pt-3 border-t border-[#22222f] flex justify-end">
                             <button
                                 type="button"
                                 onClick={() => setShowDetailModal(false)}
-                                className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 cursor-pointer"
+                                className="px-5 py-2 rounded-xl bg-[#181822] text-white hover:bg-[#20202d] border border-[#2a2a38] font-bold text-xs cursor-pointer"
                             >
                                 Close Details
                             </button>

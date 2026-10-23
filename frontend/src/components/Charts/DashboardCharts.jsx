@@ -93,7 +93,7 @@ export const WeightProgressChart = ({ data, theme = 'light' }) => {
     return <Line data={chartData} options={options} />;
 };
 
-export const RevenueGrowthChart = ({ data, theme = 'light' }) => {
+export const RevenueGrowthChart = ({ data, theme = 'dark' }) => {
     const isLight = theme === 'light';
     const chartData = {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -101,11 +101,11 @@ export const RevenueGrowthChart = ({ data, theme = 'light' }) => {
             {
                 label: 'Monthly Revenue ($)',
                 data: data || [32000, 35400, 41200, 39800, 44500, 48920],
-                backgroundColor: 'rgba(16, 185, 129, 0.25)',
-                borderColor: '#10B981',
+                backgroundColor: 'rgba(229, 9, 20, 0.35)',
+                borderColor: '#FF1E28',
                 borderWidth: 2,
                 borderRadius: 8,
-                hoverBackgroundColor: 'rgba(16, 185, 129, 0.4)',
+                hoverBackgroundColor: 'rgba(255, 30, 40, 0.65)',
             },
         ],
     };
@@ -115,8 +115,8 @@ export const RevenueGrowthChart = ({ data, theme = 'light' }) => {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-            x: { grid: { color: isLight ? '#F1F5F9' : 'rgba(51, 65, 85, 0.5)' }, ticks: { color: isLight ? '#64748B' : '#94A3B8' } },
-            y: { grid: { color: isLight ? '#F1F5F9' : 'rgba(51, 65, 85, 0.5)' }, ticks: { color: isLight ? '#64748B' : '#94A3B8' } },
+            x: { grid: { color: 'rgba(255, 255, 255, 0.06)' }, ticks: { color: '#a1a1aa' } },
+            y: { grid: { color: 'rgba(255, 255, 255, 0.06)' }, ticks: { color: '#a1a1aa' } },
         },
     };
 

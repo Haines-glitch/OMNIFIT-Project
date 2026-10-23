@@ -1,18 +1,23 @@
 /* ==========================================================================
-   OMNIFIT LUXURY MONOCHROME WHITE & BLACK DESIGN SYSTEM
+   OMNIFIT IRON DISTRICT DESIGN SYSTEM (DARK CHARCOAL & CRIMSON RED)
    ========================================================================== */
 
 :root {
-  --bg-black: #0B0B0B;
-  --bg-dark-1: #111827;
-  --bg-dark-2: #1F2937;
-  --bg-card: rgba(31, 41, 55, 0.55);
-  --bg-glass: rgba(17, 24, 39, 0.75);
+  --bg-black: #08080a;
+  --bg-dark-1: #0f0f13;
+  --bg-dark-2: #15151b;
+  --bg-card: rgba(21, 21, 27, 0.85);
+  --bg-glass: rgba(15, 15, 19, 0.88);
 
-  --accent-green: #00C853;
-  --accent-green-bright: #00E676;
-  --accent-green-glow: rgba(0, 230, 118, 0.35);
-  --accent-gradient: linear-gradient(135deg, #00C853 0%, #00E676 100%);
+  --accent-red: #E50914;
+  --accent-red-bright: #FF1E28;
+  --accent-red-glow: rgba(229, 9, 20, 0.45);
+  --accent-gradient: linear-gradient(135deg, #E50914 0%, #FF1E28 100%);
+
+  /* Backward compatibility alias */
+  --accent-green: #E50914;
+  --accent-green-bright: #FF1E28;
+  --accent-green-glow: rgba(229, 9, 20, 0.45);
 
   --mono-white: #FFFFFF;
   --mono-light: #F3F4F6;
@@ -20,10 +25,10 @@
 
   --text-primary: #FFFFFF;
   --text-muted: #9CA3AF;
-  --text-dim: #6B7280;
+  --text-dim: #71717A;
 
-  --border-glass: rgba(255, 255, 255, 0.12);
-  --border-active: rgba(0, 230, 118, 0.6);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(229, 9, 20, 0.6);
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -31,36 +36,36 @@
   --radius-full: 9999px;
 
   --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 25px rgba(0, 230, 118, 0.4);
+  --shadow-glow: 0 0 25px rgba(229, 9, 20, 0.4);
 
-  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --transition-fast: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .text-accent {
-  color: var(--accent-green-bright) !important;
+  color: var(--accent-red-bright) !important;
 }
 
 .bg-accent {
-  background-color: var(--accent-green) !important;
-  color: #000000 !important;
+  background-color: var(--accent-red) !important;
+  color: #FFFFFF !important;
 }
 
 .bg-accent-gradient {
   background: var(--accent-gradient) !important;
-  color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
 .btn-accent {
   background: var(--accent-gradient);
-  color: #000000;
-  font-weight: 700;
+  color: #FFFFFF;
+  font-weight: 800;
   border: none;
   border-radius: var(--radius-md);
   padding: 10px 20px;
   transition: var(--transition-fast);
-  box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+  box-shadow: 0 4px 15px rgba(229, 9, 20, 0.35);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -70,11 +75,11 @@
 .btn-accent:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-glow);
-  color: #000000;
+  color: #FFFFFF;
 }
 
 .glass-card {
-  background: rgba(17, 24, 39, 0.65);
+  background: rgba(18, 18, 23, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -84,8 +89,8 @@
 }
 
 .glass-card:hover {
-  border-color: rgba(0, 230, 118, 0.3);
-  box-shadow: 0 10px 30px -5px rgba(0, 230, 118, 0.15);
+  border-color: rgba(229, 9, 20, 0.35);
+  box-shadow: 0 10px 30px -5px rgba(229, 9, 20, 0.2);
 }
 
 * {
@@ -243,3 +248,45 @@ body {
   color: rgba(255, 255, 255, 0.65) !important;
   opacity: 1;
 }
+
+/* ==========================================================================
+   GLOBAL FORM CONTROLS & DROPDOWN CONTRAST FIXES
+   ========================================================================== */
+
+/* Universal dark color-scheme for native browser popups (datepickers, selects, scrollbars) */
+select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+textarea {
+  color-scheme: dark;
+}
+
+/* Force dark background and crisp white text on all native selects and option elements */
+select {
+  background-color: #181822;
+  color: #FFFFFF;
+}
+
+select option {
+  background-color: #181822 !important;
+  color: #FFFFFF !important;
+  padding: 8px 12px;
+}
+
+select option:checked,
+select option:hover,
+select option:focus {
+  background-color: #E50914 !important;
+  color: #FFFFFF !important;
+}
+
+optgroup {
+  background-color: #121217 !important;
+  color: #FF1E28 !important;
+  font-weight: bold;
+}

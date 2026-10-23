@@ -1,9 +1,17 @@
 import api from './axios';
 import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
 
-export const getMemberDashboardData = async () => {
+export const getMemberDashboardData = async (email = null) => {
     try {
-        const response = await api.get('auth/member-dashboard/');
+        const url = email ? `auth/member-dashboard/?email=${encodeURIComponent(email)}` : 'auth/member-dashboard/';
+        const response = await api.get(url);
+        if (response.data && response.data.data) {
+            return {
+                ...response.data.data,
+                data: response.data.data,
+                success: response.data.success
+            };
+        }
         return response.data;
     } catch (error) {
         // Return high quality fallback mockup data if API is loading or offline
@@ -11,12 +19,44 @@ export const getMemberDashboardData = async () => {
     }
 };
 
-export const getTrainerDashboardData = async () => {
+export const getMemberTodayWorkout = async (email = null) => {
     try {
-        const response = await api.get('auth/trainer-dashboard/');
+        const url = email ? `auth/member/today-workout/?email=${encodeURIComponent(email)}` : 'auth/member/today-workout/';
+        const response = await api.get(url);
+        return response.data?.data || response.data;
+    } catch (error) {
+        console.warn('Failed to fetch today workout:', error);
+        return null;
+    }
+};
+
+export const getTrainerDashboardData = async (email = null) => {
+    try {
+        const url = email ? `auth/trainer-dashboard/?email=${encodeURIComponent(email)}` : 'auth/trainer-dashboard/';
+        const response = await api.get(url);
         return response.data;
     } catch (error) {
         return getFallbackTrainerData();
+    }
+};
+
+export const getTrainerAssignedMembers = async (email = null) => {
+    try {
+        const url = email ? `auth/trainer/assigned-members/?email=${encodeURIComponent(email)}` : 'auth/trainer/assigned-members/';
+        const response = await api.get(url);
+        return response.data;
+    } catch (error) {
+        return [];
+    }
+};
+
+export const assignWorkoutRoutine = async (routineData) => {
+    try {
+        const response = await api.post('auth/trainer/assign-routine/', routineData);
+        return response.data;
+    } catch (error) {
+        console.warn('Failed to assign routine on server:', error);
+        throw error;
     }
 };
 
@@ -26,6 +66,16 @@ export const getAdminDashboardData = async () => {
         return response.data;
     } catch (error) {
         return getFallbackAdminData();
+    }
+};
+
+export const toggleExerciseStatus = async (exerciseId) => {
+    try {
+        const response = await api.post(`auth/member/exercise/${exerciseId}/toggle/`);
+        return response.data;
+    } catch (error) {
+        console.warn('Could not toggle exercise on server:', error);
+        return null;
     }
 };
 
