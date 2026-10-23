@@ -41,6 +41,22 @@ class LoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
+        # Strict security guard: Block unapproved accounts immediately before token creation
+        raw_email = (request.data.get('email') or '').lower().strip()
+        user_in_db = User.objects.filter(email__iexact=raw_email).first()
+        if user_in_db and user_in_db.status in ['Pending', 'Pending Approval']:
+            return standard_response(
+                success=False,
+                message="Account is pending verification and approval by your assigned trainer.",
+                data={
+                    "status": "PENDING_APPROVAL",
+                    "email": user_in_db.email,
+                    "name": user_in_db.full_name or user_in_db.email,
+                },
+                errors={"account": "Your registration is awaiting verification and approval by your assigned trainer."},
+                status_code=status.HTTP_403_FORBIDDEN
+            )
+
         serializer = self.get_serializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)

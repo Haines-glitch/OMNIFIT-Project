@@ -68,9 +68,10 @@ const TrainerDashboard = () => {
         setIsApproving(prev => ({ ...prev, [emailKey]: true }));
         try {
             const res = await LoginService.approveMember(member, trainerInfo.name);
+            const isEmailSuccess = res.email_sent === true;
             setApprovalAlert({
-                type: 'success',
-                message: res.message || `Athlete ${res.name} approved! Official verification email dispatched to ${res.email}.`,
+                type: isEmailSuccess ? 'success' : (res.email_error ? 'warning' : 'success'),
+                message: res.message || `Athlete ${res.name} approved! ${isEmailSuccess ? `Verification email sent via SMTP to ${res.email}.` : (res.email_error ? `SMTP notice: ${res.email_error}` : `Email dispatched to ${res.email}`)}`,
                 email: res.email,
                 name: res.name
             });
@@ -174,13 +175,24 @@ const TrainerDashboard = () => {
                     <div className={`p-4 rounded-xl border flex items-start gap-3 transition-all animate-fade-in ${
                         approvalAlert.type === 'success'
                             ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
+                            : approvalAlert.type === 'warning'
+                            ? 'bg-amber-50 border-amber-300 text-amber-900'
                             : 'bg-rose-50 border-rose-300 text-rose-900'
                     }`}>
-                        <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                            <i className="bi bi-envelope-check-fill text-sm"></i>
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            approvalAlert.type === 'success' ? 'bg-emerald-100 text-emerald-700' :
+                            approvalAlert.type === 'warning' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
+                        }`}>
+                            <i className={`text-sm ${
+                                approvalAlert.type === 'success' ? 'bi bi-envelope-check-fill' :
+                                approvalAlert.type === 'warning' ? 'bi bi-exclamation-triangle-fill' : 'bi bi-x-circle-fill'
+                            }`}></i>
                         </div>
                         <div className="space-y-0.5">
-                            <span className="text-xs font-bold block">Approval & Email Dispatched</span>
+                            <span className="text-xs font-bold block">
+                                {approvalAlert.type === 'success' ? 'Approval & Email Dispatched' :
+                                 approvalAlert.type === 'warning' ? 'Athlete Approved (SMTP Notice)' : 'Approval Error'}
+                            </span>
                             <span className="text-xs text-slate-700 leading-snug">{approvalAlert.message}</span>
                         </div>
                     </div>

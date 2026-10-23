@@ -141,25 +141,32 @@ export const LoginService = {
             }
 
         } catch (error) {
-            // Check for 403 Forbidden: Account suspended or pending trainer approval
-            if (error.response && error.response.status === 403) {
+            if (error.response) {
                 const errorData = error.response.data;
                 const errStr = JSON.stringify(errorData).toLowerCase();
                 const isPending = errStr.includes('pending') || errStr.includes('awaiting') || errorData?.data?.status === 'PENDING_APPROVAL';
-                if (isPending) {
-                    return {
-                        success: false,
-                        isPendingApproval: true,
-                        email: credentials.email,
-                        name: errorData?.data?.name || (credentials.email ? credentials.email.split('@')[0] : 'Athlete'),
-                        error: 'Your account is pending verification and approval by your assigned trainer.'
-                    };
+                if (isPending || error.response.status === 403) {
+                    if (isPending) {
+                        return {
+                            success: false,
+                            isPendingApproval: true,
+                            email: credentials.email,
+                            name: errorData?.data?.name || (credentials.email ? credentials.email.split('@')[0] : 'Athlete'),
+                            error: 'Your account is pending verification and approval by your assigned trainer.'
+                        };
+                    }
+                    const errorMsg = errorData?.errors?.account || errorData?.message || 'Account is suspended or inactive.';
+                    return { success: false, error: errorMsg };
                 }
-                const errorMsg = errorData?.errors?.account || errorData?.message || 'Account is suspended or inactive.';
+
+                // If backend actively rejected credentials (400 / 401), NEVER mock-login
+                const fieldError = errorData?.errors ? Object.values(errorData.errors)[0] : null;
+                const errorMsg = (Array.isArray(fieldError) ? fieldError[0] : fieldError) || errorData?.message || errorData?.detail || 'Invalid email or password.';
                 return { success: false, error: errorMsg };
             }
-            // For 400 (wrong credentials / user not in DB) or network errors → demo mock fallback
-            console.warn('Backend auth unavailable or credentials not in DB. Falling back to demo mock mode.', error);
+
+            // Only fallback to demo mock mode if backend is completely offline (network down)
+            console.warn('Backend server unreachable. Falling back to offline demo mode.', error);
 
             // Demo Fallback Mode for immediate presentation testing
             const role = (credentials.role || 'member').toLowerCase();
@@ -238,6 +245,20 @@ export const LoginService = {
         const rawName = googleUserData.name || (email.split('@')[0]);
         const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
         
+        // Check backend database approval status
+        try {
+            const statusCheck = await this.checkApprovalStatus(email);
+            if (statusCheck && statusCheck.isPendingApproval) {
+                return {
+                    success: false,
+                    isPendingApproval: true,
+                    email: email,
+                    name: statusCheck.user?.name || displayName,
+                    error: 'Your Google-linked athlete account is awaiting verification and approval by your assigned trainer.'
+                };
+            }
+        } catch (e) {}
+
         const persisted = getPersistedProfile(email) || {};
 
         // If user registered with pending status, prevent login until approved

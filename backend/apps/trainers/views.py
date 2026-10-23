@@ -321,6 +321,7 @@ class ApproveMemberView(APIView):
         )
 
         email_sent = False
+        email_error = None
         try:
             send_mail(
                 subject=email_subject,
@@ -331,8 +332,8 @@ class ApproveMemberView(APIView):
             )
             email_sent = True
         except Exception as e:
-            print(f"[Email Notification Note] Console fallback: {e}")
-            email_sent = True
+            email_error = str(e)
+            print(f"[Email Notification Error] SMTP dispatch failed: {e}")
 
         # 3. Create in-app Notification for member
         Notification.objects.create(
@@ -342,9 +343,15 @@ class ApproveMemberView(APIView):
             message=f"Trainer {trainer_name} has approved your athlete account. You now have full access to OMNIFIT."
         )
 
+        msg = f"Athlete {athlete_name} approved successfully."
+        if email_sent:
+            msg += f" Official verification email sent via SMTP to {user.email}."
+        else:
+            msg += f" Note: SMTP email delivery error: {email_error}."
+
         return standard_response(
             success=True,
-            message=f"Athlete {athlete_name} approved successfully. Verification email dispatched to {user.email}.",
+            message=msg,
             data={
                 "user_id": user.id,
                 "member_id": member.id,
@@ -352,6 +359,7 @@ class ApproveMemberView(APIView):
                 "name": athlete_name,
                 "status": "Active",
                 "email_sent": email_sent,
+                "email_error": email_error,
                 "email_subject": email_subject,
                 "email_recipient": user.email
             }
