@@ -63,6 +63,13 @@ export const assignWorkoutRoutine = async (routineData) => {
 export const getAdminDashboardData = async () => {
     try {
         const response = await api.get('auth/admin-dashboard/');
+        if (response.data && response.data.data) {
+            return {
+                ...response.data.data,
+                ...response.data,
+                data: response.data.data
+            };
+        }
         return response.data;
     } catch (error) {
         return getFallbackAdminData();

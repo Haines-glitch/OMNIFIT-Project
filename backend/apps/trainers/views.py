@@ -46,10 +46,13 @@ class TrainerListCreateView(APIView):
         if not serializer.is_valid():
             errors = serializer.errors
             err_msg = "Validation failed."
-            if "email" in errors:
-                err_msg = errors["email"][0]
-            elif "password" in errors:
-                err_msg = errors["password"][0]
+            for field, field_errs in errors.items():
+                if isinstance(field_errs, list) and len(field_errs) > 0:
+                    err_msg = str(field_errs[0]) if field in ('non_field_errors', '__all__') else f"{field}: {field_errs[0]}"
+                    break
+                elif isinstance(field_errs, str):
+                    err_msg = field_errs
+                    break
             return standard_response(
                 success=False,
                 message=err_msg,

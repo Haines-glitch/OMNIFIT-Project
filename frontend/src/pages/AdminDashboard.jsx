@@ -79,16 +79,56 @@ const AdminDashboard = () => {
             case 'trainers':
                 return <TrainerManagementModule theme="dark" />;
             case 'members':
+                const membersData = (data?.members && data.members.length > 0) ? data.members : recentPaymentsData;
                 return (
                     <DataTable
                         title="Registered Member Accounts"
                         columns={[
-                            { key: 'member', label: 'Account Name' },
+                            {
+                                key: 'member',
+                                label: 'Account Name',
+                                render: (val, row) => (
+                                    <div className="d-flex align-items-center gap-2.5">
+                                        <div
+                                            className="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white text-xs flex-shrink-0"
+                                            style={{
+                                                width: '32px',
+                                                height: '32px',
+                                                background: 'linear-gradient(135deg, #E50914, #800000)',
+                                                border: '1px solid rgba(229, 9, 20, 0.4)'
+                                            }}
+                                        >
+                                            {(val || 'U').charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="overflow-hidden">
+                                            <div className="fw-semibold text-white text-sm text-truncate">{val}</div>
+                                            {row.email && <div className="text-zinc-400 text-xs text-truncate">{row.email}</div>}
+                                        </div>
+                                    </div>
+                                )
+                            },
                             { key: 'plan', label: 'Role / Plan' },
                             { key: 'amount', label: 'Subscription Fee' },
+                            {
+                                key: 'status',
+                                label: 'Status',
+                                render: (val) => (
+                                    <span
+                                        className="badge rounded-pill fw-semibold px-2.5 py-1"
+                                        style={{
+                                            background: (val === 'Active') ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                                            color: (val === 'Active') ? '#10B981' : '#F59E0B',
+                                            border: `1px solid ${(val === 'Active') ? 'rgba(16, 185, 129, 0.25)' : 'rgba(245, 158, 11, 0.25)'}`,
+                                        }}
+                                    >
+                                        {val || 'Active'}
+                                    </span>
+                                )
+                            },
+                            { key: 'assigned_trainer', label: 'Assigned Trainer' },
                             { key: 'date', label: 'Created Date' },
                         ]}
-                        data={recentPaymentsData}
+                        data={membersData}
                         theme="dark"
                     />
                 );
@@ -141,7 +181,7 @@ const AdminDashboard = () => {
                                         SYSTEM EXECUTIVE OVERVIEW
                                     </span>
                                     <h2 className="fw-black mb-1 text-white">OMNIFIT Master Admin Portal</h2>
-                                    <p className="small mb-0 text-zinc-400">Full Control over 1,248 Members, 34 Certified Trainers, & Facial Access Terminals</p>
+                                    <p className="small mb-0 text-zinc-400">Full Control over {data?.stats?.totalMembers || (data?.members?.length || '1,248')} Members, {data?.stats?.totalTrainers || 34} Certified Trainers, & Facial Access Terminals</p>
                                 </div>
 
                                 <div className="d-flex gap-2">
@@ -173,16 +213,42 @@ const AdminDashboard = () => {
                         {/* Stat Cards Row */}
                         <div className="row g-3">
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Total Club Members" value="1,248" subtext="Active Accounts" icon="bi-people-fill" trend="+14%" theme="dark" />
+                                <StatCard
+                                    title="Total Club Members"
+                                    value={data?.stats?.totalMembers != null ? data.stats.totalMembers.toLocaleString() : "1,248"}
+                                    subtext="Active Accounts"
+                                    icon="bi-people-fill"
+                                    trend="+14%"
+                                    theme="dark"
+                                />
                             </div>
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Total Certified Trainers" value="34 Trainers" subtext="Full-time Staff" icon="bi-person-badge-fill" theme="dark" />
+                                <StatCard
+                                    title="Total Certified Trainers"
+                                    value={data?.stats?.totalTrainers != null ? `${data.stats.totalTrainers} Trainers` : "34 Trainers"}
+                                    subtext="Full-time Staff"
+                                    icon="bi-person-badge-fill"
+                                    theme="dark"
+                                />
                             </div>
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Monthly Revenue" value="$48,920" subtext="+18% vs Last Month" icon="bi-currency-dollar" trend="+18%" theme="dark" />
+                                <StatCard
+                                    title="Monthly Revenue"
+                                    value={data?.stats?.monthlyRevenue || "$48,920"}
+                                    subtext="+18% vs Last Month"
+                                    icon="bi-currency-dollar"
+                                    trend="+18%"
+                                    theme="dark"
+                                />
                             </div>
                             <div className="col-md-3 col-sm-6">
-                                <StatCard title="Today's Facial Check-Ins" value="342 Passes" subtext="Contactless verified" icon="bi-camera-fill" theme="dark" />
+                                <StatCard
+                                    title="Today's Facial Check-Ins"
+                                    value={data?.stats?.todayAttendance != null ? `${data.stats.todayAttendance} Passes` : "342 Passes"}
+                                    subtext="Contactless verified"
+                                    icon="bi-camera-fill"
+                                    theme="dark"
+                                />
                             </div>
                         </div>
 

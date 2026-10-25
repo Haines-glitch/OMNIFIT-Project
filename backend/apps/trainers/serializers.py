@@ -86,11 +86,55 @@ class TrainerCreateSerializer(serializers.Serializer):
 
     def to_internal_value(self, data):
         mutable_data = data.copy() if hasattr(data, 'copy') else dict(data)
-        if 'working_days' in mutable_data and isinstance(mutable_data['working_days'], str):
-            try:
-                mutable_data['working_days'] = json.loads(mutable_data['working_days'])
-            except Exception:
-                mutable_data['working_days'] = [d.strip() for d in mutable_data['working_days'].split(',') if d.strip()]
+        import json
+
+        # Clean working_days
+        if 'working_days' in mutable_data:
+            wd = mutable_data['working_days']
+            if isinstance(wd, str):
+                try:
+                    mutable_data['working_days'] = json.loads(wd)
+                except Exception:
+                    mutable_data['working_days'] = [d.strip() for d in wd.split(',') if d.strip()]
+        if not mutable_data.get('working_days'):
+            mutable_data['working_days'] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+        
+        # Clean date_of_birth (empty string / 'null' -> None)
+        if 'date_of_birth' in mutable_data:
+            val = mutable_data.get('date_of_birth')
+            if not val or str(val).strip() in ('', 'null', 'undefined', 'None'):
+                mutable_data['date_of_birth'] = None
+
+        # Clean experience_certificate (empty string or non-file -> None)
+        if 'experience_certificate' in mutable_data:
+            val = mutable_data.get('experience_certificate')
+            if val in ('', 'null', 'undefined', None) or not hasattr(val, 'read'):
+                mutable_data['experience_certificate'] = None
+
+        # Clean profile_image (empty string or non-file -> None)
+        if 'profile_image' in mutable_data:
+            val = mutable_data.get('profile_image')
+            if val in ('', 'null', 'undefined', None) or not hasattr(val, 'read'):
+                mutable_data['profile_image'] = None
+
+        # Clean experience (string / empty -> int)
+        if 'experience' in mutable_data:
+            val = mutable_data.get('experience')
+            if val in ('', 'null', 'undefined', None):
+                mutable_data['experience'] = 1
+            else:
+                try:
+                    mutable_data['experience'] = int(val)
+                except (ValueError, TypeError):
+                    mutable_data['experience'] = 1
+        else:
+            mutable_data['experience'] = 1
+
+        # Clean optional strings
+        for field in ['qualification', 'certification', 'license_number', 'bio', 'start_time', 'end_time']:
+            if field in mutable_data and mutable_data[field] in (None, 'null', 'undefined'):
+                mutable_data[field] = ''
+
         return super().to_internal_value(mutable_data)
 
     def validate_experience_certificate(self, value):

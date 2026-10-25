@@ -235,16 +235,14 @@ const TrainerManagementModule = ({ theme = 'dark' }) => {
         setIsSubmitting(true);
         try {
             let submissionData;
-            if (formData.experience_certificate) {
+            if (formData.experience_certificate instanceof File) {
                 const fd = new FormData();
                 Object.keys(formData).forEach(key => {
                     if (key === 'working_days') {
                         fd.append('working_days', JSON.stringify(formData.working_days || []));
                     } else if (key === 'experience_certificate') {
-                        if (formData.experience_certificate instanceof File) {
-                            fd.append('experience_certificate', formData.experience_certificate);
-                        }
-                    } else if (key !== 'certificate_name' && formData[key] !== null && formData[key] !== undefined) {
+                        fd.append('experience_certificate', formData.experience_certificate);
+                    } else if (key !== 'certificate_name' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
                         fd.append(key, formData[key]);
                     }
                 });
@@ -252,10 +250,13 @@ const TrainerManagementModule = ({ theme = 'dark' }) => {
             } else {
                 submissionData = { ...formData };
                 delete submissionData.certificate_name;
+                if (!submissionData.date_of_birth) delete submissionData.date_of_birth;
+                if (!submissionData.experience_certificate) delete submissionData.experience_certificate;
+                if (!submissionData.profile_image) delete submissionData.profile_image;
             }
 
             const res = await LoginService.createTrainer(submissionData);
-            if (res.success || res.id) {
+            if (res.success || res.id || res.data?.id) {
                 setToast({ show: true, message: 'Trainer account created successfully with verified credentials!', type: 'success' });
                 setShowAddModal(false);
                 fetchTrainersData();
@@ -287,10 +288,16 @@ const TrainerManagementModule = ({ theme = 'dark' }) => {
         } catch (err) {
             if (err.response?.status === 400) {
                 const errors = err.response?.data?.errors;
-                const errMsg = err.response?.data?.message 
-                    || errors?.experience_certificate?.[0]
-                    || errors?.email?.[0]
-                    || 'Validation error.';
+                let errMsg = err.response?.data?.message;
+                if (!errMsg || errMsg === 'Validation failed.') {
+                    if (errors && typeof errors === 'object') {
+                        const firstKey = Object.keys(errors)[0];
+                        const firstVal = errors[firstKey];
+                        errMsg = Array.isArray(firstVal) ? `${firstKey}: ${firstVal[0]}` : String(firstVal);
+                    } else {
+                        errMsg = 'Validation error.';
+                    }
+                }
                 setToast({ show: true, message: errMsg, type: 'error' });
             } else {
                 // Graceful fallback for mock mode / disconnected backend
