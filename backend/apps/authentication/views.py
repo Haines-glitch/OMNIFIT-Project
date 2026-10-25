@@ -29,6 +29,28 @@ from .models import Notification, Appointment
 
 User = get_user_model()
 
+import threading
+
+def send_async_email(subject, message, recipient_list, from_email=None):
+    """Sends email in a non-blocking daemon thread so SMTP delays never block HTTP responses."""
+    def _worker():
+        try:
+            from django.core.mail import send_mail
+            from django.conf import settings
+            sender = from_email or getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'support@omnifit.com'
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=sender,
+                recipient_list=recipient_list,
+                fail_silently=True
+            )
+        except Exception as e:
+            print(f"[Async Email Warning] {e}")
+
+    thread = threading.Thread(target=_worker, daemon=True)
+    thread.start()
+
 def standard_response(success=True, message="", data=None, errors=None, status_code=status.HTTP_200_OK):
     return Response({
         "success": success,
@@ -222,13 +244,10 @@ class RegisterView(generics.CreateAPIView):
             member.date_of_birth = None
             member.save()
 
-        # Send Welcome email if SMTP is configured
+        # Send Welcome email asynchronously (non-blocking)
         try:
-            from django.core.mail import send_mail
-            from django.conf import settings
-            from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'support@omnifit.com'
             athlete_name = user.full_name or user.email.split('@')[0]
-            send_mail(
+            send_async_email(
                 subject="Welcome to OMNIFIT Ecosystem!",
                 message=(
                     f"Hello {athlete_name},\n\n"
@@ -239,9 +258,7 @@ class RegisterView(generics.CreateAPIView):
                     f"Best regards,\n"
                     f"The OMNIFIT Coaching Team"
                 ),
-                from_email=from_email,
-                recipient_list=[user.email],
-                fail_silently=True
+                recipient_list=[user.email]
             )
         except Exception as e:
             print(f"[Registration Email Warning] {e}")

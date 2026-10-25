@@ -335,21 +335,22 @@ class ApproveMemberView(APIView):
             f"support@omnifit.com\n"
         )
 
-        email_sent = False
-        email_error = None
-        from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
-        try:
-            send_mail(
-                subject=email_subject,
-                message=email_body,
-                from_email=from_email,
-                recipient_list=[user.email],
-                fail_silently=False
-            )
-            email_sent = True
-        except Exception as e:
-            email_error = str(e)
-            print(f"[Email Notification Error] SMTP dispatch failed: {e}")
+        # Dispatch approval email asynchronously
+        def _send_approval():
+            try:
+                from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
+                send_mail(
+                    subject=email_subject,
+                    message=email_body,
+                    from_email=from_email,
+                    recipient_list=[user.email],
+                    fail_silently=True
+                )
+            except Exception as e:
+                print(f"[Email Notification Error] SMTP dispatch failed: {e}")
+
+        import threading
+        threading.Thread(target=_send_approval, daemon=True).start()
 
         # 3. Create in-app Notification for member
         Notification.objects.create(

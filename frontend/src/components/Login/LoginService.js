@@ -175,8 +175,20 @@ export const LoginService = {
                 }
 
                 // If backend actively rejected credentials (400 / 401), NEVER mock-login
-                const fieldError = errorData?.errors ? Object.values(errorData.errors)[0] : null;
-                const errorMsg = (Array.isArray(fieldError) ? fieldError[0] : fieldError) || errorData?.message || errorData?.detail || 'Invalid email or password.';
+                let errorMsg = 'Invalid email or password.';
+                if (typeof errorData?.errors === 'string') {
+                    errorMsg = errorData.errors;
+                } else if (errorData?.errors && typeof errorData.errors === 'object') {
+                    const vals = Object.values(errorData.errors);
+                    if (vals.length > 0) {
+                        const first = vals[0];
+                        errorMsg = Array.isArray(first) ? first[0] : (typeof first === 'string' ? first : JSON.stringify(first));
+                    }
+                } else if (errorData?.message) {
+                    errorMsg = errorData.message;
+                } else if (errorData?.detail) {
+                    errorMsg = errorData.detail;
+                }
                 return { success: false, error: errorMsg };
             }
 
@@ -429,12 +441,13 @@ export const LoginService = {
                     };
                 }
                 let errorMsg = errorData?.message || errorData?.detail || 'Registration failed.';
-                // Extract specific field errors if available
-                if (errorData?.errors) {
+                if (typeof errorData?.errors === 'string') {
+                    errorMsg = errorData.errors;
+                } else if (errorData?.errors && typeof errorData.errors === 'object') {
                     const firstField = Object.keys(errorData.errors)[0];
                     if (firstField) {
                         const fieldErr = errorData.errors[firstField];
-                        errorMsg = Array.isArray(fieldErr) ? fieldErr[0] : fieldErr;
+                        errorMsg = Array.isArray(fieldErr) ? fieldErr[0] : (typeof fieldErr === 'string' ? fieldErr : JSON.stringify(fieldErr));
                     }
                 }
                 return { success: false, error: errorMsg };
