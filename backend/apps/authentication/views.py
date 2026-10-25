@@ -47,17 +47,25 @@ class LoginView(TokenObtainPairView):
         raw_email = (request.data.get('email') or '').lower().strip()
         user_in_db = User.objects.filter(email__iexact=raw_email).first()
         if user_in_db and user_in_db.status in ['Pending', 'Pending Approval']:
-            return standard_response(
-                success=False,
-                message="Account is pending verification and approval by your assigned trainer.",
-                data={
-                    "status": "PENDING_APPROVAL",
-                    "email": user_in_db.email,
-                    "name": user_in_db.full_name or user_in_db.email,
-                },
-                errors={"account": "Your registration is awaiting verification and approval by your assigned trainer."},
-                status_code=status.HTTP_403_FORBIDDEN
-            )
+            import os
+            auto_approve = os.environ.get('AUTO_APPROVE_MEMBERS', 'True').lower() in ('true', '1')
+            if auto_approve:
+                user_in_db.status = 'Active'
+                user_in_db.is_active = True
+                user_in_db.save()
+                Member.objects.filter(user=user_in_db).update(status='Active', is_active=True)
+            else:
+                return standard_response(
+                    success=False,
+                    message="Account is pending verification and approval by your assigned trainer.",
+                    data={
+                        "status": "PENDING_APPROVAL",
+                        "email": user_in_db.email,
+                        "name": user_in_db.full_name or user_in_db.email,
+                    },
+                    errors={"account": "Your registration is awaiting verification and approval by your assigned trainer."},
+                    status_code=status.HTTP_403_FORBIDDEN
+                )
 
         serializer = self.get_serializer(data=request.data)
         try:
@@ -141,14 +149,19 @@ class RegisterView(generics.CreateAPIView):
                 "errors": errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
+        import os
+        auto_approve = os.environ.get('AUTO_APPROVE_MEMBERS', 'True').lower() in ('true', '1')
+
         user = serializer.save()
         user.role = 'member'
-        user.status = 'Pending Approval'
+        user.status = 'Active' if auto_approve else 'Pending Approval'
+        user.is_active = True
         user.save()
 
         # Create/Update Member profile with extended details if supplied
         member, _ = Member.objects.get_or_create(user=user)
-        member.status = 'Pending'
+        member.status = 'Active' if auto_approve else 'Pending'
+        member.is_active = True
 
         default_trainer = User.objects.filter(role='trainer').first()
         if default_trainer:
@@ -209,12 +222,36 @@ class RegisterView(generics.CreateAPIView):
             member.date_of_birth = None
             member.save()
 
+        # Send Welcome email if SMTP is configured
+        try:
+            from django.core.mail import send_mail
+            from django.conf import settings
+            from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'support@omnifit.com'
+            athlete_name = user.full_name or user.email.split('@')[0]
+            send_mail(
+                subject="Welcome to OMNIFIT Ecosystem!",
+                message=(
+                    f"Hello {athlete_name},\n\n"
+                    f"Welcome to the OMNIFIT High-Performance Health Club Ecosystem!\n\n"
+                    f"Your athlete account is ACTIVE. You can now log into your Athlete Command Center:\n"
+                    f"https://omnifit-nine.vercel.app/login\n\n"
+                    f"Account Email: {user.email}\n\n"
+                    f"Best regards,\n"
+                    f"The OMNIFIT Coaching Team"
+                ),
+                from_email=from_email,
+                recipient_list=[user.email],
+                fail_silently=True
+            )
+        except Exception as e:
+            print(f"[Registration Email Warning] {e}")
+
         # Create notification for athlete
         Notification.objects.create(
             user=user,
             notification_type="AI Alert",
-            title="Registration Awaiting Trainer Approval",
-            message=f"Welcome {user.full_name or user.email}! Your registration has been received and is awaiting review by your trainer. You will receive an email once approved."
+            title="Account Ready!" if auto_approve else "Registration Awaiting Trainer Approval",
+            message=f"Welcome {user.full_name or user.email}! Your athlete account is active and ready for training." if auto_approve else f"Welcome {user.full_name or user.email}! Your registration has been received and is awaiting review by your trainer."
         )
 
         # Create notification for assigned trainer
@@ -222,19 +259,20 @@ class RegisterView(generics.CreateAPIView):
             Notification.objects.create(
                 user=default_trainer,
                 notification_type="Member Registration",
-                title=f"New Athlete Awaiting Approval: {user.full_name or user.email}",
-                message=f"Athlete {user.full_name or user.email} has registered and requires your approval before accessing the facility."
+                title=f"New Athlete: {user.full_name or user.email}",
+                message=f"Athlete {user.full_name or user.email} has registered with OMNIFIT."
             )
 
         return Response({
-            "message": "Member registration successful. Awaiting trainer approval.",
-            "status": "PENDING_APPROVAL",
+            "message": "Member registration successful. You can now log in!" if auto_approve else "Member registration successful. Awaiting trainer approval.",
+            "status": "ACTIVE" if auto_approve else "PENDING_APPROVAL",
+            "success": True,
             "user": {
                 "id": user.id,
                 "name": user.full_name or user.email,
                 "email": user.email,
                 "role": "MEMBER",
-                "status": "Pending Approval"
+                "status": user.status
             }
         }, status=status.HTTP_201_CREATED)
 

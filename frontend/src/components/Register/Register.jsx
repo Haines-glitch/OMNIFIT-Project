@@ -188,11 +188,20 @@ const Register = () => {
 
             const result = await LoginService.register(userData);
 
-            if (result.success || result.isPendingApproval || result.status === 'PENDING_APPROVAL') {
+            if (result.success && !result.isPendingApproval) {
+                setToast({
+                    show: true,
+                    message: result.message || "Account registered successfully! You can now log in.",
+                    type: 'success'
+                });
+                setTimeout(() => {
+                    navigate(`/login?registered=success&email=${encodeURIComponent(email.trim())}`);
+                }, 1000);
+            } else if (result.success || result.isPendingApproval || result.status === 'PENDING_APPROVAL') {
                 setToast({
                     show: true,
                     message: result.message || "Registration received. Awaiting trainer approval.",
-                    type: 'success'
+                    type: 'warning'
                 });
                 // Redirect newly registered member to /login with pending screen
                 setTimeout(() => {

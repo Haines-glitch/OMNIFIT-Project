@@ -41,7 +41,15 @@ const Login = () => {
         // Check if redirected from registration as pending approval
         try {
             const params = new URLSearchParams(window.location.search);
-            if (params.get('registered') === 'pending') {
+            if (params.get('registered') === 'success') {
+                const regEmail = params.get('email') || '';
+                setEmail(regEmail);
+                setToast({
+                    show: true,
+                    message: 'Account created! Enter your password to log in.',
+                    type: 'success'
+                });
+            } else if (params.get('registered') === 'pending') {
                 const regEmail = params.get('email') || '';
                 setPendingApprovalData({
                     email: regEmail,

@@ -44,6 +44,22 @@ if email and password:
 else:
     print("[OMNIFIT] SUPERUSER_EMAIL or SUPERUSER_PASSWORD not set. Skipping superuser creation.")
 
+# Automatically activate any pending members if auto-approval is enabled
+if os.environ.get('AUTO_APPROVE_MEMBERS', 'True').lower() in ('true', '1'):
+    try:
+        from apps.members.models import Member
+        pending_users = User.objects.filter(status__in=['Pending', 'Pending Approval'])
+        count = pending_users.count()
+        if count > 0:
+            for pu in pending_users:
+                pu.status = 'Active'
+                pu.is_active = True
+                pu.save()
+                Member.objects.filter(user=pu).update(status='Active', is_active=True)
+            print(f"[OMNIFIT] Activated {count} pending member account(s) to 'Active'!")
+    except Exception as e:
+        print(f"[OMNIFIT] Note on pending member activation: {e}")
+
 # Optional seed demo data trigger
 if os.environ.get('SEED_DATABASE', 'False').lower() in ('true', '1'):
     try:

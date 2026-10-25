@@ -385,21 +385,27 @@ export const LoginService = {
             const response = await api.post('/register/', memberData);
             const payload = response.data;
 
-            const pendingInfo = {
+            const isApproved = payload.status === 'ACTIVE' || payload.status === 'Active' || payload.user?.status === 'Active';
+            const memberInfo = {
                 ...userData,
                 email: userEmail,
-                status: 'Pending Approval',
-                isPendingApproval: true,
+                status: isApproved ? 'Active' : 'Pending Approval',
+                isPendingApproval: !isApproved,
                 join_date: new Date().toISOString().split('T')[0]
             };
-            savePersistedProfile(userEmail, pendingInfo);
-            savePendingMember(pendingInfo);
+            savePersistedProfile(userEmail, memberInfo);
+            if (!isApproved) {
+                savePendingMember(memberInfo);
+            } else {
+                removePendingMember(userEmail);
+            }
 
             return {
                 success: true,
-                isPendingApproval: true,
-                message: payload.message || "Member registration successful. Awaiting trainer approval.",
-                user: payload.user || payload.data?.user || pendingInfo
+                isPendingApproval: !isApproved,
+                status: isApproved ? 'ACTIVE' : 'PENDING_APPROVAL',
+                message: payload.message || (isApproved ? "Registration successful! You can now log in." : "Member registration successful. Awaiting trainer approval."),
+                user: payload.user || payload.data?.user || memberInfo
             };
         } catch (error) {
             // If backend responded with an error, check if it's actually an existing pending account
