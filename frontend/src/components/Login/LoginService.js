@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { DEFAULT_AVATAR } from '../../utils/defaultAvatar';
 
-const API_URL = '/api/auth';
+// Dynamic API base configuration for local development & production (Render/Vercel)
+const RAW_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '/api/' : 'http://127.0.0.1:8000/api/');
+const CLEAN_BASE = RAW_BASE_URL.replace(/\/+$/, '');
+export const API_ROOT = CLEAN_BASE.endsWith('/api') ? CLEAN_BASE : `${CLEAN_BASE}/api`;
+const API_URL = `${API_ROOT}/auth/`;
 
 // Create Axios instance with default headers
 const api = axios.create({
@@ -11,9 +15,12 @@ const api = axios.create({
     },
 });
 
-// Intercept requests to add Bearer token if available
+// Intercept requests to add Bearer token if available and normalize relative paths
 api.interceptors.request.use(
     (config) => {
+        if (config.url && config.url.startsWith('/') && !config.url.startsWith('//')) {
+            config.url = config.url.slice(1);
+        }
         const token = localStorage.getItem('access_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -457,7 +464,7 @@ export const LoginService = {
     async getPendingMembers() {
         let serverList = [];
         try {
-            const res = await api.get('/trainers/pending-members/', { baseURL: '/api' });
+            const res = await api.get('trainers/pending-members/', { baseURL: `${API_ROOT}/` });
             if (res.data?.data) {
                 serverList = res.data.data;
             }
@@ -494,7 +501,7 @@ export const LoginService = {
                 email: email,
                 user_id: userId,
                 trainer_name: trainerName
-            }, { baseURL: '/api' });
+            }, { baseURL: `${API_ROOT}/` });
             if (res.data?.success) {
                 serverSuccess = true;
                 responseMsg = res.data.message;
@@ -530,7 +537,7 @@ export const LoginService = {
         if (!email) return { is_approved: false };
         const cleanEmail = email.toLowerCase().trim();
         try {
-            const res = await api.get(`/auth/approval-status/?email=${encodeURIComponent(cleanEmail)}`, { baseURL: '/api' });
+            const res = await api.get(`auth/approval-status/?email=${encodeURIComponent(cleanEmail)}`, { baseURL: `${API_ROOT}/` });
             if (res.data?.data) {
                 const data = res.data.data;
                 if (data.is_approved) {
@@ -563,7 +570,7 @@ export const LoginService = {
      */
     async getTrainers() {
         try {
-            const res = await api.get('/trainers/', { baseURL: '/api' });
+            const res = await api.get('trainers/', { baseURL: `${API_ROOT}/` });
             return res.data?.data || res.data || [];
         } catch (e) {
             console.warn('Error fetching trainers:', e);
@@ -573,37 +580,37 @@ export const LoginService = {
 
     async createTrainer(trainerData) {
         const isFormData = typeof FormData !== 'undefined' && trainerData instanceof FormData;
-        const config = { baseURL: '/api' };
+        const config = { baseURL: `${API_ROOT}/` };
         if (isFormData) {
             config.headers = { 'Content-Type': 'multipart/form-data' };
         }
-        const res = await api.post('/trainers/', trainerData, config);
+        const res = await api.post('trainers/', trainerData, config);
         return res.data;
     },
 
     async getTrainerById(id) {
-        const res = await api.get(`/trainers/${id}/`, { baseURL: '/api' });
+        const res = await api.get(`trainers/${id}/`, { baseURL: `${API_ROOT}/` });
         return res.data?.data || res.data;
     },
 
     async updateTrainer(id, data) {
         const isFormData = typeof FormData !== 'undefined' && data instanceof FormData;
-        const config = { baseURL: '/api' };
+        const config = { baseURL: `${API_ROOT}/` };
         if (isFormData) {
             config.headers = { 'Content-Type': 'multipart/form-data' };
         }
-        const res = await api.patch(`/trainers/${id}/`, data, config);
+        const res = await api.patch(`trainers/${id}/`, data, config);
         return res.data;
     },
 
     async deleteTrainer(id) {
-        const res = await api.delete(`/trainers/${id}/`, { baseURL: '/api' });
+        const res = await api.delete(`trainers/${id}/`, { baseURL: `${API_ROOT}/` });
         return res.data;
     },
 
     async getAvailableMembers() {
         try {
-            const res = await api.get('/trainers/available-members/', { baseURL: '/api' });
+            const res = await api.get('trainers/available-members/', { baseURL: `${API_ROOT}/` });
             return res.data?.data || res.data || [];
         } catch (e) {
             console.warn('Error fetching members:', e);
@@ -612,7 +619,7 @@ export const LoginService = {
     },
 
     async assignMemberToTrainer(trainerId, memberId) {
-        const res = await api.post(`/trainers/${trainerId}/assign-member/`, { member_id: memberId }, { baseURL: '/api' });
+        const res = await api.post(`trainers/${trainerId}/assign-member/`, { member_id: memberId }, { baseURL: `${API_ROOT}/` });
         return res.data;
     },
 
