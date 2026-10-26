@@ -11,6 +11,7 @@ import {
 import LoginService from '../Login/LoginService';
 import WorkoutProofModal from '../Workouts/WorkoutProofModal';
 import WorkoutProofViewerModal from '../Workouts/WorkoutProofViewerModal';
+import { PREBUILT_ROUTINES, PREBUILT_CATEGORIES } from '../../data/routineBlueprints';
 
 const WorkoutModule = ({ 
     role = 'MEMBER', 
@@ -18,7 +19,8 @@ const WorkoutModule = ({
     initialMemberEmail = null,
     userEmail = null,
     activeRoutine = null,
-    onToggleExercise = null
+    onToggleExercise = null,
+    searchQuery = ''
 }) => {
     const isTrainerOrAdmin = role === 'TRAINER' || role === 'ADMIN';
     const [selectedCategory, setSelectedCategory] = useState('All');
@@ -28,7 +30,13 @@ const WorkoutModule = ({
     const [activeTab, setActiveTab] = useState('assigned');
 
     // Active sub-tab for trainers: 'prescribe' vs 'review_proofs'
-    const [trainerTab, setTrainerTab] = useState('review_proofs');
+    const [trainerTab, setTrainerTab] = useState('prescribe');
+
+    // Pre-built routine HUD states
+    const [selectedBlueprintCategory, setSelectedBlueprintCategory] = useState('All Blueprints');
+    const [selectedPresetId, setSelectedPresetId] = useState('chest-triceps');
+    const [showLibraryPicker, setShowLibraryPicker] = useState(false);
+    const [catalogSearch, setCatalogSearch] = useState('');
 
     // Member assigned workout state
     const [memberRoutine, setMemberRoutine] = useState(activeRoutine || null);
@@ -52,27 +60,54 @@ const WorkoutModule = ({
     // Assigned athletes list for trainers
     const [assignedAthletes, setAssignedAthletes] = useState([]);
     const [selectedAthleteEmail, setSelectedAthleteEmail] = useState(initialMemberEmail || '');
-    const [routineTitle, setRoutineTitle] = useState('Chest & Triceps Hypertrophy');
+    const [routineTitle, setRoutineTitle] = useState('🔥 Chest & Triceps Hypertrophy');
     const [routineDifficulty, setRoutineDifficulty] = useState('Intermediate');
 
-    // Exercise items to prescribe
-    const [prescribeExercises, setPrescribeExercises] = useState([
-        { id: 1, name: 'Incline Dumbbell Press', sets: 4, reps: '10-12', targetLoad: '26 kg', notes: 'Maintain 30-degree incline, solid stretch' },
-        { id: 2, name: 'Weighted Tricep Dips', sets: 3, reps: '12', targetLoad: '+15 kg', notes: 'Full depth and vertical chest lock' }
-    ]);
+    // Exercise items to prescribe - default to Chest & Triceps blueprint
+    const [prescribeExercises, setPrescribeExercises] = useState(() => 
+        PREBUILT_ROUTINES[0].exercises.map((ex, idx) => ({
+            ...ex,
+            id: Date.now() + idx
+        }))
+    );
 
     const [formFeedback, setFormFeedback] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Default library workouts
+    // Expanded gym movements library
     const [workouts, setWorkouts] = useState([
-        { id: 1, name: 'Incline Barbell Bench Press', category: 'Chest', sets: 4, reps: '10', duration: '20 mins', calories: 220, difficulty: 'Intermediate', notes: 'Maintain 30-degree bench angle' },
-        { id: 2, name: 'Seated Cable Row', category: 'Back', sets: 4, reps: '12', duration: '18 mins', calories: 190, difficulty: 'Beginner', notes: 'Squeeze shoulder blades at peak' },
-        { id: 3, name: 'Overhead Barbell Press', category: 'Shoulders', sets: 3, reps: '8', duration: '15 mins', calories: 170, difficulty: 'Advanced', notes: 'Keep core engaged' },
-        { id: 4, name: 'High-Intensity Treadmill Sprints', category: 'Cardio', sets: 5, reps: '30s Sprint', duration: '15 mins', calories: 280, difficulty: 'Intermediate', notes: '140+ BPM target heart rate' },
-        { id: 5, name: 'Barbell Back Squats', category: 'Legs', sets: 4, reps: '8-10', duration: '25 mins', calories: 310, difficulty: 'Advanced', notes: 'Below parallel depth' },
-        { id: 6, name: 'Hanging Leg Raises', category: 'Core', sets: 4, reps: '15', duration: '12 mins', calories: 140, difficulty: 'Intermediate', notes: 'Control hip flexion' },
+        { id: 1, name: 'Incline Barbell Bench Press', category: 'Chest', sets: 4, reps: '10', duration: '20 mins', calories: 220, difficulty: 'Intermediate', notes: 'Maintain 30-degree bench angle, 3s negative' },
+        { id: 2, name: 'Flat Dumbbell Bench Press', category: 'Chest', sets: 4, reps: '10-12', duration: '18 mins', calories: 210, difficulty: 'Intermediate', notes: 'Full stretch at bottom, explosive press' },
+        { id: 3, name: 'High-to-Low Cable Flyes', category: 'Chest', sets: 3, reps: '15', duration: '15 mins', calories: 160, difficulty: 'Beginner', notes: 'Constant tension across pectoral fibers' },
+        { id: 4, name: 'Wide-Grip Lat Pulldowns', category: 'Back', sets: 4, reps: '10-12', duration: '20 mins', calories: 230, difficulty: 'Intermediate', notes: 'Drive elbows to hips, slow eccentric' },
+        { id: 5, name: 'Seated Cable Row', category: 'Back', sets: 4, reps: '12', duration: '18 mins', calories: 190, difficulty: 'Beginner', notes: 'Squeeze shoulder blades at peak' },
+        { id: 6, name: 'Barbell Bent-Over Row', category: 'Back', sets: 4, reps: '8-10', duration: '22 mins', calories: 260, difficulty: 'Advanced', notes: '45-degree hip hinge, pull to lower ribs' },
+        { id: 7, name: 'Overhead Barbell Military Press', category: 'Shoulders', sets: 4, reps: '8', duration: '18 mins', calories: 190, difficulty: 'Advanced', notes: 'Vertical bar path, lock out overhead' },
+        { id: 8, name: 'Dumbbell Lateral Raises', category: 'Shoulders', sets: 4, reps: '15', duration: '12 mins', calories: 130, difficulty: 'Beginner', notes: 'Lead with elbows, strict controlled tempo' },
+        { id: 9, name: 'Face Pulls with External Rotation', category: 'Shoulders', sets: 4, reps: '15', duration: '12 mins', calories: 140, difficulty: 'Beginner', notes: 'Rope to eye level, posterior delt focus' },
+        { id: 10, name: 'Incline Dumbbell Hammer Curls', category: 'Biceps', sets: 4, reps: '12', duration: '15 mins', calories: 150, difficulty: 'Intermediate', notes: 'Stationary elbows, brachialis focus' },
+        { id: 11, name: 'EZ-Bar Spider Preacher Curls', category: 'Biceps', sets: 3, reps: '10-12', duration: '15 mins', calories: 140, difficulty: 'Intermediate', notes: 'Strict peak contraction, zero swing' },
+        { id: 12, name: 'Weighted Tricep Dips', category: 'Triceps', sets: 3, reps: '12', duration: '16 mins', calories: 180, difficulty: 'Advanced', notes: 'Torso vertical, full elbow lockout' },
+        { id: 13, name: 'Overhead Rope Tricep Extensions', category: 'Triceps', sets: 4, reps: '12-15', duration: '14 mins', calories: 150, difficulty: 'Beginner', notes: 'Flare rope outward at full extension' },
+        { id: 14, name: 'Barbell Back Squats', category: 'Legs', sets: 4, reps: '8-10', duration: '25 mins', calories: 310, difficulty: 'Advanced', notes: 'Below parallel depth, midfoot drive' },
+        { id: 15, name: 'Romanian Deadlifts (Barbell RDL)', category: 'Legs', sets: 4, reps: '10', duration: '22 mins', calories: 280, difficulty: 'Intermediate', notes: 'Hip hinge, deep hamstring stretch' },
+        { id: 16, name: 'Bulgarian Dumbbell Split Squats', category: 'Legs', sets: 3, reps: '10/leg', duration: '18 mins', calories: 240, difficulty: 'Advanced', notes: 'Rear foot elevated, glute bias' },
+        { id: 17, name: 'Ab Wheel Rollouts', category: 'Core', sets: 4, reps: '12', duration: '12 mins', calories: 130, difficulty: 'Intermediate', notes: 'Posterior pelvic tilt, avoid sagging' },
+        { id: 18, name: 'Hanging Leg Raises', category: 'Core', sets: 4, reps: '15', duration: '12 mins', calories: 140, difficulty: 'Intermediate', notes: 'Control hip flexion, no swing' },
+        { id: 19, name: 'Kettlebell Russian Swings', category: 'Full Body', sets: 4, reps: '15', duration: '16 mins', calories: 260, difficulty: 'Intermediate', notes: 'Explosive hip extension' },
+        { id: 20, name: 'Barbell Thrusters', category: 'Full Body', sets: 4, reps: '10', duration: '18 mins', calories: 300, difficulty: 'Advanced', notes: 'Front squat to overhead press in 1 motion' },
+        { id: 21, name: 'High-Intensity Treadmill Sprints', category: 'Cardio', sets: 6, reps: '30s Sprint', duration: '15 mins', calories: 290, difficulty: 'Intermediate', notes: '95%+ target heart rate' },
+        { id: 22, name: 'Assault AirBike Calorie Intervals', category: 'Cardio', sets: 5, reps: '15 Cals', duration: '15 mins', calories: 310, difficulty: 'Advanced', notes: 'All-out anaerobic sprint intervals' }
     ]);
+
+    // Sync when initialMemberEmail is provided or changed
+    useEffect(() => {
+        if (initialMemberEmail) {
+            setSelectedAthleteEmail(initialMemberEmail);
+            setReviewAthleteEmail(initialMemberEmail);
+            setTrainerTab('prescribe');
+        }
+    }, [initialMemberEmail]);
 
     // Load assigned routine for member on mount or prop change
     useEffect(() => {
@@ -211,7 +246,7 @@ const WorkoutModule = ({
     const addExerciseRow = () => {
         setPrescribeExercises(prev => [
             ...prev,
-            { id: Date.now(), name: '', sets: 4, reps: '10', targetLoad: '20 kg', notes: '' }
+            { id: Date.now(), name: '', sets: 4, reps: '10-12', targetLoad: '20 kg', notes: '' }
         ]);
     };
 
@@ -222,6 +257,77 @@ const WorkoutModule = ({
 
     const updateExerciseRow = (id, field, value) => {
         setPrescribeExercises(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e));
+    };
+
+    const duplicateExerciseRow = (id) => {
+        const index = prescribeExercises.findIndex(e => e.id === id);
+        if (index === -1) return;
+        const item = prescribeExercises[index];
+        const copy = {
+            ...item,
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            name: item.name ? `${item.name} (Variation)` : ''
+        };
+        const updated = [...prescribeExercises];
+        updated.splice(index + 1, 0, copy);
+        setPrescribeExercises(updated);
+    };
+
+    const moveExerciseRow = (index, direction) => {
+        const newIndex = index + direction;
+        if (newIndex < 0 || newIndex >= prescribeExercises.length) return;
+        const updated = [...prescribeExercises];
+        const temp = updated[index];
+        updated[index] = updated[newIndex];
+        updated[newIndex] = temp;
+        setPrescribeExercises(updated);
+    };
+
+    const clearBuilder = () => {
+        setPrescribeExercises([
+            { id: Date.now(), name: '', sets: 4, reps: '10', targetLoad: '20 kg', notes: '' }
+        ]);
+        setSelectedPresetId(null);
+    };
+
+    const loadBlueprint = (blueprint) => {
+        setSelectedPresetId(blueprint.id);
+        setRoutineTitle(blueprint.title);
+        setRoutineDifficulty(blueprint.difficulty);
+        const cloned = blueprint.exercises.map((ex, idx) => ({
+            id: Date.now() + idx + Math.floor(Math.random() * 1000),
+            name: ex.name,
+            sets: ex.sets,
+            reps: ex.reps,
+            targetLoad: ex.targetLoad,
+            notes: ex.notes || ''
+        }));
+        setPrescribeExercises(cloned);
+        setFormFeedback({
+            type: 'success',
+            message: `✓ Blueprint "${blueprint.title}" loaded with ${cloned.length} coupled exercises! You can freely edit any exercise, modify loads/reps, or add/delete movements below before assigning.`
+        });
+        setTimeout(() => setFormFeedback(null), 6000);
+    };
+
+    const insertMovementFromCatalog = (movement) => {
+        setPrescribeExercises(prev => [
+            ...prev,
+            {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                name: movement.name,
+                sets: movement.sets || 4,
+                reps: movement.reps || '10-12',
+                targetLoad: '20 kg',
+                notes: movement.notes || ''
+            }
+        ]);
+        setTrainerTab('prescribe');
+        setFormFeedback({
+            type: 'success',
+            message: `Added "${movement.name}" into current routine build!`
+        });
+        setTimeout(() => setFormFeedback(null), 4000);
     };
 
     const handlePrescribeRoutine = async (e) => {
@@ -316,9 +422,26 @@ const WorkoutModule = ({
         }
     };
 
-    const filteredWorkouts = selectedCategory === 'All'
-        ? workouts
-        : workouts.filter(w => w.category === selectedCategory);
+    const combinedQuery = (catalogSearch || searchQuery || '').toLowerCase().trim();
+    const filteredWorkouts = workouts.filter(w => {
+        const matchesCat = selectedCategory === 'All' || w.category === selectedCategory;
+        const matchesQuery = !combinedQuery || 
+            w.name.toLowerCase().includes(combinedQuery) ||
+            (w.category && w.category.toLowerCase().includes(combinedQuery)) ||
+            (w.notes && w.notes.toLowerCase().includes(combinedQuery));
+        return matchesCat && matchesQuery;
+    });
+
+    const blueprintQuery = (searchQuery || '').toLowerCase().trim();
+    const filteredBlueprints = PREBUILT_ROUTINES.filter(bp => {
+        const matchesCat = selectedBlueprintCategory === 'All Blueprints' || bp.category === selectedBlueprintCategory;
+        const matchesQuery = !blueprintQuery ||
+            bp.title.toLowerCase().includes(blueprintQuery) ||
+            bp.category.toLowerCase().includes(blueprintQuery) ||
+            bp.description.toLowerCase().includes(blueprintQuery) ||
+            bp.exercises.some(e => e.name.toLowerCase().includes(blueprintQuery));
+        return matchesCat && matchesQuery;
+    });
 
     // Telemetry calculations for member's assigned routine
     const totalAssigned = routineExercises.length;
@@ -885,7 +1008,7 @@ const WorkoutModule = ({
 
             {/* TRAINER ASSIGNMENT BUILDER: Prescribe Routine to Specific Athlete */}
             {isTrainerOrAdmin && trainerTab === 'prescribe' && (
-                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-4">
+                <div className="p-4 sm:p-5 bg-[#121217] border border-[#22222a] rounded-2xl shadow-xl space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1f1f28]">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-[#E50914]/15 border border-[#E50914]/40 text-[#FF1E28] flex items-center justify-center text-lg">
@@ -896,28 +1019,238 @@ const WorkoutModule = ({
                                     Prescribe Daily Routine to Athlete
                                 </h4>
                                 <p className="text-xs text-zinc-400 font-medium">
-                                    Assigned members will immediately see their own personalized workout plan on their dashboard and workouts tab
+                                    Choose a pre-built routine blueprint or customize exercises, sets, reps, and loads before assigning.
                                 </p>
                             </div>
                         </div>
+
+                        {/* Quick Action to Jump to Movement Library */}
+                        <button
+                            type="button"
+                            onClick={() => setShowLibraryPicker(!showLibraryPicker)}
+                            className="px-3 py-1.5 rounded-xl bg-[#181824] hover:bg-[#222232] border border-[#2a2a3e] text-zinc-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                        >
+                            <i className="bi bi-collection-play-fill text-[#FF1E28]"></i>
+                            <span>{showLibraryPicker ? 'Close Library Picker' : 'Browse Movement Library'}</span>
+                        </button>
                     </div>
 
                     {formFeedback && (
-                        <div className={`p-4 rounded-xl border flex items-center gap-3 text-xs font-bold transition-all ${
+                        <div className={`p-4 rounded-xl border flex items-center justify-between gap-3 text-xs font-bold transition-all animate-fade-in ${
                             formFeedback.type === 'success'
                                 ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-200 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
                                 : formFeedback.type === 'warning'
                                 ? 'bg-amber-950/40 border-amber-500/40 text-amber-200'
                                 : 'bg-rose-950/40 border-rose-500/40 text-rose-200'
                         }`}>
-                            <i className={`text-base ${
-                                formFeedback.type === 'success' ? 'bi bi-check-circle-fill text-emerald-400' : 'bi bi-exclamation-triangle-fill text-amber-400'
-                            }`}></i>
-                            <span>{formFeedback.message}</span>
+                            <div className="flex items-center gap-2.5">
+                                <i className={`text-base ${
+                                    formFeedback.type === 'success' ? 'bi bi-check-circle-fill text-emerald-400' : 'bi bi-exclamation-triangle-fill text-amber-400'
+                                }`}></i>
+                                <span>{formFeedback.message}</span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setFormFeedback(null)}
+                                className="text-zinc-400 hover:text-white text-xs cursor-pointer"
+                            >
+                                <i className="bi bi-x-lg"></i>
+                            </button>
                         </div>
                     )}
 
-                    <form onSubmit={handlePrescribeRoutine} className="space-y-4">
+                    {/* PRE-BUILT ROUTINE BLUEPRINTS HUD */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-b from-[#161622] to-[#121218] border border-[#262638] space-y-4 shadow-2xl">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#E50914] to-red-800 text-white flex items-center justify-center text-sm shadow-[0_0_12px_rgba(229,9,20,0.5)]">
+                                    <i className="bi bi-cpu-fill"></i>
+                                </div>
+                                <div>
+                                    <h5 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
+                                        ⚡ PRE-BUILT ROUTINE BLUEPRINTS HUD
+                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-600/20 text-[#FF1E28] border border-red-500/40">
+                                            1-Click Load & Edit
+                                        </span>
+                                    </h5>
+                                    <p className="text-xs text-zinc-400 font-medium">
+                                        Select any routine to automatically populate all coupled exercises into the builder. You can freely edit any field before assigning.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Blueprint Category Filter Pills */}
+                            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                                {PREBUILT_CATEGORIES.map(cat => (
+                                    <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => setSelectedBlueprintCategory(cat)}
+                                        className={`px-3 py-1 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                                            selectedBlueprintCategory === cat
+                                                ? 'bg-[#E50914] text-white shadow-[0_0_10px_rgba(229,9,20,0.4)]'
+                                                : 'bg-[#181824] text-zinc-400 hover:text-white border border-[#2a2a3c]'
+                                        }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Blueprints Cards Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 pt-1">
+                            {filteredBlueprints.map(bp => {
+                                const isLoaded = selectedPresetId === bp.id;
+                                return (
+                                    <div
+                                        key={bp.id}
+                                        onClick={() => loadBlueprint(bp)}
+                                        className={`p-4 rounded-2xl border transition-all flex flex-col justify-between gap-3 cursor-pointer group ${
+                                            isLoaded
+                                                ? 'bg-[#1a1417] border-red-500/70 shadow-[0_0_20px_rgba(229,9,20,0.3)] ring-1 ring-red-500/50'
+                                                : 'bg-[#15151e] border-[#252538] hover:border-red-500/40 hover:bg-[#181824]'
+                                        }`}
+                                    >
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-600/15 text-[#FF1E28] border border-red-500/30">
+                                                    {bp.category}
+                                                </span>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#1d1d2b] text-zinc-300 border border-[#2a2a3e]">
+                                                        {bp.difficulty}
+                                                    </span>
+                                                    {isLoaded && (
+                                                        <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1">
+                                                            <i className="bi bi-check-circle-fill"></i> Loaded
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h6 className="text-sm font-black text-white group-hover:text-[#FF1E28] transition-colors flex items-center gap-2">
+                                                    {bp.title}
+                                                </h6>
+                                                <p className="text-[11px] text-zinc-400 line-clamp-2 mt-0.5">
+                                                    {bp.description}
+                                                </p>
+                                            </div>
+
+                                            {/* Exercises preview chip list */}
+                                            <div className="space-y-1 pt-1">
+                                                <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 block">
+                                                    Coupled Exercises ({bp.exercises.length}):
+                                                </span>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {bp.exercises.map((e, idx) => (
+                                                        <span
+                                                            key={idx}
+                                                            className="px-2 py-0.5 rounded-md bg-[#1d1d2b] text-[10px] text-zinc-300 border border-[#29293e]"
+                                                        >
+                                                            {e.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-2 border-t border-[#222232] flex items-center justify-between gap-2">
+                                            <span className="text-[11px] text-zinc-400 font-medium">
+                                                <i className="bi bi-clock me-1 text-zinc-500"></i>{bp.estimatedDuration} • <i className="bi bi-fire text-amber-400 me-0.5"></i>{bp.calorieBurn}
+                                            </span>
+
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    loadBlueprint(bp);
+                                                }}
+                                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                                                    isLoaded
+                                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                                        : 'bg-[#1f1f2e] group-hover:bg-[#E50914] text-zinc-300 group-hover:text-white border border-[#2e2e42] group-hover:border-[#E50914]'
+                                                }`}
+                                            >
+                                                <i className={`bi ${isLoaded ? 'bi-check-lg' : 'bi-lightning-charge-fill text-[#FF1E28] group-hover:text-white'}`}></i>
+                                                <span>{isLoaded ? 'Loaded into Form' : 'Load Blueprint'}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* QUICK MOVEMENT LIBRARY PICKER DRAWER (TOGGLEABLE) */}
+                    {showLibraryPicker && (
+                        <div className="p-4 sm:p-5 rounded-2xl bg-[#14141c] border border-red-500/30 space-y-3 animate-fade-in shadow-xl">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#222230]">
+                                <div className="flex items-center gap-2">
+                                    <i className="bi bi-collection-fill text-[#FF1E28] text-base"></i>
+                                    <h5 className="text-sm font-extrabold text-white">
+                                        Gym Movement Catalog Picker
+                                    </h5>
+                                    <span className="text-xs text-zinc-400">
+                                        (Click any movement to insert directly into your routine build)
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={catalogSearch}
+                                        onChange={(e) => setCatalogSearch(e.target.value)}
+                                        placeholder="Search exercises by name or muscle..."
+                                        className="px-3 py-1.5 rounded-xl bg-[#1b1b26] border border-[#2c2c3e] text-white text-xs outline-none focus:border-[#E50914] w-64"
+                                    />
+                                    {catalogSearch && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setCatalogSearch('')}
+                                            className="text-zinc-500 hover:text-white text-xs"
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-72 overflow-y-auto pr-1">
+                                {filteredWorkouts.map(w => (
+                                    <div
+                                        key={w.id}
+                                        className="p-3 rounded-xl bg-[#181822] border border-[#262636] hover:border-red-500/40 flex items-center justify-between gap-2.5 transition-all group"
+                                    >
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-red-600/15 text-[#FF1E28]">
+                                                    {w.category}
+                                                </span>
+                                                <span className="text-[10px] text-zinc-400">
+                                                    {w.sets}x{w.reps}
+                                                </span>
+                                            </div>
+                                            <div className="text-xs font-bold text-white truncate">
+                                                {w.name}
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => insertMovementFromCatalog(w)}
+                                            className="px-2.5 py-1 rounded-lg bg-[#222230] hover:bg-[#E50914] text-zinc-300 hover:text-white text-xs font-bold transition-all shrink-0 cursor-pointer"
+                                            title="Insert into current build"
+                                        >
+                                            + Insert
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* EDITABLE ROUTINE BUILD FORM */}
+                    <form onSubmit={handlePrescribeRoutine} className="space-y-5">
                         {/* Target Athlete & Routine Meta */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -930,7 +1263,7 @@ const WorkoutModule = ({
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-white text-xs font-semibold focus:border-[#E50914] outline-none"
                                 >
                                     {assignedAthletes.length === 0 ? (
-                                            <option value="gouthamsreekumar2027@mca.ajce.in">Goutham Sreekumar (gouthamsreekumar2027@mca.ajce.in)</option>
+                                        <option value="gouthamsreekumar2027@mca.ajce.in">Goutham Sreekumar (gouthamsreekumar2027@mca.ajce.in)</option>
                                     ) : (
                                         assignedAthletes.map(a => (
                                             <option key={a.id || a.email} value={a.email}>
@@ -964,90 +1297,191 @@ const WorkoutModule = ({
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-white text-xs font-semibold focus:border-[#E50914] outline-none"
                                 >
                                     <option value="Beginner">Beginner (Foundational)</option>
-                                    <option value="Intermediate">Intermediate (Overload)</option>
+                                    <option value="Intermediate">Intermediate (Hypertrophy / Overload)</option>
                                     <option value="Advanced">Advanced (High Intensity / Failure)</option>
                                 </select>
                             </div>
                         </div>
 
-                        {/* Exercise Items List to Prescribe */}
+                        {/* Exercise Items List to Prescribe with Full Editing Controls */}
                         <div className="space-y-3 pt-2">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
-                                    Routine Exercises ({prescribeExercises.length})
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={addExerciseRow}
-                                    className="px-3 py-1.5 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#2a2a38] text-[#FF1E28] font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
-                                >
-                                    <i className="bi bi-plus-lg"></i>
-                                    <span>Add Exercise</span>
-                                </button>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+                                <div>
+                                    <span className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                                        <i className="bi bi-sliders2 text-[#FF1E28]"></i>
+                                        Custom Routine Build ({prescribeExercises.length} Movements)
+                                    </span>
+                                    <span className="text-[11px] text-zinc-400">
+                                        Edit exercise names, sets, reps, loads, and cues. Use arrows to reorder.
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={addExerciseRow}
+                                        className="px-3 py-1.5 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#2a2a38] text-[#FF1E28] font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                        <i className="bi bi-plus-lg"></i>
+                                        <span>Add Movement</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowLibraryPicker(prev => !prev)}
+                                        className="px-3 py-1.5 rounded-xl bg-[#181820] hover:bg-[#22222d] border border-[#2a2a38] text-zinc-300 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                        <i className="bi bi-collection text-blue-400"></i>
+                                        <span>From Library</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={clearBuilder}
+                                        className="px-2.5 py-1.5 rounded-xl bg-[#181820] hover:bg-rose-950/40 border border-[#2a2a38] text-zinc-400 hover:text-rose-400 text-xs font-semibold transition-all cursor-pointer"
+                                        title="Clear exercises and start fresh"
+                                    >
+                                        <i className="bi bi-arrow-counterclockwise"></i>
+                                        <span>Reset</span>
+                                    </button>
+                                </div>
                             </div>
 
                             {prescribeExercises.map((ex, index) => (
-                                <div key={ex.id} className="p-4 rounded-2xl bg-[#181820] border border-[#252532] grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                                    <div className="md:col-span-1 text-center font-black text-xs text-[#FF1E28]">
-                                        #{index + 1}
+                                <div 
+                                    key={ex.id} 
+                                    className="p-4 rounded-2xl bg-[#181820] border border-[#252532] hover:border-[#38384d] transition-all space-y-2.5"
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                                        {/* Reorder and Index Controls */}
+                                        <div className="md:col-span-1 flex items-center gap-1">
+                                            <div className="flex flex-col gap-0.5">
+                                                <button
+                                                    type="button"
+                                                    disabled={index === 0}
+                                                    onClick={() => moveExerciseRow(index, -1)}
+                                                    className="w-5 h-4 rounded bg-[#121217] text-[10px] text-zinc-400 hover:text-white flex items-center justify-center disabled:opacity-20 cursor-pointer"
+                                                    title="Move Up"
+                                                >
+                                                    ▲
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={index === prescribeExercises.length - 1}
+                                                    onClick={() => moveExerciseRow(index, 1)}
+                                                    className="w-5 h-4 rounded bg-[#121217] text-[10px] text-zinc-400 hover:text-white flex items-center justify-center disabled:opacity-20 cursor-pointer"
+                                                    title="Move Down"
+                                                >
+                                                    ▼
+                                                </button>
+                                            </div>
+                                            <span className="font-black text-xs text-[#FF1E28] ml-1">
+                                                #{index + 1}
+                                            </span>
+                                        </div>
+
+                                        {/* Exercise Name */}
+                                        <div className="md:col-span-4">
+                                            <label className="block text-[10px] text-zinc-400 font-bold uppercase mb-1">Movement Name</label>
+                                            <input
+                                                type="text"
+                                                value={ex.name}
+                                                onChange={(e) => updateExerciseRow(ex.id, 'name', e.target.value)}
+                                                placeholder="Exercise Name (e.g. Incline DB Press)"
+                                                className="w-full px-3 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs outline-none focus:border-[#E50914]"
+                                            />
+                                        </div>
+
+                                        {/* Sets and Reps */}
+                                        <div className="md:col-span-3">
+                                            <label className="block text-[10px] text-zinc-400 font-bold uppercase mb-1">Sets x Reps</label>
+                                            <div className="flex items-center gap-1">
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max="10"
+                                                    value={ex.sets}
+                                                    onChange={(e) => updateExerciseRow(ex.id, 'sets', parseInt(e.target.value) || 1)}
+                                                    className="w-14 px-2 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs text-center outline-none focus:border-[#E50914]"
+                                                    title="Number of sets"
+                                                />
+                                                <span className="text-zinc-500 text-xs font-bold">x</span>
+                                                <input
+                                                    type="text"
+                                                    value={ex.reps}
+                                                    onChange={(e) => updateExerciseRow(ex.id, 'reps', e.target.value)}
+                                                    placeholder="10-12"
+                                                    className="flex-1 px-2.5 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs text-center outline-none focus:border-[#E50914]"
+                                                    title="Target reps or duration"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Target Load */}
+                                        <div className="md:col-span-2">
+                                            <label className="block text-[10px] text-zinc-400 font-bold uppercase mb-1">Target Load</label>
+                                            <input
+                                                type="text"
+                                                value={ex.targetLoad}
+                                                onChange={(e) => updateExerciseRow(ex.id, 'targetLoad', e.target.value)}
+                                                placeholder="24 kg"
+                                                className="w-full px-3 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs outline-none focus:border-[#E50914]"
+                                            />
+                                        </div>
+
+                                        {/* Row Action Buttons: Duplicate & Delete */}
+                                        <div className="md:col-span-2 flex items-center justify-end gap-1.5 pt-3 md:pt-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => duplicateExerciseRow(ex.id)}
+                                                className="w-8 h-8 rounded-lg bg-[#181824] hover:bg-[#222232] text-zinc-400 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-[#28283a]"
+                                                title="Duplicate exercise"
+                                            >
+                                                <i className="bi bi-copy text-xs"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeExerciseRow(ex.id)}
+                                                disabled={prescribeExercises.length <= 1}
+                                                className="w-8 h-8 rounded-lg bg-[#1f1a20] hover:bg-rose-950/60 text-zinc-400 hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer disabled:opacity-30 border border-[#2f242c]"
+                                                title="Delete exercise"
+                                            >
+                                                <i className="bi bi-trash text-xs"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="md:col-span-4">
-                                        <input
-                                            type="text"
-                                            value={ex.name}
-                                            onChange={(e) => updateExerciseRow(ex.id, 'name', e.target.value)}
-                                            placeholder="Exercise Name (e.g. Incline DB Press)"
-                                            className="w-full px-3 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs outline-none focus:border-[#E50914]"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 flex items-center gap-1">
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            max="10"
-                                            value={ex.sets}
-                                            onChange={(e) => updateExerciseRow(ex.id, 'sets', parseInt(e.target.value) || 1)}
-                                            className="w-12 px-2 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs text-center outline-none focus:border-[#E50914]"
-                                        />
-                                        <span className="text-zinc-500 text-xs">x</span>
-                                        <input
-                                            type="text"
-                                            value={ex.reps}
-                                            onChange={(e) => updateExerciseRow(ex.id, 'reps', e.target.value)}
-                                            placeholder="10-12"
-                                            className="w-16 px-2 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs text-center outline-none focus:border-[#E50914]"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-3">
-                                        <input
-                                            type="text"
-                                            value={ex.targetLoad}
-                                            onChange={(e) => updateExerciseRow(ex.id, 'targetLoad', e.target.value)}
-                                            placeholder="24 kg"
-                                            className="w-full px-3 py-1.5 rounded-lg bg-[#121217] border border-[#2a2a38] text-white text-xs outline-none focus:border-[#E50914]"
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 flex items-center justify-end pt-3 md:pt-0">
-                                        <button
-                                            type="button"
-                                            onClick={() => removeExerciseRow(ex.id)}
-                                            disabled={prescribeExercises.length <= 1}
-                                            className="w-8 h-8 rounded-lg bg-[#1f1a20] hover:bg-rose-950/60 text-zinc-500 hover:text-rose-400 flex items-center justify-center transition-all cursor-pointer disabled:opacity-30"
-                                            title="Delete exercise"
-                                        >
-                                            <i className="bi bi-trash text-xs"></i>
-                                        </button>
+
+                                    {/* Coaching Cue / Biomechanical Notes Row */}
+                                    <div className="pt-1 border-t border-[#1f1f2a]">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] text-zinc-500 font-bold uppercase shrink-0">
+                                                <i className="bi bi-chat-left-text text-[#FF1E28] me-1"></i> Form Cue:
+                                            </span>
+                                            <input
+                                                type="text"
+                                                value={ex.notes || ''}
+                                                onChange={(e) => updateExerciseRow(ex.id, 'notes', e.target.value)}
+                                                placeholder="Biomechanical cues & athlete instructions (e.g. 30-degree incline, 3-sec negative stretch, full lockout)"
+                                                className="w-full px-2.5 py-1 rounded-md bg-[#121217] border border-[#242432] text-[11px] text-zinc-300 placeholder-zinc-500 outline-none focus:border-[#E50914]"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Submit Action */}
-                        <div className="flex justify-end pt-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-[#1f1f28]">
+                            <div className="text-xs text-zinc-400">
+                                <span>Assigning to: </span>
+                                <strong className="text-white">
+                                    {assignedAthletes.find(a => a.email === selectedAthleteEmail)?.name || selectedAthleteEmail || 'Goutham Sreekumar'}
+                                </strong>
+                                <span> ({prescribeExercises.length} movements configured)</span>
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-black text-xs flex items-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer disabled:opacity-60"
+                                className="px-7 py-3 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer disabled:opacity-60"
                             >
                                 {isSubmitting ? (
                                     <>
@@ -1069,12 +1503,30 @@ const WorkoutModule = ({
             {/* Exercise Catalog Grid (When in catalog tab or for trainers/admins) */}
             {(isTrainerOrAdmin || activeTab === 'catalog') && (
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between px-1">
-                        <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+                        <div className="flex items-center gap-2">
                             <i className="bi bi-collection text-[#FF1E28]"></i>
-                            Omnifit Gym Movement & Exercise Database ({filteredWorkouts.length})
-                        </h4>
-                        <span className="text-xs text-zinc-400">Filtered by: <strong className="text-white">{selectedCategory}</strong></span>
+                            <h4 className="text-sm font-black text-white uppercase tracking-wider">
+                                Omnifit Gym Movement & Exercise Database ({filteredWorkouts.length})
+                            </h4>
+                        </div>
+
+                        {/* Movement Search Input */}
+                        <div className="flex items-center gap-2">
+                            <div className="relative">
+                                <i className="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+                                <input
+                                    type="text"
+                                    value={catalogSearch}
+                                    onChange={(e) => setCatalogSearch(e.target.value)}
+                                    placeholder="Filter movement catalog..."
+                                    className="pl-8 pr-3 py-1.5 rounded-xl bg-[#14141c] border border-[#262636] text-white text-xs placeholder-zinc-500 outline-none focus:border-[#E50914] w-56"
+                                />
+                            </div>
+                            <span className="text-xs text-zinc-400">
+                                Category: <strong className="text-white">{selectedCategory}</strong>
+                            </span>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -1102,9 +1554,21 @@ const WorkoutModule = ({
                                         <span><i className="bi bi-stack text-[#FF1E28] me-1"></i>{w.sets} Sets x {w.reps} Reps</span>
                                         <span><i className="bi bi-fire text-amber-400 me-1"></i>{w.calories} kcal</span>
                                     </div>
-                                    <button className="w-full py-2 rounded-xl bg-[#181820] hover:bg-[#20202d] border border-[#2c2c3d] hover:border-[#E50914]/50 text-white font-bold text-xs transition-all cursor-pointer">
-                                        Start Supplementary Set
-                                    </button>
+
+                                    {isTrainerOrAdmin ? (
+                                        <button 
+                                            type="button"
+                                            onClick={() => insertMovementFromCatalog(w)}
+                                            className="w-full py-2 rounded-xl bg-[#181820] hover:bg-[#E50914] border border-[#2c2c3d] hover:border-[#E50914] text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                        >
+                                            <i className="bi bi-plus-circle text-xs"></i>
+                                            <span>Add to Routine Builder</span>
+                                        </button>
+                                    ) : (
+                                        <button className="w-full py-2 rounded-xl bg-[#181820] hover:bg-[#20202d] border border-[#2c2c3d] hover:border-[#E50914]/50 text-white font-bold text-xs transition-all cursor-pointer">
+                                            Start Supplementary Set
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

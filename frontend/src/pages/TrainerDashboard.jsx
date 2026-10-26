@@ -25,6 +25,7 @@ const TrainerDashboard = () => {
 
     const [selectedAthleteForWorkout, setSelectedAthleteForWorkout] = useState(null);
     const [activeMembersList, setActiveMembersList] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [currentUser, setCurrentUser] = useState(() => LoginService.getCurrentUser());
 
@@ -197,8 +198,25 @@ const TrainerDashboard = () => {
         setCurrentUser(updatedUser);
     };
 
+    const queryLower = (searchQuery || '').toLowerCase().trim();
+    const filteredActiveMembers = queryLower ? activeMembersList.filter(m => 
+        (m.name && m.name.toLowerCase().includes(queryLower)) ||
+        (m.email && m.email.toLowerCase().includes(queryLower)) ||
+        (m.plan && m.plan.toLowerCase().includes(queryLower)) ||
+        (m.goal && m.goal.toLowerCase().includes(queryLower)) ||
+        (m.currentRoutine && m.currentRoutine.toLowerCase().includes(queryLower))
+    ) : activeMembersList;
+
+    const filteredPendingMembers = queryLower ? pendingMembers.filter(m =>
+        (m.name && m.name.toLowerCase().includes(queryLower)) ||
+        (m.email && m.email.toLowerCase().includes(queryLower)) ||
+        (m.fitness_goal && m.fitness_goal.toLowerCase().includes(queryLower)) ||
+        (m.membership_plan && m.membership_plan.toLowerCase().includes(queryLower))
+    ) : pendingMembers;
+
     // Render Pending Approvals Card Widget
     const renderPendingApprovalsSection = () => {
+        const displayPending = filteredPendingMembers;
         return (
             <div className="p-4 sm:p-5 bg-[#121217]/90 backdrop-blur-xl border border-[#1f1f28] rounded-2xl shadow-xl space-y-3.5" data-testid="pending-approvals-panel">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1f1f28]">
@@ -209,9 +227,9 @@ const TrainerDashboard = () => {
                         <div>
                             <h3 className="text-sm sm:text-base font-extrabold text-white tracking-tight flex items-center gap-2">
                                 Pending Athlete Registrations
-                                {pendingMembers.length > 0 && (
+                                {displayPending.length > 0 && (
                                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">
-                                        {pendingMembers.length} Awaiting Approval
+                                        {displayPending.length} {queryLower ? 'Matched' : 'Awaiting Approval'}
                                     </span>
                                 )}
                             </h3>
@@ -260,19 +278,23 @@ const TrainerDashboard = () => {
                 )}
 
                 {/* Pending Members List */}
-                {pendingMembers.length === 0 ? (
+                {displayPending.length === 0 ? (
                     <div className="py-6 text-center rounded-xl bg-[#16161f] border border-[#22222d] border-dashed">
                         <div className="w-10 h-10 rounded-full bg-red-600/15 border border-red-500/30 text-[#FF1E28] flex items-center justify-center mx-auto mb-2 text-lg shadow-[0_0_12px_rgba(229,9,20,0.25)]">
                             <i className="bi bi-check2-circle"></i>
                         </div>
-                        <h4 className="text-sm font-bold text-white">All Registrations Approved</h4>
+                        <h4 className="text-sm font-bold text-white">
+                            {queryLower ? `No Pending Registrations Found for "${searchQuery}"` : 'All Registrations Approved'}
+                        </h4>
                         <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-                            No athletes are currently awaiting approval. When a new member registers, they will appear here for verification.
+                            {queryLower 
+                                ? 'Try a different search keyword or clear the search filter.' 
+                                : 'No athletes are currently awaiting approval. When a new member registers, they will appear here for verification.'}
                         </p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                        {pendingMembers.map((member) => {
+                        {displayPending.map((member) => {
                             const emailKey = (member.email || '').toLowerCase().trim();
                             const loading = isApproving[emailKey];
                             return (
@@ -369,13 +391,20 @@ const TrainerDashboard = () => {
                         <DataTable
                             title="Active Assigned Health Club Members"
                             columns={memberColumns}
-                            data={activeMembersList}
+                            data={filteredActiveMembers}
                             theme="dark"
                         />
                     </div>
                 );
             case 'workout':
-                return <WorkoutModule role="TRAINER" theme="dark" initialMemberEmail={selectedAthleteForWorkout} />;
+                return (
+                    <WorkoutModule 
+                        role="TRAINER" 
+                        theme="dark" 
+                        initialMemberEmail={selectedAthleteForWorkout} 
+                        searchQuery={searchQuery}
+                    />
+                );
             case 'diet':
                 return <DietModule role="TRAINER" theme="dark" />;
             case 'appointments':
@@ -438,6 +467,26 @@ const TrainerDashboard = () => {
                             </div>
                         </div>
 
+                        {/* Live Search Active Feedback Banner */}
+                        {searchQuery.trim() && (
+                            <div className="p-3.5 bg-red-950/20 border border-red-500/30 rounded-2xl flex items-center justify-between text-xs animate-fade-in shadow-lg">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-6 h-6 rounded-lg bg-red-600/20 border border-red-500/30 text-[#FF1E28] flex items-center justify-center text-xs">
+                                        <i className="bi bi-search"></i>
+                                    </div>
+                                    <span className="text-zinc-300">
+                                        Active Search Filter: <strong className="text-white">"{searchQuery}"</strong> — Showing <span className="text-[#FF1E28] font-bold">{filteredActiveMembers.length}</span> active athlete(s) & <span className="text-amber-400 font-bold">{filteredPendingMembers.length}</span> pending registration(s).
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    className="px-3 py-1 rounded-xl bg-[#181820] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-[#2c2c3d] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-all"
+                                >
+                                    <i className="bi bi-x-lg text-[10px]"></i> Clear Search
+                                </button>
+                            </div>
+                        )}
+
                         {/* 4x KPI Stat Cards Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                             <StatCard
@@ -481,7 +530,7 @@ const TrainerDashboard = () => {
                                 <DataTable
                                     title="Recent Active Client Roster"
                                     columns={memberColumns}
-                                    data={activeMembersList}
+                                    data={filteredActiveMembers}
                                     theme="dark"
                                 />
                             </div>
@@ -521,6 +570,9 @@ const TrainerDashboard = () => {
                     theme="dark"
                     isCollapsed={isCollapsed}
                     onNavigateTab={setActiveTab}
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    searchPlaceholder="Search athletes, routines, exercises, or approvals..."
                 />
                 {renderContent()}
             </main>
