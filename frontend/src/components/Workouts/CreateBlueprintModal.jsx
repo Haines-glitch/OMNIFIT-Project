@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { PREBUILT_CATEGORIES } from '../../data/routineBlueprints';
 
 const ICON_OPTIONS = [
@@ -120,14 +121,34 @@ const CreateBlueprintModal = ({
         onClose();
     };
 
+    // Lock body scroll and attach Escape key listener
+    useEffect(() => {
+        if (!isOpen) return;
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.body.style.overflow = originalOverflow;
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     const availableCategories = PREBUILT_CATEGORIES.filter(c => c !== 'All Blueprints');
 
-    return (
-        <div className="fixed inset-0 z-[1200] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fade-in">
+    return ReactDOM.createPortal(
+        <div 
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fade-in"
+            onClick={onClose}
+        >
             <div 
-                className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto bg-[#101017] border border-[#272738] rounded-3xl shadow-[0_0_60px_rgba(229,9,20,0.25)] flex flex-col text-white scrollbar-none"
+                className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#101017] border border-[#272738] rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.95)] flex flex-col text-white scrollbar-none"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -423,7 +444,8 @@ const CreateBlueprintModal = ({
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 
