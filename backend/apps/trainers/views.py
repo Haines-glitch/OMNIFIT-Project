@@ -310,6 +310,7 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
     host_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', None) or 'wgcflgwsfdeoyupa'
     from_email = f"OMNIFIT Coaching Team <{host_user}>"
 
+    err1 = None
     # Attempt 1: Port 587 (TLS)
     try:
         msg = EmailMultiAlternatives(subject, text_content, from_email, [user_email])
@@ -318,7 +319,8 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
         print(f"[OMNIFIT Email] Sent via Port 587 TLS to {user_email}. Result: {sent}")
         return True, None
     except Exception as e1:
-        print(f"[OMNIFIT Email Warning] Port 587 TLS failed: {e1}. Trying fallback Port 465 (SSL)...")
+        err1 = str(e1)
+        print(f"[OMNIFIT Email Warning] Port 587 TLS failed: {err1}. Trying fallback Port 465 (SSL)...")
 
     # Attempt 2: Fallback to Port 465 (Direct SSL)
     try:
@@ -337,7 +339,7 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
         print(f"[OMNIFIT Email] Sent via Port 465 SSL to {user_email}. Result: {sent}")
         return True, None
     except Exception as e2:
-        err_msg = f"Port 587 failed: {e1}; Port 465 failed: {e2}"
+        err_msg = f"Port 587 failed: {err1}; Port 465 failed: {e2}"
         print(f"[OMNIFIT Email ERROR] All SMTP attempts failed for {user_email}: {err_msg}")
         return False, err_msg
 
@@ -480,6 +482,20 @@ class TestSmtpView(APIView):
     def post(self, request):
         target = (request.data.get('email') or 'gouthamsreekumar2027@mca.ajce.in').lower().strip()
         trainer = request.data.get('trainer_name') or 'Anandhu pradeep'
+
+        import socket
+        diagnostics = {}
+        for port in [587, 465, 2525, 443]:
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(3)
+                host = 'smtp.gmail.com' if port != 443 else 'www.google.com'
+                s.connect((host, port))
+                s.close()
+                diagnostics[f"port_{port}"] = "OPEN/REACHABLE"
+            except Exception as sexc:
+                diagnostics[f"port_{port}"] = f"BLOCKED/FAILED: {sexc}"
+
         sent, err = dispatch_approval_email(target, target.split('@')[0], trainer)
         return standard_response(
             success=sent,
@@ -488,11 +504,13 @@ class TestSmtpView(APIView):
                 "target": target,
                 "email_sent": sent,
                 "email_error": err,
+                "diagnostics": diagnostics,
                 "host_user": settings.EMAIL_HOST_USER,
                 "has_password": bool(settings.EMAIL_HOST_PASSWORD)
             },
-            status_code=status.HTTP_200_OK if sent else status.HTTP_500_INTERNAL_SERVER_ERROR
+            status_code=status.HTTP_200_OK if sent else status.HTTP_200_OK
         )
+
 
 
 

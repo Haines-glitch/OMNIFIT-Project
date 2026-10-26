@@ -515,6 +515,8 @@ export const LoginService = {
         // 1. Call backend approval API
         let serverSuccess = false;
         let responseMsg = '';
+        let emailSent = false;
+        let emailError = null;
         try {
             const res = await api.post('trainers/approve-member/', {
                 email: email,
@@ -524,9 +526,12 @@ export const LoginService = {
             if (res.data?.success) {
                 serverSuccess = true;
                 responseMsg = res.data.message;
+                emailSent = res.data?.data?.email_sent === true;
+                emailError = res.data?.data?.email_error || null;
             }
         } catch (e) {
             console.warn('Backend approval sync note:', e);
+            emailError = e.response?.data?.message || e.message;
         }
 
         // 2. Update local persistent storage
@@ -545,7 +550,11 @@ export const LoginService = {
             success: true,
             email: email,
             name: name,
-            message: responseMsg || `Athlete ${name} approved successfully! Verification email dispatched to ${email}.`
+            email_sent: emailSent,
+            email_error: emailError,
+            message: responseMsg || (emailSent 
+                ? `Athlete ${name} approved successfully! Verification email dispatched to ${email}.`
+                : (emailError ? `Athlete ${name} approved. (Note: Email delivery issue: ${emailError})` : `Athlete ${name} approved.`))
         };
     },
 
