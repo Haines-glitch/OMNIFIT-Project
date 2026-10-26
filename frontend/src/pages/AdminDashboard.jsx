@@ -68,18 +68,14 @@ const AdminDashboard = () => {
         }
     ];
 
-    const recentPaymentsData = data?.recentPayments || [
-        { id: 'TXN-9841', member: 'Alex Mercer', amount: '$199.00', plan: 'Platinum VIP', status: 'Paid', date: '2026-08-05' },
-        { id: 'TXN-9842', member: 'Sarah Jenkins', amount: '$129.00', plan: 'Gold Fitness', status: 'Paid', date: '2026-08-05' },
-        { id: 'TXN-9843', member: 'Michael Scott', amount: '$89.00', plan: 'Silver Basic', status: 'Pending', date: '2026-08-04' },
-    ];
+    const recentPaymentsData = data?.recentPayments || [];
 
     const renderContent = () => {
         switch (activeTab) {
             case 'trainers':
                 return <TrainerManagementModule theme="dark" />;
             case 'members':
-                const membersData = (data?.members && data.members.length > 0) ? data.members : recentPaymentsData;
+                const membersData = data?.members || [];
                 return (
                     <DataTable
                         title="Registered Member Accounts"
@@ -181,7 +177,7 @@ const AdminDashboard = () => {
                                         SYSTEM EXECUTIVE OVERVIEW
                                     </span>
                                     <h2 className="fw-black mb-1 text-white">OMNIFIT Master Admin Portal</h2>
-                                    <p className="small mb-0 text-zinc-400">Full Control over {data?.stats?.totalMembers || (data?.members?.length || '1,248')} Members, {data?.stats?.totalTrainers || 34} Certified Trainers, & Facial Access Terminals</p>
+                                    <p className="small mb-0 text-zinc-400">Full Control over {data?.stats?.totalMembers ?? (data?.members?.length ?? 0)} Members, {data?.stats?.totalTrainers ?? 0} Certified Trainers, & Facial Access Terminals</p>
                                 </div>
 
                                 <div className="d-flex gap-2">
@@ -215,17 +211,17 @@ const AdminDashboard = () => {
                             <div className="col-md-3 col-sm-6">
                                 <StatCard
                                     title="Total Club Members"
-                                    value={data?.stats?.totalMembers != null ? data.stats.totalMembers.toLocaleString() : "1,248"}
+                                    value={data?.stats?.totalMembers != null ? data.stats.totalMembers.toLocaleString() : "0"}
                                     subtext="Active Accounts"
                                     icon="bi-people-fill"
-                                    trend="+14%"
+                                    trend="+0%"
                                     theme="dark"
                                 />
                             </div>
                             <div className="col-md-3 col-sm-6">
                                 <StatCard
                                     title="Total Certified Trainers"
-                                    value={data?.stats?.totalTrainers != null ? `${data.stats.totalTrainers} Trainers` : "34 Trainers"}
+                                    value={data?.stats?.totalTrainers != null ? `${data.stats.totalTrainers} Trainers` : "0 Trainers"}
                                     subtext="Full-time Staff"
                                     icon="bi-person-badge-fill"
                                     theme="dark"
@@ -234,17 +230,17 @@ const AdminDashboard = () => {
                             <div className="col-md-3 col-sm-6">
                                 <StatCard
                                     title="Monthly Revenue"
-                                    value={data?.stats?.monthlyRevenue || "$48,920"}
-                                    subtext="+18% vs Last Month"
+                                    value={data?.stats?.monthlyRevenue || "$0"}
+                                    subtext="Financial Tracking"
                                     icon="bi-currency-dollar"
-                                    trend="+18%"
+                                    trend="+0%"
                                     theme="dark"
                                 />
                             </div>
                             <div className="col-md-3 col-sm-6">
                                 <StatCard
                                     title="Today's Facial Check-Ins"
-                                    value={data?.stats?.todayAttendance != null ? `${data.stats.todayAttendance} Passes` : "342 Passes"}
+                                    value={data?.stats?.todayAttendance != null ? `${data.stats.todayAttendance} Passes` : "0 Passes"}
                                     subtext="Contactless verified"
                                     icon="bi-camera-fill"
                                     theme="dark"

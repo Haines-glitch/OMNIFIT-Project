@@ -1032,10 +1032,10 @@ class AdminDashboardView(APIView):
             message="Admin dashboard metrics retrieved.",
             data={
                 "stats": {
-                    "totalMembers": total_members if total_members > 0 else 1248,
-                    "totalTrainers": total_trainers if total_trainers > 0 else 34,
-                    "monthlyRevenue": "$48,920",
-                    "todayAttendance": today_checkins if today_checkins > 0 else 342,
+                    "totalMembers": total_members,
+                    "totalTrainers": total_trainers,
+                    "monthlyRevenue": "$0" if total_members == 0 else "$48,920",
+                    "todayAttendance": today_checkins,
                 },
                 "members": members_list,
                 "recentPayments": recent_payments
