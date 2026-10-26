@@ -181,6 +181,13 @@ const TrainerDashboard = () => {
                         <i className="bi bi-cup-hot text-xs text-[#FF1E28]"></i>
                         Diet
                     </button>
+                    <button
+                        className="px-2.5 py-1.5 bg-zinc-900/90 hover:bg-red-950/60 border border-zinc-800 hover:border-red-600/40 text-zinc-400 hover:text-red-400 text-xs font-semibold rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                        title="Remove member"
+                        onClick={() => handleReject(row)}
+                    >
+                        <i className="bi bi-trash text-xs"></i>
+                    </button>
                 </div>
             )
         }

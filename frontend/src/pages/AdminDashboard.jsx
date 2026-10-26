@@ -44,6 +44,25 @@ const AdminDashboard = () => {
         setCurrentUser(updatedUser);
     };
 
+    const handleDeleteMember = async (memberRow) => {
+        const email = memberRow.email || memberRow.member;
+        if (!window.confirm(`Are you sure you want to permanently remove member ${email}?`)) {
+            return;
+        }
+        try {
+            await LoginService.rejectMember(memberRow);
+            setData(prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    members: (prev.members || []).filter(m => (m.email || '').toLowerCase() !== (email || '').toLowerCase())
+                };
+            });
+        } catch (e) {
+            console.error('Failed to remove member:', e);
+        }
+    };
+
     const paymentColumns = [
         { key: 'id', label: 'Transaction ID' },
         { key: 'member', label: 'Member Name' },
@@ -124,6 +143,21 @@ const AdminDashboard = () => {
                             },
                             { key: 'assigned_trainer', label: 'Assigned Trainer' },
                             { key: 'date', label: 'Created Date' },
+                            {
+                                key: 'actions',
+                                label: 'Actions',
+                                render: (_, row) => (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteMember(row)}
+                                        className="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 px-2.5 py-1 rounded-2"
+                                        style={{ fontSize: '11px', borderColor: 'rgba(239, 68, 68, 0.4)' }}
+                                        title="Delete Member Account"
+                                    >
+                                        <i className="bi bi-trash"></i> Remove
+                                    </button>
+                                )
+                            }
                         ]}
                         data={membersData}
                         theme="dark"
