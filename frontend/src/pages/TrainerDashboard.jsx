@@ -108,6 +108,28 @@ const TrainerDashboard = () => {
         }
     };
 
+    const handleReject = async (member) => {
+        const emailKey = (member.email || '').toLowerCase().trim();
+        setIsApproving(prev => ({ ...prev, [emailKey]: true }));
+        try {
+            await LoginService.rejectMember(member);
+            setApprovalAlert({
+                type: 'info',
+                message: `Member ${member.name || emailKey} was successfully removed.`
+            });
+            setPendingMembers(prev => prev.filter(m => (m.email || '').toLowerCase().trim() !== emailKey));
+        } catch (err) {
+            console.error('Reject error:', err);
+            setApprovalAlert({
+                type: 'error',
+                message: 'Failed to remove member. Please retry.'
+            });
+        } finally {
+            setIsApproving(prev => ({ ...prev, [emailKey]: false }));
+            setTimeout(() => setApprovalAlert(null), 5000);
+        }
+    };
+
     const memberColumns = [
         {
             key: 'name',
@@ -284,28 +306,42 @@ const TrainerDashboard = () => {
                                     {/* Action Bar */}
                                     <div className="pt-2 border-t border-[#22222e] flex items-center justify-between gap-3">
                                         <span className="text-[10px] text-zinc-400 font-medium flex items-center gap-1">
-                                            <i className="bi bi-send text-[#FF1E28]"></i> Sends approval email
+                                            <i className="bi bi-shield-check text-[#FF1E28]"></i> Trainer Verification
                                         </span>
 
-                                        <button
-                                            type="button"
-                                            onClick={() => handleApprove(member)}
-                                            disabled={loading}
-                                            className="px-4 py-2 rounded-xl bg-[#E50914] hover:bg-[#FF1E28] text-white text-xs font-black flex items-center gap-1.5 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer"
-                                            data-testid={`approve-member-${member.email}`}
-                                        >
-                                            {loading ? (
-                                                <>
-                                                    <span className="spinner-border spinner-border-sm" role="status"></span>
-                                                    <span>Approving...</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <i className="bi bi-check-lg text-sm"></i>
-                                                    <span>Approve & Send Email</span>
-                                                </>
-                                            )}
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleReject(member)}
+                                                disabled={loading}
+                                                className="px-3 py-2 rounded-xl bg-zinc-850 hover:bg-zinc-800 text-zinc-300 hover:text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer border border-zinc-700/80"
+                                                title="Reject and permanently delete this account"
+                                                data-testid={`reject-member-${member.email}`}
+                                            >
+                                                <i className="bi bi-trash text-xs text-red-400"></i>
+                                                <span>Reject / Remove</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => handleApprove(member)}
+                                                disabled={loading}
+                                                className="px-4 py-2 rounded-xl bg-[#E50914] hover:bg-[#FF1E28] text-white text-xs font-black flex items-center gap-1.5 shadow-[0_0_15px_rgba(229,9,20,0.35)] transition-all cursor-pointer"
+                                                data-testid={`approve-member-${member.email}`}
+                                            >
+                                                {loading ? (
+                                                    <>
+                                                        <span className="spinner-border spinner-border-sm" role="status"></span>
+                                                        <span>Processing...</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <i className="bi bi-check-lg text-sm"></i>
+                                                        <span>Approve & Send Email</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             );

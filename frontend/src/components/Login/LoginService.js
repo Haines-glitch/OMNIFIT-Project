@@ -550,6 +550,44 @@ export const LoginService = {
     },
 
     /**
+     * Trainer rejects or removes pending member account
+     */
+    async rejectMember(memberData) {
+        const email = (typeof memberData === 'string' ? memberData : memberData.email || '').toLowerCase().trim();
+        const userId = typeof memberData === 'object' ? (memberData.user_id || memberData.id) : null;
+        const memberId = typeof memberData === 'object' ? memberData.member_id : null;
+
+        // 1. Call backend rejection API
+        let serverSuccess = false;
+        try {
+            const res = await api.post('trainers/reject-member/', {
+                email: email,
+                user_id: userId,
+                member_id: memberId
+            }, { baseURL: `${API_ROOT}/` });
+            if (res.data?.success) {
+                serverSuccess = true;
+            }
+        } catch (e) {
+            console.warn('Backend reject sync notice:', e);
+        }
+
+        // 2. Remove from local storage
+        removePendingMember(email);
+        try {
+            const all = JSON.parse(localStorage.getItem(PROFILES_STORAGE_KEY) || '{}');
+            delete all[email];
+            localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(all));
+        } catch {}
+
+        return {
+            success: true,
+            email: email,
+            message: `Member ${email} removed successfully.`
+        };
+    },
+
+    /**
      * Check if an athlete account has been approved
      */
     async checkApprovalStatus(email) {

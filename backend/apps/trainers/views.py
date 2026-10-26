@@ -375,3 +375,47 @@ class ApproveMemberView(APIView):
             }
         )
 
+
+class RejectMemberView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = (request.data.get('email') or '').lower().strip()
+        user_id = request.data.get('user_id')
+        member_id = request.data.get('member_id')
+
+        member = None
+        if member_id:
+            member = Member.objects.filter(id=member_id).first()
+        if not member and user_id:
+            member = Member.objects.filter(user_id=user_id).first()
+        if not member and email:
+            member = Member.objects.filter(user__email__iexact=email).first()
+
+        user = member.user if member else User.objects.filter(email__iexact=email).first()
+        if not user:
+            return standard_response(
+                success=False,
+                message="User or member not found.",
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+
+        if user.role in ['admin', 'trainer']:
+            return standard_response(
+                success=False,
+                message="Cannot delete staff or administrator accounts.",
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+
+        target_email = user.email
+        if member:
+            member.delete()
+        user.delete()
+
+        return standard_response(
+            success=True,
+            message=f"Member account '{target_email}' has been successfully removed.",
+            data={"email": target_email}
+        )
+
+
