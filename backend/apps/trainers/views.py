@@ -310,8 +310,59 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
     host_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', None) or 'wgcflgwsfdeoyupa'
     from_email = f"OMNIFIT Coaching Team <{host_user}>"
 
+    # Strategy 1: Google Apps Script Web App (Port 443 HTTPS - bypasses Render port blocks)
+    google_script_url = getattr(settings, 'GOOGLE_MAIL_SCRIPT_URL', None) or os.environ.get('GOOGLE_MAIL_SCRIPT_URL', '').strip()
+    if google_script_url:
+        try:
+            import requests
+            res = requests.post(
+                google_script_url,
+                json={
+                    "to": user_email,
+                    "subject": subject,
+                    "text": text_content,
+                    "html": html_content
+                },
+                timeout=10
+            )
+            if res.status_code == 200:
+                print(f"[OMNIFIT Email] Sent via Google Apps Script HTTPS to {user_email}")
+                return True, None
+            else:
+                print(f"[OMNIFIT Email Warning] Google Script HTTP {res.status_code}: {res.text}")
+        except Exception as e_script:
+            print(f"[OMNIFIT Email Warning] Google Script attempt error: {e_script}")
+
+    # Strategy 2: Brevo HTTPS REST API (Port 443)
+    brevo_key = getattr(settings, 'BREVO_API_KEY', None) or os.environ.get('BREVO_API_KEY', '').strip()
+    if brevo_key:
+        try:
+            import requests
+            res = requests.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={
+                    "api-key": brevo_key,
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "sender": {"name": "OMNIFIT Coaching Team", "email": host_user},
+                    "to": [{"email": user_email, "name": athlete_name}],
+                    "subject": subject,
+                    "htmlContent": html_content,
+                    "textContent": text_content
+                },
+                timeout=10
+            )
+            if res.status_code in [200, 201, 202]:
+                print(f"[OMNIFIT Email] Sent via Brevo HTTPS API to {user_email}")
+                return True, None
+            else:
+                print(f"[OMNIFIT Email Warning] Brevo HTTP {res.status_code}: {res.text}")
+        except Exception as e_brevo:
+            print(f"[OMNIFIT Email Warning] Brevo attempt error: {e_brevo}")
+
     err1 = None
-    # Attempt 1: Port 587 (TLS)
+    # Strategy 3: Port 587 (TLS SMTP)
     try:
         msg = EmailMultiAlternatives(subject, text_content, from_email, [user_email])
         msg.attach_alternative(html_content, "text/html")
@@ -322,7 +373,7 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
         err1 = str(e1)
         print(f"[OMNIFIT Email Warning] Port 587 TLS failed: {err1}. Trying fallback Port 465 (SSL)...")
 
-    # Attempt 2: Fallback to Port 465 (Direct SSL)
+    # Strategy 4: Fallback to Port 465 (Direct SSL SMTP)
     try:
         fallback_conn = get_connection(
             host=settings.EMAIL_HOST,
@@ -331,7 +382,7 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
             password=host_pass,
             use_ssl=True,
             use_tls=False,
-            timeout=10
+            timeout=5
         )
         msg = EmailMultiAlternatives(subject, text_content, from_email, [user_email], connection=fallback_conn)
         msg.attach_alternative(html_content, "text/html")
@@ -340,7 +391,7 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
         return True, None
     except Exception as e2:
         err_msg = f"Port 587 failed: {err1}; Port 465 failed: {e2}"
-        print(f"[OMNIFIT Email ERROR] All SMTP attempts failed for {user_email}: {err_msg}")
+        print(f"[OMNIFIT Email ERROR] All email dispatch attempts failed for {user_email}: {err_msg}")
         return False, err_msg
 
 

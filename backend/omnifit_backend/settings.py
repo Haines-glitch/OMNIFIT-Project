@@ -187,4 +187,9 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL') or EMAIL_HOST_USER or 
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 15))
+EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 5))
+
+# HTTPS Email Relay Configuration (Bypasses Render cloud firewall blocks on ports 25, 465, 587)
+GOOGLE_MAIL_SCRIPT_URL = os.environ.get('GOOGLE_MAIL_SCRIPT_URL', '').strip()
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '').strip()
+

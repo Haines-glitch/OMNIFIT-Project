@@ -59,6 +59,46 @@ def send_async_email(subject, message, recipient_list, from_email=None):
 </body>
 </html>"""
 
+            # Strategy 1: Google Apps Script Webhook (Port 443 HTTPS - bypasses Render firewall)
+            google_script_url = getattr(settings, 'GOOGLE_MAIL_SCRIPT_URL', None) or os.environ.get('GOOGLE_MAIL_SCRIPT_URL', '').strip()
+            if google_script_url:
+                try:
+                    import requests
+                    for r_email in recipient_list:
+                        res = requests.post(
+                            google_script_url,
+                            json={"to": r_email, "subject": subject, "text": message, "html": html_body},
+                            timeout=10
+                        )
+                        if res.status_code == 200:
+                            print(f"[OMNIFIT Async Email] Sent to {r_email} via Google Apps Script HTTPS")
+                    return
+                except Exception as e_script:
+                    print(f"[OMNIFIT Async Email Warning] Google Script error: {e_script}")
+
+            # Strategy 2: Brevo HTTPS REST API (Port 443)
+            brevo_key = getattr(settings, 'BREVO_API_KEY', None) or os.environ.get('BREVO_API_KEY', '').strip()
+            if brevo_key:
+                try:
+                    import requests
+                    res = requests.post(
+                        "https://api.brevo.com/v3/smtp/email",
+                        headers={"api-key": brevo_key, "Content-Type": "application/json"},
+                        json={
+                            "sender": {"name": "OMNIFIT Support", "email": host_user},
+                            "to": [{"email": e} for e in recipient_list],
+                            "subject": subject,
+                            "htmlContent": html_body,
+                            "textContent": message
+                        },
+                        timeout=10
+                    )
+                    if res.status_code in [200, 201, 202]:
+                        print(f"[OMNIFIT Async Email] Sent to {recipient_list} via Brevo HTTPS")
+                        return
+                except Exception as e_brevo:
+                    print(f"[OMNIFIT Async Email Warning] Brevo error: {e_brevo}")
+
             try:
                 msg = EmailMultiAlternatives(subject, message, sender, recipient_list)
                 msg.attach_alternative(html_body, "text/html")
@@ -75,7 +115,7 @@ def send_async_email(subject, message, recipient_list, from_email=None):
                 password=host_pass,
                 use_ssl=True,
                 use_tls=False,
-                timeout=10
+                timeout=5
             )
             msg = EmailMultiAlternatives(subject, message, sender, recipient_list, connection=fallback_conn)
             msg.attach_alternative(html_body, "text/html")
