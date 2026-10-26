@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const NotificationModule = ({ theme = 'dark' }) => {
     const [notifications, setNotifications] = useState([
         { id: 1, type: 'Workout', title: 'Chest & Triceps Hypertrophy Scheduled', time: '10 mins ago', isRead: false, icon: 'bi-lightning-fill', accent: 'crimson', desc: 'Coach prescribed today\'s 4-exercise routine with target overload.' },
-        { id: 2, type: 'Appointment', title: '1-on-1 Coaching Session Confirmed', time: '1 hour ago', isRead: false, icon: 'bi-calendar-check-fill', accent: 'green', desc: 'Session confirmed with Coach Marcus Vance for today @ 10:00 AM.' },
+        { id: 2, type: 'Appointment', title: '1-on-1 Coaching Session Confirmed', time: '1 hour ago', isRead: false, icon: 'bi-calendar-check-fill', accent: 'green', desc: 'Session confirmed with Coach Anandhu pradeep for today @ 10:00 AM.' },
         { id: 3, type: 'Diet', title: 'Daily Protein Target (180g) 88% Achieved', time: '3 hours ago', isRead: true, icon: 'bi-egg-fried', accent: 'amber', desc: 'Caloric surplus and protein target synchronized with progressive overload.' },
         { id: 4, type: 'Facility', title: 'Facial Check-In Verified at Terminal 1', time: 'Yesterday', isRead: true, icon: 'bi-person-check-fill', accent: 'slate', desc: 'Contactless access granted at Iron District Main Gate.' },
     ]);

@@ -231,20 +231,20 @@ export const LoginService = {
                 } else if (credentials.email === 'anandhu@omnifit.com' || credentials.email === 'trainer@omnifit.com') {
                     displayName = 'Anandhu pradeep';
                 } else if (credentials.email === 'admin@omnifit.com') {
-                    displayName = 'Sarah Jenkins';
+                    displayName = 'Omnifit Administrator';
                 } else if (credentials.email) {
                     const raw = credentials.email.includes('@') ? credentials.email.split('@')[0] : credentials.email;
                     const parts = raw.replace(/[\._-]/g, ' ').trim().split(/\s+/);
                     displayName = parts.map(p => p.length <= 2 ? p.toUpperCase() : (p.charAt(0).toUpperCase() + p.slice(1))).join(' ');
                 } else {
-                    displayName = role === 'trainer' ? 'Anandhu pradeep' : (role === 'admin' ? 'Sarah Jenkins' : 'Alex Mercer');
+                    displayName = role === 'trainer' ? 'Anandhu pradeep' : (role === 'admin' ? 'Omnifit Administrator' : 'Athlete');
                 }
             }
 
             const mockUser = {
                 id: persisted.id || Math.floor(Math.random() * 1000) + 1,
-                name: displayName || 'Alex Mercer',
-                full_name: displayName || 'Alex Mercer',
+                name: displayName || 'Athlete',
+                full_name: displayName || 'Athlete',
                 email: credentials.email,
                 role: role.toUpperCase(),
                 redirect_url: targetRedirect,

@@ -577,9 +577,9 @@ class TrainerOverviewView(APIView):
                 trainer_user = param_user
 
         if not trainer_user or not trainer_user.is_authenticated:
-            trainer_user = User.objects.filter(email='marcus.vance@omnifit.com').first() or User.objects.filter(role='trainer').first()
+            trainer_user = User.objects.filter(email='anandhu@omnifit.com').first() or User.objects.filter(role='trainer').first()
 
-        trainer_name = trainer_user.full_name or trainer_user.email if trainer_user else "Marcus Vance"
+        trainer_name = trainer_user.full_name or trainer_user.email if trainer_user else "Anandhu pradeep"
 
         # Fetch real assigned members from database
         assigned_qs = Member.objects.filter(assigned_trainer=trainer_user).select_related('user')
@@ -694,11 +694,11 @@ class TrainerAssignRoutineView(APIView):
 
         # Identify trainer
         trainer_user = request.user
-        trainer_name = "Marcus Vance"
+        trainer_name = "Anandhu pradeep"
         if trainer_user and trainer_user.is_authenticated:
             trainer_name = trainer_user.full_name or trainer_user.email
         else:
-            trainer_user = User.objects.filter(email='marcus.vance@omnifit.com').first() or User.objects.filter(role='trainer').first()
+            trainer_user = User.objects.filter(email='anandhu@omnifit.com').first() or User.objects.filter(role='trainer').first()
 
         # Identify target member user
         member_user = None
@@ -800,9 +800,9 @@ class TrainerDashboardDataView(APIView):
                 trainer_user = param_user
 
         if not trainer_user or not trainer_user.is_authenticated:
-            trainer_user = User.objects.filter(email='marcus.vance@omnifit.com').first() or User.objects.filter(role='trainer').first()
+            trainer_user = User.objects.filter(email='anandhu@omnifit.com').first() or User.objects.filter(role='trainer').first()
 
-        trainer_name = trainer_user.full_name or trainer_user.email if trainer_user else "Marcus Vance"
+        trainer_name = trainer_user.full_name or trainer_user.email if trainer_user else "Anandhu pradeep"
         t_profile = getattr(trainer_user, 'trainer_profile', None) if trainer_user else None
 
         # Real assigned members for this trainer
@@ -942,7 +942,7 @@ class MemberTodayWorkoutView(APIView):
             user = User.objects.filter(role='member').first() or User.objects.first()
 
         m = getattr(user, 'member_profile', None) if user else None
-        trainer_name = "Marcus Vance"
+        trainer_name = "Anandhu pradeep"
         if m and m.assigned_trainer:
             t_user = m.assigned_trainer
             trainer_name = t_user.full_name or t_user.email
@@ -1011,7 +1011,7 @@ class NotificationsView(APIView):
                 "id": 2,
                 "type": "Appointment",
                 "title": "Session Confirmed",
-                "message": "1-on-1 Personal Training Session with Marcus Vance scheduled at 10:00 AM.",
+                "message": "1-on-1 Personal Training Session with Anandhu pradeep scheduled at 10:00 AM.",
                 "time": "1h ago",
                 "read": False
             },
@@ -1300,7 +1300,7 @@ class MemberDashboardDataView(APIView):
             expiry_days_str = f"{max(0, days_left)} Days"
 
         # 2. Real Assigned Coach
-        trainer_name = "Marcus Vance (NASM Master)"
+        trainer_name = "Anandhu pradeep (NASM Master)"
         if m and m.assigned_trainer:
             t_user = m.assigned_trainer
             trainer_name = f"{t_user.full_name or t_user.email} (Assigned Coach)"

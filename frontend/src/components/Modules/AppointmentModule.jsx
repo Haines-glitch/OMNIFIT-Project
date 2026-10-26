@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { validateAppointmentDate, validateText } from '../../utils/validation';
+import { LoginService } from '../Login/LoginService';
+
+const APPOINTMENTS_STORAGE_KEY = 'omnifit_appointments_list';
 
 const AppointmentModule = ({ role }) => {
-    const [appointments, setAppointments] = useState([
-        { id: 101, trainer: 'Marcus Vance', member: 'Alex Mercer', date: '2026-08-07', time: '10:00 AM', purpose: 'Hypertrophy Form & Deadlift Audit', status: 'Approved' },
-        { id: 102, trainer: 'Elena Rostova', member: 'Sarah Jenkins', date: '2026-08-08', time: '02:30 PM', purpose: 'Nutritional Macro Optimization', status: 'Pending' },
-        { id: 103, trainer: 'Marcus Vance', member: 'David Miller', date: '2026-08-09', time: '05:00 PM', purpose: 'VO2 Max Cardio Testing', status: 'Rejected' },
-    ]);
+    const currentUser = LoginService.getCurrentUser() || {};
+    const memberName = currentUser?.name || currentUser?.full_name || currentUser?.email?.split('@')[0] || 'Athlete';
 
-    const [booking, setBooking] = useState({ trainer: 'Marcus Vance', date: '', time: '10:00 AM', purpose: '' });
+    const [appointments, setAppointments] = useState(() => {
+        try {
+            const raw = localStorage.getItem(APPOINTMENTS_STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                // Purge any legacy mock trainers/members from storage
+                return parsed.filter(a => 
+                    a.trainer !== 'Marcus Vance' && 
+                    a.trainer !== 'Elena Rostova' && 
+                    a.trainer !== 'John Wick' && 
+                    a.member !== 'Alex Mercer' && 
+                    a.member !== 'David Miller'
+                );
+            }
+        } catch (e) {
+            console.warn('Error reading appointments from storage:', e);
+        }
+        return [];
+    });
+
+    const [booking, setBooking] = useState({ trainer: 'Anandhu pradeep', date: '', time: '10:00 AM', purpose: '' });
     const [msg, setMsg] = useState(null);
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(appointments));
+        } catch (e) {
+            console.warn('Error saving appointments:', e);
+        }
+    }, [appointments]);
 
     const handleBook = (e) => {
         e.preventDefault();
@@ -32,16 +60,16 @@ const AppointmentModule = ({ role }) => {
 
         const newAppt = {
             id: Date.now(),
-            trainer: booking.trainer,
-            member: 'Alex Mercer',
+            trainer: booking.trainer || 'Anandhu pradeep',
+            member: memberName,
             date: booking.date,
             time: booking.time,
             purpose: booking.purpose.trim(),
             status: 'Pending',
         };
-        setAppointments([newAppt, ...appointments]);
-        setMsg({ type: 'success', text: 'Appointment booking submitted successfully! Pending trainer approval.' });
-        setBooking({ trainer: 'Marcus Vance', date: '', time: '10:00 AM', purpose: '' });
+        setAppointments(prev => [newAppt, ...prev]);
+        setMsg({ type: 'success', text: `Appointment booked with Coach ${newAppt.trainer}! Pending confirmation.` });
+        setBooking({ trainer: 'Anandhu pradeep', date: '', time: '10:00 AM', purpose: '' });
         setTimeout(() => setMsg(null), 5000);
     };
 
@@ -74,9 +102,7 @@ const AppointmentModule = ({ role }) => {
                                 value={booking.trainer}
                                 onChange={(e) => setBooking({ ...booking, trainer: e.target.value })}
                             >
-                                <option value="Marcus Vance">Marcus Vance (Resistance Master)</option>
-                                <option value="Elena Rostova">Elena Rostova (Bio-Metrics & Diet)</option>
-                                <option value="John Wick">John Wick (Tactical Conditioning)</option>
+                                <option value="Anandhu pradeep">Anandhu pradeep (NASM Master Coach)</option>
                             </select>
                         </div>
 
@@ -110,7 +136,7 @@ const AppointmentModule = ({ role }) => {
                             <input
                                 type="text"
                                 className="form-control bg-dark text-white border-secondary"
-                                placeholder="e.g. Squat Form check"
+                                placeholder="e.g. Squat Form & Overload Review"
                                 value={booking.purpose}
                                 onChange={(e) => setBooking({ ...booking, purpose: e.target.value })}
                             />
@@ -139,29 +165,39 @@ const AppointmentModule = ({ role }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {appointments.map((a) => (
-                                <tr key={a.id} className="border-secondary border-opacity-50">
-                                    <td className="bg-transparent text-white fw-bold">{a.trainer}</td>
-                                    <td className="bg-transparent text-zinc-100 font-medium">{a.member}</td>
-                                    <td className="bg-transparent text-zinc-200 font-semibold small">{a.date} @ {a.time}</td>
-                                    <td className="bg-transparent text-zinc-200 small">{a.purpose}</td>
-                                    <td className="bg-transparent">
-                                        <span className={`badge ${a.status === 'Approved' ? 'bg-success' : a.status === 'Pending' ? 'bg-warning text-dark' : 'bg-danger'}`}>
-                                            {a.status}
-                                        </span>
+                            {appointments.length === 0 ? (
+                                <tr>
+                                    <td colSpan={role === 'TRAINER' || role === 'ADMIN' ? 6 : 5} className="bg-transparent text-center py-5 text-zinc-400">
+                                        <i className="bi bi-calendar-x text-3xl mb-2 d-block text-zinc-500"></i>
+                                        <div className="font-semibold text-white">No Appointments Scheduled Yet</div>
+                                        <div className="small text-zinc-400 mt-1">Select a session date and time slot above to schedule your 1-on-1 consultation with Coach Anandhu pradeep.</div>
                                     </td>
-                                    {(role === 'TRAINER' || role === 'ADMIN') && (
-                                        <td className="bg-transparent">
-                                            {a.status === 'Pending' && (
-                                                <div className="d-flex gap-2">
-                                                    <button className="btn btn-sm btn-success" onClick={() => updateStatus(a.id, 'Approved')}>Approve</button>
-                                                    <button className="btn btn-sm btn-danger" onClick={() => updateStatus(a.id, 'Rejected')}>Reject</button>
-                                                </div>
-                                            )}
-                                        </td>
-                                    )}
                                 </tr>
-                            ))}
+                            ) : (
+                                appointments.map((a) => (
+                                    <tr key={a.id} className="border-secondary border-opacity-50">
+                                        <td className="bg-transparent text-white fw-bold">{a.trainer}</td>
+                                        <td className="bg-transparent text-zinc-100 font-medium">{a.member}</td>
+                                        <td className="bg-transparent text-zinc-200 font-semibold small">{a.date} @ {a.time}</td>
+                                        <td className="bg-transparent text-zinc-200 small">{a.purpose}</td>
+                                        <td className="bg-transparent">
+                                            <span className={`badge ${a.status === 'Approved' ? 'bg-success' : a.status === 'Pending' ? 'bg-warning text-dark' : 'bg-danger'}`}>
+                                                {a.status}
+                                            </span>
+                                        </td>
+                                        {(role === 'TRAINER' || role === 'ADMIN') && (
+                                            <td className="bg-transparent">
+                                                {a.status === 'Pending' && (
+                                                    <div className="d-flex gap-2">
+                                                        <button className="btn btn-sm btn-success" onClick={() => updateStatus(a.id, 'Approved')}>Approve</button>
+                                                        <button className="btn btn-sm btn-danger" onClick={() => updateStatus(a.id, 'Rejected')}>Reject</button>
+                                                    </div>
+                                                )}
+                                            </td>
+                                        )}
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>

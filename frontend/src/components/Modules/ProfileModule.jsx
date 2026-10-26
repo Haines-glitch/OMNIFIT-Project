@@ -13,8 +13,8 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
 
     const defaultAvatar = DEFAULT_AVATAR;
 
-    const defaultEmail = user?.email || (role === 'MEMBER' ? 'sarah.jenkins@omnifit.com' : 'marcus.vance@omnifit.com');
-    const defaultName = user?.name || (role === 'MEMBER' ? 'Sarah Jenkins' : 'Marcus Vance');
+    const defaultEmail = user?.email || (role === 'MEMBER' ? 'athlete@omnifit.com' : (role === 'ADMIN' ? 'admin@omnifit.com' : 'anandhu@omnifit.com'));
+    const defaultName = user?.name || user?.full_name || (role === 'MEMBER' ? 'Athlete' : (role === 'ADMIN' ? 'Admin' : 'Anandhu pradeep'));
 
     const [profileData, setProfileData] = useState({
         name: defaultName,
@@ -36,8 +36,8 @@ const ProfileModule = ({ user, onSaveUser, role, theme = 'dark' }) => {
     useEffect(() => {
         if (user) {
             const updated = {
-                name: user.name || (role === 'MEMBER' ? 'Sarah Jenkins' : 'Marcus Vance'),
-                email: user.email || (role === 'MEMBER' ? 'sarah.jenkins@omnifit.com' : 'marcus.vance@omnifit.com'),
+                name: user.name || user.full_name || (role === 'MEMBER' ? 'Athlete' : (role === 'ADMIN' ? 'Admin' : 'Anandhu pradeep')),
+                email: user.email || (role === 'MEMBER' ? 'athlete@omnifit.com' : (role === 'ADMIN' ? 'admin@omnifit.com' : 'anandhu@omnifit.com')),
                 phone: user.phone || '+91 98765 43210',
                 gender: user.gender || 'Female',
                 dob: user.dob || '1998-04-12',

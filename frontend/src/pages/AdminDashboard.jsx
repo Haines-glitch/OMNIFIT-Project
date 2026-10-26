@@ -33,8 +33,8 @@ const AdminDashboard = () => {
 
     const adminInfo = {
         ...currentUser,
-        name: currentUser?.name || currentUser?.full_name || 'Sarah Jenkins',
-        email: currentUser?.email || 'sarah.jenkins@omnifit.com',
+        name: currentUser?.name || currentUser?.full_name || 'Omnifit Administrator',
+        email: currentUser?.email || 'admin@omnifit.com',
         phone: currentUser?.phone || '+91 98765 43210',
         role: currentUser?.role || 'ADMIN',
         avatar: currentUser?.avatar || DEFAULT_AVATAR,

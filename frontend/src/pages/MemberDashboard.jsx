@@ -48,7 +48,7 @@ const MemberDashboard = () => {
             id: 2,
             type: 'Appointment',
             title: '1-on-1 Coaching Session Confirmed',
-            desc: 'Session with Marcus Vance confirmed for Today at 10:00 AM.',
+            desc: 'Session with Anandhu pradeep confirmed for Today at 10:00 AM.',
             time: '1h ago',
             read: false,
             badgeBg: 'bg-red-500/15 text-red-400 border-red-500/40',
@@ -74,9 +74,9 @@ const MemberDashboard = () => {
     ]);
 
     const upcomingWorkouts = [
-        { id: 1, title: 'Upper Body Strength', coach: 'Marcus Vance', time: 'Today • 10:00 AM', tag: 'Hypertrophy', badge: 'bg-[#E50914]/15 text-[#FF1E28] border-[#E50914]/40' },
-        { id: 2, title: 'HIIT Conditioning Blast', coach: 'Elena Rostova', time: 'Tomorrow • 08:30 AM', tag: 'Endurance', badge: 'bg-zinc-800 text-zinc-300 border-zinc-700' },
-        { id: 3, title: 'Posterior Chain & Core', coach: 'Marcus Vance', time: 'Friday • 09:00 AM', tag: 'Power', badge: 'bg-red-500/15 text-red-400 border-red-500/40' }
+        { id: 1, title: 'Upper Body Strength', coach: 'Anandhu pradeep', time: 'Today • 10:00 AM', tag: 'Hypertrophy', badge: 'bg-[#E50914]/15 text-[#FF1E28] border-[#E50914]/40' },
+        { id: 2, title: 'HIIT Conditioning Blast', coach: 'Anandhu pradeep', time: 'Tomorrow • 08:30 AM', tag: 'Endurance', badge: 'bg-zinc-800 text-zinc-300 border-zinc-700' },
+        { id: 3, title: 'Posterior Chain & Core', coach: 'Anandhu pradeep', time: 'Friday • 09:00 AM', tag: 'Power', badge: 'bg-red-500/15 text-red-400 border-red-500/40' }
     ];
 
     const [currentUser, setCurrentUser] = useState(() => LoginService.getCurrentUser());
@@ -116,20 +116,20 @@ const MemberDashboard = () => {
     const memberInfo = {
         ...(data?.member || {}),
         ...currentUser,
-        name: currentUser?.name || currentUser?.full_name || data?.member?.name || 'Sarah Jenkins',
-        email: currentUser?.email || data?.member?.email || 'sarah.jenkins@omnifit.com',
+        name: currentUser?.name || currentUser?.full_name || data?.member?.name || (currentUser?.email ? currentUser.email.split('@')[0] : 'Athlete'),
+        email: currentUser?.email || data?.member?.email || '',
         phone: currentUser?.phone || data?.member?.phone || '+91 98765 43210',
-        gender: currentUser?.gender || data?.member?.gender || 'Female',
+        gender: currentUser?.gender || data?.member?.gender || 'Male',
         dob: currentUser?.dob || data?.member?.dob || '1998-04-12',
         height: currentUser?.height || data?.member?.height || '182 cm',
         weight: currentUser?.weight || data?.member?.weight || '78.5 kg',
         bmi: currentUser?.bmi || data?.member?.bmi || 23.7,
         fitnessGoal: currentUser?.fitnessGoal || data?.member?.fitnessGoal || data?.member?.goal || 'Hypertrophy & Fat Loss',
-        emergencyContact: currentUser?.emergencyContact || data?.member?.emergencyContact || 'Sarah Mercer (+91 98765 12345)',
+        emergencyContact: currentUser?.emergencyContact || data?.member?.emergencyContact || 'Emergency Contact (+91 98765 12345)',
         medicalHistory: currentUser?.medicalHistory || data?.member?.medicalHistory || 'Cleared for high-intensity training',
         role: currentUser?.role || 'MEMBER',
         membershipPlan: currentUser?.membership_plan || data?.member?.membershipPlan || 'PLATINUM VIP ATHLETE',
-        trainerName: data?.member?.trainerName || 'Marcus Vance',
+        trainerName: data?.member?.trainerName || data?.member?.assigned_trainer || 'Anandhu pradeep',
         avatar: currentUser?.avatar || data?.member?.avatar || DEFAULT_AVATAR,
     };
 

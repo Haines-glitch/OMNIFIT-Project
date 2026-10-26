@@ -62,20 +62,14 @@ const ReportModule = ({ role = 'TRAINER', theme = 'dark' }) => {
 
     // Mock/Real Combined Data Source for preview
     const sampleWorkoutLogs = [
-        { date: '2026-10-23', athlete: 'Haines Jose', routine: 'Chest & Triceps Hypertrophy', exercise: 'Incline Dumbbell Press', setsReps: '4 x 10-12', load: '26 kg', status: 'Completed', notes: 'Maintain 30-degree incline' },
-        { date: '2026-10-23', athlete: 'Haines Jose', routine: 'Chest & Triceps Hypertrophy', exercise: 'Weighted Tricep Dips', setsReps: '3 x 12', load: '+15 kg', status: 'Pending', notes: 'Full depth lockout' },
-        { date: '2026-10-22', athlete: 'Sarah Jenkins', routine: 'Posterior Chain Overload', exercise: 'Barbell Romanian Deadlift', setsReps: '4 x 8', load: '60 kg', status: 'Completed', notes: 'Neutral spine, hinge hips' },
-        { date: '2026-10-22', athlete: 'Sarah Jenkins', routine: 'Posterior Chain Overload', exercise: 'Bulgarian Split Squats', setsReps: '3 x 10', load: '16 kg', status: 'Completed', notes: 'Knee stability' },
-        { date: '2026-10-21', athlete: 'Marcus Vance', routine: 'Push Power Foundation', exercise: 'Overhead Barbell Press', setsReps: '4 x 6', load: '50 kg', status: 'Completed', notes: 'Strict vertical bar path' },
-        { date: '2026-10-20', athlete: 'Alex Mercer', routine: 'Hypertrophy Back & Biceps', exercise: 'Seated Cable Row', setsReps: '4 x 12', load: '45 kg', status: 'Completed', notes: 'Squeeze rhomboids' },
+        { date: '2026-10-23', athlete: 'Goutham Sreekumar', routine: 'Chest & Triceps Hypertrophy', exercise: 'Incline Dumbbell Press', setsReps: '4 x 10-12', load: '26 kg', status: 'Completed', notes: 'Maintain 30-degree incline' },
+        { date: '2026-10-23', athlete: 'Goutham Sreekumar', routine: 'Chest & Triceps Hypertrophy', exercise: 'Weighted Tricep Dips', setsReps: '3 x 12', load: '+15 kg', status: 'Pending', notes: 'Full depth lockout' },
+        { date: '2026-10-22', athlete: 'Goutham Sreekumar', routine: 'Posterior Chain Overload', exercise: 'Barbell Romanian Deadlift', setsReps: '4 x 8', load: '60 kg', status: 'Completed', notes: 'Neutral spine, hinge hips' },
     ];
 
     const sampleAttendanceLogs = [
-        { date: '2026-10-23', athlete: 'Haines Jose', time: '08:15 AM', session: '1h 20m', terminal: 'Terminal 1 - Main Gate', status: 'Verified' },
-        { date: '2026-10-22', athlete: 'Sarah Jenkins', time: '07:45 AM', session: '1h 10m', terminal: 'Terminal 2 - Iron Bay', status: 'Verified' },
-        { date: '2026-10-21', athlete: 'Sarah Jenkins', time: '08:00 AM', session: '1h 15m', terminal: 'Terminal 1 - Main Gate', status: 'Verified' },
-        { date: '2026-10-20', athlete: 'Marcus Vance', time: '09:30 AM', session: '1h 05m', terminal: 'Terminal 1 - Main Gate', status: 'Verified' },
-        { date: '2026-10-19', athlete: 'Alex Mercer', time: '07:30 AM', session: '1h 30m', terminal: 'Terminal 2 - Iron Bay', status: 'Verified' },
+        { date: '2026-10-23', athlete: 'Goutham Sreekumar', time: '08:15 AM', session: '1h 20m', terminal: 'Terminal 1 - Main Gate', status: 'Verified' },
+        { date: '2026-10-22', athlete: 'Goutham Sreekumar', time: '07:45 AM', session: '1h 10m', terminal: 'Terminal 2 - Iron Bay', status: 'Verified' },
     ];
 
     // Filter preview records
@@ -201,10 +195,8 @@ const ReportModule = ({ role = 'TRAINER', theme = 'dark' }) => {
                 } else {
                     head = [['Date', 'Athlete', 'Biometric Metric', 'Starting', 'Current', 'Progress Delta', 'Status']];
                     body = [
-                        ['2026-10-23', 'Haines Jose', 'Body Weight (kg)', '80.5 kg', '78.5 kg', '-2.0 kg', 'On Track'],
-                        ['2026-10-23', 'Sarah Jenkins', 'Body Weight (kg)', '68.0 kg', '66.2 kg', '-1.8 kg', 'On Track'],
-                        ['2026-10-22', 'Marcus Vance', 'Overhead Press (1RM)', '65.0 kg', '72.5 kg', '+7.5 kg', 'Overloading'],
-                        ['2026-10-21', 'Alex Mercer', 'Bench Press (1RM)', '90.0 kg', '95.0 kg', '+5.0 kg', 'Overloading']
+                        ['2026-10-23', 'Goutham Sreekumar', 'Body Weight (kg)', '80.5 kg', '78.5 kg', '-2.0 kg', 'On Track'],
+                        ['2026-10-22', 'Goutham Sreekumar', 'Overhead Press (1RM)', '65.0 kg', '72.5 kg', '+7.5 kg', 'Overloading']
                     ];
                 }
 
@@ -398,9 +390,7 @@ const ReportModule = ({ role = 'TRAINER', theme = 'dark' }) => {
                             <option value="ALL">All Assigned Athletes</option>
                             {assignedAthletes.length === 0 ? (
                                 <>
-                                    <option value="Haines Jose">Haines Jose (hainesjosepaulson123@gmail.com)</option>
-                                    <option value="Sarah Jenkins">Sarah Jenkins (sarah.jenkins@omnifit.com)</option>
-                                    <option value="Alex Mercer">Alex Mercer (alex.mercer@omnifit.com)</option>
+                                    <option value="Goutham Sreekumar">Goutham Sreekumar (gouthamsreekumar2027@mca.ajce.in)</option>
                                 </>
                             ) : (
                                 assignedAthletes.map(a => (

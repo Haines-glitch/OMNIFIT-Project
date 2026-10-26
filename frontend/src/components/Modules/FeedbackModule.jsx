@@ -19,7 +19,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
             rating: 5,
             status: 'Reviewed',
             date: '2026-08-08',
-            response: 'Thank you Alex! Trainer Marcus Vance has been notified of your review.'
+            response: 'Thank you! Coach Anandhu pradeep has been notified of your review.'
         },
         {
             id: 'FB-103',
@@ -139,7 +139,7 @@ const FeedbackModule = ({ theme = 'light' }) => {
                                     onChange={(e) => setCategory(e.target.value)}
                                     style={{ background: isLight ? '#F8FAFC' : '#0F172A', border: `1px solid ${isLight ? '#E2E8F0' : '#334155'}`, color: isLight ? '#0F172A' : '#F8FAFC' }}
                                 >
-                                    <option value="Trainer Performance">Trainer Performance (Marcus Vance)</option>
+                                    <option value="Trainer Performance">Trainer Performance (Anandhu pradeep)</option>
                                     <option value="AI Workout Plan">AI Workout Plan & Exercises</option>
                                     <option value="AI Diet Plan">AI Diet & Nutrition Macros</option>
                                     <option value="Facility Cleanliness">Facility Cleanliness & Amenities</option>

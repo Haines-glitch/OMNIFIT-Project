@@ -680,16 +680,16 @@ const Login = () => {
                                 {/* Option 3: Athlete Demo */}
                                 <button
                                     type="button"
-                                    onClick={() => handleGoogleSignIn('alex.mercer@gmail.com', 'Alex Mercer')}
+                                    onClick={() => handleGoogleSignIn('gouthamsreekumar2027@mca.ajce.in', 'Goutham Sreekumar')}
                                     className="d-flex align-items-center gap-3 p-2.5 rounded-3 border text-start w-100 transition-all"
                                     style={{ background: '#222', borderColor: 'rgba(255,255,255,0.1)', cursor: 'pointer' }}
                                 >
                                     <div className="w-8 h-8 rounded-circle bg-success text-white d-flex align-items-center justify-content-center fw-bold text-sm">
-                                        A
+                                        G
                                     </div>
                                     <div className="flex-grow-1 overflow-hidden">
-                                        <div className="text-white fw-bold small">Alex Mercer</div>
-                                        <div className="text-zinc-300 small text-truncate">alex.mercer@gmail.com</div>
+                                        <div className="text-white fw-bold small">Goutham Sreekumar</div>
+                                        <div className="text-zinc-300 small text-truncate">gouthamsreekumar2027@mca.ajce.in</div>
                                     </div>
                                     <i className="bi bi-chevron-right text-zinc-400 small"></i>
                                 </button>

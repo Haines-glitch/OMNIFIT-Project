@@ -126,7 +126,7 @@ export const getFallbackMemberData = () => ({
         role: "Member",
         membershipPlan: "Platinum VIP Membership",
         membershipExpiry: "120 Days",
-        trainerName: "Marcus Vance (NASM Master)",
+        trainerName: "Anandhu pradeep (NASM Master)",
         avatar: DEFAULT_AVATAR,
         age: 26,
         gender: "Male",
@@ -144,7 +144,7 @@ export const getFallbackMemberData = () => ({
     stats: {
         todayWorkout: "Chest & Triceps Hypertrophy",
         todayDiet: "High-Protein Surplus (180g P)",
-        upcomingAppointment: "Tomorrow @ 10:00 AM with Marcus",
+        upcomingAppointment: "Session with Anandhu pradeep",
     },
     charts: {
         weeklyCalories: [620, 780, 840, 710, 950, 890, 840],
@@ -156,7 +156,7 @@ export const getFallbackMemberData = () => ({
 
 export const getFallbackTrainerData = () => ({
     trainer: {
-        name: "Marcus Vance",
+        name: "Anandhu pradeep",
         specialization: "Hypertrophy & Resistance AI",
         experience: "8 Years",
         rating: "4.95 / 5.0",
@@ -165,34 +165,29 @@ export const getFallbackTrainerData = () => ({
         pendingReviews: 3,
     },
     recentMembers: [
-        { id: 1, name: "Sarah Jenkins", plan: "Gold Fitness", goal: "Endurance & Cardio", attendance: "95%" },
-        { id: 2, name: "Michael Scott", plan: "Silver Basic", goal: "Weight Management", attendance: "95%" },
+        { id: 1, name: "Goutham Sreekumar", plan: "Platinum VIP", goal: "Hypertrophy & Strength", attendance: "100%" },
     ],
     upcomingSessions: [
-        { id: 101, member: "Sarah Jenkins", time: "10:00 AM", type: "Cardio & Endurance Check", status: "Approved" },
-        { id: 102, member: "Michael Scott", time: "02:30 PM", type: "Weight Management Audit", status: "Pending" },
+        { id: 101, member: "Goutham Sreekumar", time: "10:00 AM", type: "Hypertrophy Check", status: "Approved" },
     ]
 });
 
 export const getFallbackAdminData = () => ({
     stats: {
-        totalMembers: 1248,
-        totalTrainers: 34,
-        activeMemberships: 1180,
-        todayAttendance: 342,
-        monthlyRevenue: "$48,920",
-        pendingPayments: "$1,450",
-        appointmentsToday: 28,
+        totalMembers: 1,
+        totalTrainers: 1,
+        activeMemberships: 1,
+        todayAttendance: 1,
+        monthlyRevenue: "$199",
+        pendingPayments: "$0",
+        appointmentsToday: 1,
     },
     charts: {
-        monthlyRevenue: [32000, 35400, 41200, 39800, 44500, 48920],
-        memberGrowth: [800, 910, 1020, 1100, 1180, 1248],
-        attendanceStats: [280, 310, 295, 330, 342],
+        monthlyRevenue: [0, 0, 0, 0, 0, 199],
+        memberGrowth: [0, 0, 0, 0, 1, 1],
+        attendanceStats: [0, 0, 0, 1, 1],
     },
     recentPayments: [
-        { id: "TXN-9841", member: "Alex Mercer", amount: "$199.00", plan: "Platinum VIP", status: "Paid", date: "2026-08-05" },
-        { id: "TXN-9842", member: "Sarah Jenkins", amount: "$129.00", plan: "Gold Fitness", status: "Paid", date: "2026-08-05" },
-        { id: "TXN-9843", member: "Michael Scott", amount: "$89.00", plan: "Silver Basic", status: "Pending", date: "2026-08-04" },
-        { id: "TXN-9844", member: "Elena Rostova", amount: "$199.00", plan: "Platinum VIP", status: "Paid", date: "2026-08-04" },
+        { id: "TXN-9841", member: "Goutham Sreekumar", amount: "$199.00", plan: "Platinum VIP", status: "Paid", date: "2026-10-25" },
     ]
 });

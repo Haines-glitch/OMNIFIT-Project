@@ -542,7 +542,7 @@ const TrainerManagementModule = ({ theme = 'dark' }) => {
                                             type="text"
                                             name="full_name"
                                             className="w-full px-3.5 py-2.5 rounded-xl bg-[#181822] border border-[#2e2e40] text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-[#E50914]"
-                                            placeholder="Marcus Vance"
+                                            placeholder="Anandhu pradeep"
                                             value={formData.full_name}
                                             onChange={handleInputChange}
                                             required

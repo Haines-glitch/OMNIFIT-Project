@@ -480,7 +480,7 @@ const WorkoutModule = ({
                                             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
                                                 <i className="bi bi-person-badge text-[#FF1E28]"></i>
                                                 <span className="text-zinc-400">Coach:</span>
-                                                <span className="font-extrabold text-white">{memberRoutine?.coach || 'Marcus Vance'}</span>
+                                                <span className="font-extrabold text-white">{memberRoutine?.coach || 'Anandhu pradeep'}</span>
                                             </div>
 
                                             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#181820] border border-[#2a2a38] text-xs">
@@ -699,7 +699,7 @@ const WorkoutModule = ({
                                 className="px-3.5 py-2 rounded-xl bg-[#181820] border border-[#2a2a38] text-white text-xs font-semibold focus:border-emerald-500 outline-none cursor-pointer"
                             >
                                 {assignedAthletes.length === 0 ? (
-                                    <option value="sarah.jenkins@omnifit.com">Sarah Jenkins (sarah.jenkins@omnifit.com)</option>
+                                        <option value="gouthamsreekumar2027@mca.ajce.in">Goutham Sreekumar (gouthamsreekumar2027@mca.ajce.in)</option>
                                 ) : (
                                     assignedAthletes.map(a => (
                                         <option key={a.id || a.email} value={a.email}>
@@ -930,7 +930,7 @@ const WorkoutModule = ({
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#181820] border border-[#2a2a38] text-white text-xs font-semibold focus:border-[#E50914] outline-none"
                                 >
                                     {assignedAthletes.length === 0 ? (
-                                        <option value="sarah.jenkins@omnifit.com">Sarah Jenkins (sarah.jenkins@omnifit.com)</option>
+                                            <option value="gouthamsreekumar2027@mca.ajce.in">Goutham Sreekumar (gouthamsreekumar2027@mca.ajce.in)</option>
                                     ) : (
                                         assignedAthletes.map(a => (
                                             <option key={a.id || a.email} value={a.email}>
