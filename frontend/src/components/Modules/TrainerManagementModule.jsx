@@ -48,59 +48,12 @@ const TrainerManagementModule = ({ theme = 'dark' }) => {
         setIsLoading(true);
         try {
             const data = await LoginService.getTrainers();
-            if (data) {
+            if (data && Array.isArray(data)) {
                 setTrainers(data);
+            } else if (data) {
+                setTrainers([data]);
             } else {
-                // Mock default fallback trainers if backend endpoint returns empty
-                setTrainers([
-                    {
-                        id: 1,
-                        user_id: 101,
-                        full_name: 'Marcus Vance',
-                        name: 'Marcus Vance',
-                        email: 'trainer@omnifit.com',
-                        phone: '+1 (555) 234-5678',
-                        specialization: 'Bodybuilding & Strength',
-                        experience: 8,
-                        qualification: 'B.Sc Exercise Physiology',
-                        certification: 'CSCS & NASM CPT',
-                        license_number: 'NASM-88214',
-                        bio: 'Specializing in elite hyper-trophy programming and powerlifting mechanics.',
-                        working_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                        start_time: '06:00 AM',
-                        end_time: '04:00 PM',
-                        rating: 4.9,
-                        status: 'Active',
-                        assigned_members_count: 14,
-                        assigned_members: [
-                            { id: 1, membership_no: 'OMNI-MBR-1001', full_name: 'Alex Mercer', email: 'member@omnifit.com', membership_plan: 'Platinum VIP', status: 'Active' }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        user_id: 102,
-                        full_name: 'Elena Rostova',
-                        name: 'Elena Rostova',
-                        email: 'elena@omnifit.com',
-                        phone: '+1 (555) 876-5432',
-                        specialization: 'Yoga & Functional Mobility',
-                        experience: 6,
-                        qualification: 'M.Sc Kinesiology',
-                        certification: 'RYT 500 Yoga Alliance',
-                        license_number: 'YA-99120',
-                        bio: 'Focusing on active recovery, mobility, and high-intensity metabolic conditioning.',
-                        working_days: ['Monday', 'Wednesday', 'Friday', 'Saturday'],
-                        start_time: '08:00 AM',
-                        end_time: '05:00 PM',
-                        rating: 5.0,
-                        status: 'Active',
-                        assigned_members_count: 8,
-                        assigned_members: []
-                    }
-                ].filter(t => {
-                    const deletedTrainerIds = JSON.parse(localStorage.getItem('mockDeletedTrainers') || '[]');
-                    return !deletedTrainerIds.includes(t.id);
-                }));
+                setTrainers([]);
             }
 
             const membersData = await LoginService.getAvailableMembers();

@@ -45,62 +45,27 @@ try:
 except Exception as e:
     print(f"[OMNIFIT] Error ensuring superuser: {e}")
 
-# 2. Trainer Credentials (Preserve / Set)
-trainer_email = os.environ.get('TRAINER_EMAIL', 'trainer@omnifit.com').strip() or 'trainer@omnifit.com'
-trainer_password = os.environ.get('TRAINER_PASSWORD', 'Trainer@123').strip() or 'Trainer@123'
-trainer_name = os.environ.get('TRAINER_NAME', 'Marcus Vance').strip() or 'Marcus Vance'
-
+# 2. Ensure Anandhu pradeep trainer is active
 try:
-    trainer_user, created = User.objects.get_or_create(
-        email=trainer_email,
-        defaults={
-            'username': trainer_email,
-            'full_name': trainer_name,
-            'phone': '+1 (555) 234-5678',
-            'role': 'trainer',
-            'status': 'Active',
-            'is_staff': False,
-            'is_superuser': False,
-            'is_active': True,
-        }
-    )
-    trainer_user.set_password(trainer_password)
-    trainer_user.role = 'trainer'
-    trainer_user.status = 'Active'
-    trainer_user.is_active = True
-    trainer_user.save()
-
-    Trainer.objects.get_or_create(
-        user=trainer_user,
-        defaults={
-            'specialization': 'Bodybuilding & Strength',
-            'experience': 8,
-            'qualification': 'B.Sc Exercise Physiology',
-            'certification': 'CSCS & NASM CPT',
-            'status': 'Active'
-        }
-    )
-    action = "Created" if created else "Verified"
-    print(f"[OMNIFIT] Trainer user '{trainer_email}' successfully {action}!")
-except Exception as e:
-    print(f"[OMNIFIT] Error ensuring trainer: {e}")
-
-# Ensure marcus.vance@omnifit.com is also preserved with Trainer@123
-try:
-    mv = User.objects.filter(email='marcus.vance@omnifit.com').first()
-    if mv:
-        mv.set_password('Trainer@123')
-        mv.role = 'trainer'
-        mv.status = 'Active'
-        mv.is_active = True
-        mv.save()
+    anandhu = User.objects.filter(role='trainer').filter(email__icontains='anandhu').first()
+    if not anandhu:
+        anandhu = User.objects.filter(email='anandhu@omnifit.com').first()
+    if anandhu:
+        anandhu.role = 'trainer'
+        anandhu.status = 'Active'
+        anandhu.is_active = True
+        anandhu.save()
         Trainer.objects.get_or_create(
-            user=mv,
+            user=anandhu,
             defaults={
-                'specialization': 'Hypertrophy & Biomechanics',
-                'experience': 8,
+                'specialization': 'Cardio',
+                'experience': 5,
+                'working_days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                'start_time': '08:00 AM',
+                'end_time': '05:00 PM',
                 'status': 'Active'
             }
         )
+        print(f"[OMNIFIT] Verified trainer '{anandhu.email}' ({anandhu.full_name})!")
 except Exception as e:
-    pass
+    print(f"[OMNIFIT] Error checking trainer: {e}")
