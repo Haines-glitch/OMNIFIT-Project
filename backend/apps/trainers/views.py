@@ -339,15 +339,16 @@ class ApproveMemberView(APIView):
         def _send_approval():
             try:
                 from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
-                send_mail(
+                res = send_mail(
                     subject=email_subject,
                     message=email_body,
                     from_email=from_email,
                     recipient_list=[user.email],
-                    fail_silently=True
+                    fail_silently=False
                 )
+                print(f"[OMNIFIT] Approval email successfully dispatched to {user.email}. Result: {res}")
             except Exception as e:
-                print(f"[Email Notification Error] SMTP dispatch failed: {e}")
+                print(f"[Email Notification Error] SMTP dispatch failed to {user.email}: {e}")
 
         import threading
         threading.Thread(target=_send_approval, daemon=True).start()

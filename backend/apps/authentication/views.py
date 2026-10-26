@@ -37,16 +37,17 @@ def send_async_email(subject, message, recipient_list, from_email=None):
         try:
             from django.core.mail import send_mail
             from django.conf import settings
-            sender = from_email or getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'support@omnifit.com'
-            send_mail(
+            sender = from_email or getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
+            res = send_mail(
                 subject=subject,
                 message=message,
                 from_email=sender,
                 recipient_list=recipient_list,
-                fail_silently=True
+                fail_silently=False
             )
+            print(f"[OMNIFIT Async Email] Sent '{subject}' to {recipient_list}. Result: {res}")
         except Exception as e:
-            print(f"[Async Email Warning] {e}")
+            print(f"[Async Email Warning] Failed to send email to {recipient_list}: {e}")
 
     thread = threading.Thread(target=_worker, daemon=True)
     thread.start()
