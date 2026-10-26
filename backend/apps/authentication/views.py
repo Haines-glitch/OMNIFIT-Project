@@ -32,20 +32,55 @@ User = get_user_model()
 import threading
 
 def send_async_email(subject, message, recipient_list, from_email=None):
-    """Sends email in a non-blocking daemon thread so SMTP delays never block HTTP responses."""
+    """Sends email in a non-blocking daemon thread with automatic Port 587 -> 465 fallback."""
     def _worker():
         try:
-            from django.core.mail import send_mail
+            from django.core.mail import EmailMultiAlternatives, get_connection
             from django.conf import settings
-            sender = from_email or getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
-            res = send_mail(
-                subject=subject,
-                message=message,
-                from_email=sender,
-                recipient_list=recipient_list,
-                fail_silently=False
+
+            host_user = getattr(settings, 'EMAIL_HOST_USER', None) or 'hainesjosepaulson123@gmail.com'
+            host_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', None) or 'wgcflgwsfdeoyupa'
+            sender = from_email or f"OMNIFIT Support <{host_user}>"
+
+            html_body = f"""<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:24px;background:#0d0d12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e4e4e7;">
+  <div style="max-width:560px;margin:0 auto;background:#181820;border:1px solid #272733;border-radius:16px;padding:32px;">
+    <div style="margin-bottom:20px;">
+      <span style="display:inline-block;padding:6px 14px;background:#e50914;color:#fff;font-weight:900;border-radius:6px;font-size:14px;letter-spacing:1.5px;">OMNIFIT</span>
+    </div>
+    <h2 style="color:#ffffff;margin-top:0;font-size:20px;font-weight:800;">{subject}</h2>
+    <div style="font-size:15px;line-height:1.6;color:#d4d4d8;white-space:pre-wrap;">{message}</div>
+    <div style="text-align:center;margin:32px 0;">
+      <a href="https://omnifit.hainesjosepaulson.dev/login" style="display:inline-block;background:#e50914;color:#ffffff;padding:12px 28px;font-weight:bold;text-decoration:none;border-radius:8px;font-size:14px;">Visit OMNIFIT Ecosystem &rarr;</a>
+    </div>
+    <p style="font-size:12px;color:#71717a;margin-bottom:0;">The OMNIFIT High-Performance Coaching Staff</p>
+  </div>
+</body>
+</html>"""
+
+            try:
+                msg = EmailMultiAlternatives(subject, message, sender, recipient_list)
+                msg.attach_alternative(html_body, "text/html")
+                sent = msg.send(fail_silently=False)
+                print(f"[OMNIFIT Async Email] Sent '{subject}' to {recipient_list}. Result: {sent}")
+                return
+            except Exception as e1:
+                print(f"[OMNIFIT Async Email Warning] Port 587 attempt failed: {e1}. Trying Port 465 SSL...")
+
+            fallback_conn = get_connection(
+                host=settings.EMAIL_HOST,
+                port=465,
+                username=host_user,
+                password=host_pass,
+                use_ssl=True,
+                use_tls=False,
+                timeout=10
             )
-            print(f"[OMNIFIT Async Email] Sent '{subject}' to {recipient_list}. Result: {res}")
+            msg = EmailMultiAlternatives(subject, message, sender, recipient_list, connection=fallback_conn)
+            msg.attach_alternative(html_body, "text/html")
+            sent = msg.send(fail_silently=False)
+            print(f"[OMNIFIT Async Email] Sent via Port 465 SSL '{subject}' to {recipient_list}. Result: {sent}")
         except Exception as e:
             print(f"[Async Email Warning] Failed to send email to {recipient_list}: {e}")
 

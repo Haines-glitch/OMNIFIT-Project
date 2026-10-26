@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db import models
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives, get_connection
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from apps.authentication.permissions import IsAdminRole
@@ -269,6 +269,79 @@ class PendingMembersView(APIView):
         )
 
 
+def dispatch_approval_email(user_email, athlete_name, trainer_name):
+    subject = "Welcome to OMNIFIT — Your Athlete Account Has Been Approved!"
+    text_content = (
+        f"Hello {athlete_name},\n\n"
+        f"Great news! Your OMNIFIT athlete membership has been verified and APPROVED by Trainer {trainer_name}.\n\n"
+        f"Your athlete account is now ACTIVE. You can log into your dashboard at:\n"
+        f"https://omnifit.hainesjosepaulson.dev/login\n\n"
+        f"Account Email: {user_email}\n\n"
+        f"Welcome to the team!\n"
+        f"Best regards,\n"
+        f"The OMNIFIT Coaching Staff\n"
+    )
+    html_content = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#0d0d12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e4e4e7;">
+  <div style="max-width:560px;margin:0 auto;background:#181820;border:1px solid #272733;border-radius:16px;padding:32px;">
+    <div style="margin-bottom:24px;">
+      <span style="display:inline-block;padding:6px 14px;background:#e50914;color:#fff;font-weight:900;border-radius:6px;font-size:14px;letter-spacing:1.5px;">OMNIFIT</span>
+    </div>
+    <h2 style="color:#ffffff;margin-top:0;font-size:22px;font-weight:800;">Account Approved!</h2>
+    <p style="font-size:15px;line-height:1.6;color:#a1a1aa;">Hello <strong>{athlete_name}</strong>,</p>
+    <p style="font-size:15px;line-height:1.6;color:#a1a1aa;">Great news! Your OMNIFIT athlete membership has been verified and approved by <strong>Coach {trainer_name}</strong>.</p>
+    <div style="margin:24px 0;padding:18px;background:#121217;border:1px solid #272733;border-radius:12px;">
+      <div style="font-size:12px;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Account Email</div>
+      <div style="font-size:15px;color:#ffffff;font-weight:bold;">{user_email}</div>
+      <div style="font-size:12px;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;margin-top:12px;margin-bottom:4px;">Clearance Status</div>
+      <div style="font-size:14px;color:#10b981;font-weight:bold;">Active &bull; Cleared for Training</div>
+    </div>
+    <div style="text-align:center;margin:32px 0;">
+      <a href="https://omnifit.hainesjosepaulson.dev/login" style="display:inline-block;background:#e50914;color:#ffffff;padding:14px 32px;font-weight:bold;text-decoration:none;border-radius:10px;font-size:14px;letter-spacing:0.5px;">LOG IN TO ATHLETE COMMAND CENTER &rarr;</a>
+    </div>
+    <p style="font-size:13px;color:#71717a;margin-bottom:0;">The OMNIFIT High-Performance Coaching Staff</p>
+  </div>
+</body>
+</html>"""
+
+    host_user = getattr(settings, 'EMAIL_HOST_USER', None) or 'hainesjosepaulson123@gmail.com'
+    host_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', None) or 'wgcflgwsfdeoyupa'
+    from_email = f"OMNIFIT Coaching Team <{host_user}>"
+
+    # Attempt 1: Port 587 (TLS)
+    try:
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [user_email])
+        msg.attach_alternative(html_content, "text/html")
+        sent = msg.send(fail_silently=False)
+        print(f"[OMNIFIT Email] Sent via Port 587 TLS to {user_email}. Result: {sent}")
+        return True, None
+    except Exception as e1:
+        print(f"[OMNIFIT Email Warning] Port 587 TLS failed: {e1}. Trying fallback Port 465 (SSL)...")
+
+    # Attempt 2: Fallback to Port 465 (Direct SSL)
+    try:
+        fallback_conn = get_connection(
+            host=settings.EMAIL_HOST,
+            port=465,
+            username=host_user,
+            password=host_pass,
+            use_ssl=True,
+            use_tls=False,
+            timeout=10
+        )
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [user_email], connection=fallback_conn)
+        msg.attach_alternative(html_content, "text/html")
+        sent = msg.send(fail_silently=False)
+        print(f"[OMNIFIT Email] Sent via Port 465 SSL to {user_email}. Result: {sent}")
+        return True, None
+    except Exception as e2:
+        err_msg = f"Port 587 failed: {e1}; Port 465 failed: {e2}"
+        print(f"[OMNIFIT Email ERROR] All SMTP attempts failed for {user_email}: {err_msg}")
+        return False, err_msg
+
+
 class ApproveMemberView(APIView):
     permission_classes = [AllowAny]
 
@@ -324,34 +397,9 @@ class ApproveMemberView(APIView):
             member.assigned_trainer = trainer_user
         member.save()
 
-        # 2. Send official verification approval email asynchronously
+        # 2. Send official verification approval email
         athlete_name = user.full_name or user.email.split('@')[0]
-        email_subject = "Welcome to OMNIFIT — Your Athlete Account Has Been Approved!"
-        email_body = (
-            f"Hello {athlete_name},\n\n"
-            f"Great news! Your OMNIFIT athlete membership has been verified and APPROVED by Trainer {effective_trainer_name}.\n\n"
-            f"Your athlete account is now ACTIVE. You can log into your dashboard at https://omnifit.hainesjosepaulson.dev/login\n\n"
-            f"Welcome to the team!\n"
-            f"Best regards,\n"
-            f"The OMNIFIT Coaching Staff\n"
-        )
-
-        def _send_approval():
-            try:
-                from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
-                res = send_mail(
-                    subject=email_subject,
-                    message=email_body,
-                    from_email=from_email,
-                    recipient_list=[user.email],
-                    fail_silently=False
-                )
-                print(f"[OMNIFIT] Approval email successfully dispatched to {user.email}. Result: {res}")
-            except Exception as e:
-                print(f"[Email Notification Error] SMTP dispatch failed to {user.email}: {e}")
-
-        import threading
-        threading.Thread(target=_send_approval, daemon=True).start()
+        email_sent, email_err = dispatch_approval_email(user.email, athlete_name, effective_trainer_name)
 
         # 3. Create in-app Notification for member
         Notification.objects.create(
@@ -362,6 +410,10 @@ class ApproveMemberView(APIView):
         )
 
         msg = f"Athlete {athlete_name} approved successfully by Trainer {effective_trainer_name}."
+        if email_sent:
+            msg += f" Verification email dispatched to {user.email}."
+        elif email_err:
+            msg += f" Note: Email dispatch notice: {email_err}."
 
         return standard_response(
             success=True,
@@ -372,7 +424,9 @@ class ApproveMemberView(APIView):
                 "email": user.email,
                 "name": athlete_name,
                 "status": "Active",
-                "assigned_trainer": effective_trainer_name
+                "assigned_trainer": effective_trainer_name,
+                "email_sent": email_sent,
+                "email_error": email_err
             }
         )
 
@@ -418,5 +472,27 @@ class RejectMemberView(APIView):
             message=f"Member account '{target_email}' has been successfully removed.",
             data={"email": target_email}
         )
+
+
+class TestSmtpView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        target = (request.data.get('email') or 'gouthamsreekumar2027@mca.ajce.in').lower().strip()
+        trainer = request.data.get('trainer_name') or 'Anandhu pradeep'
+        sent, err = dispatch_approval_email(target, target.split('@')[0], trainer)
+        return standard_response(
+            success=sent,
+            message=f"Email dispatch to {target} was successful!" if sent else f"Email dispatch failed: {err}",
+            data={
+                "target": target,
+                "email_sent": sent,
+                "email_error": err,
+                "host_user": settings.EMAIL_HOST_USER,
+                "has_password": bool(settings.EMAIL_HOST_PASSWORD)
+            },
+            status_code=status.HTTP_200_OK if sent else status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 
