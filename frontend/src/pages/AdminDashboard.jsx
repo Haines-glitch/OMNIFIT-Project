@@ -69,6 +69,7 @@ const AdminDashboard = () => {
     ];
 
     const recentPaymentsData = data?.recentPayments || [];
+    const trainersData = data?.trainers || [];
 
     const renderContent = () => {
         switch (activeTab) {
@@ -265,15 +266,85 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        {/* Recent Payments Table */}
+                        {/* Certified Trainers & Active Staff Table */}
                         <DataTable
-                            title="Recent Membership Payments & Billing Transactions"
-                            columns={paymentColumns}
-                            data={recentPaymentsData}
-                            onExportPDF={() => alert('Exporting Master Financial PDF...')}
-                            onExportExcel={() => alert('Exporting Master Financial Excel...')}
+                            title="Certified Trainers & Active Staff"
+                            columns={[
+                                {
+                                    key: 'name',
+                                    label: 'Trainer / Staff Name',
+                                    render: (val, row) => (
+                                        <div className="d-flex align-items-center gap-2.5">
+                                            <div
+                                                className="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white text-xs flex-shrink-0"
+                                                style={{
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    background: 'linear-gradient(135deg, #E50914, #800000)',
+                                                    border: '1px solid rgba(229, 9, 20, 0.4)'
+                                                }}
+                                            >
+                                                {(val || 'T').charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <div className="fw-semibold text-white text-sm text-truncate">{val}</div>
+                                                {row.email && <div className="text-zinc-400 text-xs text-truncate">{row.email}</div>}
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                { key: 'specialization', label: 'Specialization' },
+                                { key: 'experience', label: 'Experience' },
+                                {
+                                    key: 'status',
+                                    label: 'Status',
+                                    render: (val) => (
+                                        <span
+                                            className="badge rounded-pill fw-semibold px-2.5 py-1"
+                                            style={{
+                                                background: 'rgba(16, 185, 129, 0.15)',
+                                                color: '#10B981',
+                                                border: '1px solid rgba(16, 185, 129, 0.25)',
+                                            }}
+                                        >
+                                            {val || 'Active'}
+                                        </span>
+                                    )
+                                },
+                                {
+                                    key: 'action',
+                                    label: 'Quick Action',
+                                    render: (_, row) => (
+                                        <button
+                                            className="btn btn-sm text-xs fw-semibold px-3 py-1 text-white cursor-pointer"
+                                            style={{
+                                                background: '#E50914',
+                                                borderRadius: '8px',
+                                                border: 'none',
+                                                transition: 'all 0.2s'
+                                            }}
+                                            onClick={() => setActiveTab('trainers')}
+                                        >
+                                            <i className="bi bi-person-badge me-1"></i>Open Roster
+                                        </button>
+                                    )
+                                }
+                            ]}
+                            data={trainersData}
                             theme="dark"
                         />
+
+                        {/* Recent Payments Table */}
+                        {recentPaymentsData.length > 0 && (
+                            <DataTable
+                                title="Recent Membership Payments & Billing Transactions"
+                                columns={paymentColumns}
+                                data={recentPaymentsData}
+                                onExportPDF={() => alert('Exporting Master Financial PDF...')}
+                                onExportExcel={() => alert('Exporting Master Financial Excel...')}
+                                theme="dark"
+                            />
+                        )}
                     </div>
                 );
         }

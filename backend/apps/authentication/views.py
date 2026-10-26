@@ -1027,6 +1027,24 @@ class AdminDashboardView(APIView):
                     "date": m["date"]
                 })
 
+        trainers_qs = Trainer.objects.select_related('user').all().order_by('-created_at')
+        trainers_list = []
+        for t in trainers_qs:
+            u = t.user
+            trainers_list.append({
+                "id": t.id,
+                "user_id": u.id,
+                "name": u.full_name or u.email,
+                "trainer": u.full_name or u.email,
+                "email": u.email,
+                "phone": u.phone or "N/A",
+                "specialization": t.specialization or "Cardio & Fitness",
+                "experience": f"{t.experience} Years" if t.experience else "5 Years",
+                "status": t.status or u.status or "Active",
+                "working_days": t.working_days or ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "clients_count": Member.objects.filter(assigned_trainer=u).count()
+            })
+
         return standard_response(
             success=True,
             message="Admin dashboard metrics retrieved.",
@@ -1037,6 +1055,7 @@ class AdminDashboardView(APIView):
                     "monthlyRevenue": "$0" if total_members == 0 else "$48,920",
                     "todayAttendance": today_checkins,
                 },
+                "trainers": trainers_list,
                 "members": members_list,
                 "recentPayments": recent_payments
             }
