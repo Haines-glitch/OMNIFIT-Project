@@ -63,15 +63,25 @@ def send_async_email(subject, message, recipient_list, from_email=None):
             google_script_url = getattr(settings, 'GOOGLE_MAIL_SCRIPT_URL', None) or os.environ.get('GOOGLE_MAIL_SCRIPT_URL', '').strip()
             if google_script_url:
                 try:
-                    import requests
                     for r_email in recipient_list:
-                        res = requests.post(
-                            google_script_url,
-                            json={"to": r_email, "subject": subject, "text": message, "html": html_body},
-                            timeout=10
-                        )
-                        if res.status_code == 200:
-                            print(f"[OMNIFIT Async Email] Sent to {r_email} via Google Apps Script HTTPS")
+                        try:
+                            import requests
+                            res = requests.post(
+                                google_script_url,
+                                json={"to": r_email, "subject": subject, "text": message, "html": html_body},
+                                headers={"User-Agent": "Mozilla/5.0"},
+                                timeout=15
+                            )
+                            if res.status_code == 200:
+                                print(f"[OMNIFIT Async Email] Sent to {r_email} via Google Apps Script HTTPS")
+                        except ImportError:
+                            import urllib.request
+                            import json
+                            payload = json.dumps({"to": r_email, "subject": subject, "text": message, "html": html_body}).encode('utf-8')
+                            req = urllib.request.Request(google_script_url, data=payload, headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"})
+                            with urllib.request.urlopen(req, timeout=15) as r:
+                                if r.status == 200:
+                                    print(f"[OMNIFIT Async Email] Sent to {r_email} via Google Apps Script urllib")
                     return
                 except Exception as e_script:
                     print(f"[OMNIFIT Async Email Warning] Google Script error: {e_script}")

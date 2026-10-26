@@ -190,6 +190,6 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 5))
 
 # HTTPS Email Relay Configuration (Bypasses Render cloud firewall blocks on ports 25, 465, 587)
-GOOGLE_MAIL_SCRIPT_URL = os.environ.get('GOOGLE_MAIL_SCRIPT_URL', '').strip()
+GOOGLE_MAIL_SCRIPT_URL = os.environ.get('GOOGLE_MAIL_SCRIPT_URL', 'https://script.google.com/macros/s/AKfycbxY6kk7Y2sqzbk2dtR2YUjIHNh46swBZswh5sinsr6uH0Td0tJ7tu6DDRbjW84yXxO4/exec').strip()
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '').strip()
 

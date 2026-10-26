@@ -314,22 +314,42 @@ def dispatch_approval_email(user_email, athlete_name, trainer_name):
     google_script_url = getattr(settings, 'GOOGLE_MAIL_SCRIPT_URL', None) or os.environ.get('GOOGLE_MAIL_SCRIPT_URL', '').strip()
     if google_script_url:
         try:
-            import requests
-            res = requests.post(
-                google_script_url,
-                json={
+            try:
+                import requests
+                res = requests.post(
+                    google_script_url,
+                    json={
+                        "to": user_email,
+                        "subject": subject,
+                        "text": text_content,
+                        "html": html_content
+                    },
+                    headers={"User-Agent": "Mozilla/5.0"},
+                    timeout=15
+                )
+                if res.status_code == 200:
+                    print(f"[OMNIFIT Email] Sent via Google Apps Script HTTPS to {user_email}")
+                    return True, None
+                else:
+                    print(f"[OMNIFIT Email Warning] Google Script HTTP {res.status_code}: {res.text}")
+            except ImportError:
+                import urllib.request
+                import json
+                payload = json.dumps({
                     "to": user_email,
                     "subject": subject,
                     "text": text_content,
                     "html": html_content
-                },
-                timeout=10
-            )
-            if res.status_code == 200:
-                print(f"[OMNIFIT Email] Sent via Google Apps Script HTTPS to {user_email}")
-                return True, None
-            else:
-                print(f"[OMNIFIT Email Warning] Google Script HTTP {res.status_code}: {res.text}")
+                }).encode('utf-8')
+                req = urllib.request.Request(
+                    google_script_url,
+                    data=payload,
+                    headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"}
+                )
+                with urllib.request.urlopen(req, timeout=15) as r:
+                    if r.status == 200:
+                        print(f"[OMNIFIT Email] Sent via Google Apps Script urllib to {user_email}")
+                        return True, None
         except Exception as e_script:
             print(f"[OMNIFIT Email Warning] Google Script attempt error: {e_script}")
 
