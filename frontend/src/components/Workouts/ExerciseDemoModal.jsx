@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 
-// Exercise kinematic patterns detector
+// Exercise movement detector
 export const detectExercisePattern = (name = '') => {
     const n = (name || '').toLowerCase();
     if (n.includes('incline') && (n.includes('press') || n.includes('bench') || n.includes('dumbbell'))) return 'incline_bench_press';
@@ -20,415 +20,1120 @@ export const detectExercisePattern = (name = '') => {
     return 'bench_press';
 };
 
-// Biomechanical metadata database with Open-Source 3-Phase standards (inspired by workout-guide & exercises-dataset)
+// Accurate, professional exercise guide database
 const EXERCISE_METADATA = {
-    incline_bench_press: {
-        pattern: 'Incline Push (Clavicular Bias)',
-        primaryMuscles: ['Pectoralis Major (Upper Clavicular Head)', 'Anterior Deltoids'],
-        secondaryMuscles: ['Triceps Brachii', 'Upper Traps'],
-        breathing: 'Inhale on controlled descent to upper chest; Exhale as you drive vertically.',
-        tempo: '3 - 0 - 1 (3s negative, 1s drive)',
+    squat: {
+        pattern: 'Leg Strength & Hypertrophy',
+        primaryMuscles: ['Quadriceps', 'Glutes'],
+        secondaryMuscles: ['Hamstrings', 'Calves', 'Core'],
+        breathing: 'Inhale as you lower your hips. Exhale as you drive back up.',
+        tempo: '3 - 1 - 1 (Controlled descent, explosive drive)',
         cues: [
-            'Set bench between 30° and 45° to isolate the upper pectoral shelf.',
-            'Lower dumbbells along a natural arc until they hover just above upper chest.',
-            'Drive vertically upward toward ceiling while keeping scapulae retracted.'
+            'Stand tall with feet shoulder-width apart, barbell resting level across upper traps.',
+            'Push hips back and bend knees until your thighs are parallel to the floor.',
+            'Drive through your midfoot to stand upright, keeping your chest proud.'
         ],
         mistakes: [
-            'Bench angle set too steep (>45°), turning the movement into a shoulder press.',
-            'Flaring elbows out horizontally at 90°, risking rotator cuff impingement.',
-            'Allowing dumbbells to violently clank together at the concentric peak.'
+            'Do not let your knees cave inward on the way up.',
+            'Avoid bending forward excessively at the waist.',
+            'Keep your heels glued firmly to the floor throughout.'
         ],
         phases: [
             {
-                title: 'Phase 1: Setup & Starting Stance',
-                action: 'Sit deep on the incline seat, plant heels into the floor, retract shoulder blades, and hold dumbbells above upper chest with palms forward.'
+                title: 'Phase 1: Setup & Stance',
+                action: 'Grip the bar slightly wider than shoulders, pull shoulder blades together, and lock eyes forward.'
             },
             {
-                title: 'Phase 2: Controlled Eccentric Negative',
-                action: 'Inhale deeply while lowering the dumbbells in a 3-second controlled tempo, tucking elbows at 45° until a full stretch across the clavicular pectorals is felt.'
+                title: 'Phase 2: Controlled Descent',
+                action: 'Inhale and descend in 3 seconds, keeping weight balanced over midfoot until reaching parallel depth.'
             },
             {
-                title: 'Phase 3: Concentric Drive & Peak Squeeze',
-                action: 'Exhale forcefully while driving dumbbells vertically upward to lockout, contracting upper chest firmly at peak for 1 second.'
+                title: 'Phase 3: Explosive Drive',
+                action: 'Exhale forcefully and push the floor away, locking out hips and knees at the top.'
             }
         ]
     },
     bench_press: {
-        pattern: 'Horizontal Push',
-        primaryMuscles: ['Pectoralis Major (Sternal Head)', 'Anterior Deltoids'],
-        secondaryMuscles: ['Triceps Brachii', 'Serratus Anterior'],
-        breathing: 'Inhale on 2s descent to lower sternum; Exhale on explosive drive up.',
+        pattern: 'Chest & Triceps Power',
+        primaryMuscles: ['Pectorals (Chest)', 'Triceps'],
+        secondaryMuscles: ['Anterior Deltoids', 'Core'],
+        breathing: 'Inhale lowering bar to chest. Exhale pressing up to lockout.',
         tempo: '2 - 1 - 1 (2s down, 1s pause, 1s push)',
         cues: [
-            'Retract and pin scapulae firmly into the bench surface.',
-            'Keep elbows tucked at a 45 to 60-degree angle from your torso.',
-            'Maintain a firm midfoot plant into the floor for kinetic leg drive.'
+            'Lie flat with eyes directly under the bar and feet planted firmly on the floor.',
+            'Lower the bar in a controlled path to your lower sternum with elbows at 45°.',
+            'Press the bar vertically back to arms extended, squeezing your chest at the top.'
         ],
         mistakes: [
-            'Bouncing the weight violently off the ribcage.',
-            'Flaring elbows out to 90 degrees, shifting shear stress to rotator cuffs.',
-            'Allowing wrists to bend backward under heavy load.'
+            'Do not bounce the barbell off your ribcage.',
+            'Avoid flaring your elbows out to 90 degrees.',
+            'Keep your wrists straight; do not let them bend backward.'
         ],
         phases: [
             {
-                title: 'Phase 1: Setup & Scapular Lock',
-                action: 'Lie flat with eyes under the bar, arch thoracic spine slightly, squeeze shoulder blades together, and grip bar with knuckles turned up.'
+                title: 'Phase 1: Starting Setup',
+                action: 'Squeeze shoulder blades into the bench, arch lower back naturally, and grip bar firmly.'
             },
             {
-                title: 'Phase 2: Controlled Descent',
-                action: 'Inhale and lower the bar smoothly to the sternum, keeping forearms vertical and elbows tucked.'
+                title: 'Phase 2: Lowering to Sternum',
+                action: 'Inhale deeply as you lower the bar under control until it touches mid-chest.'
             },
             {
-                title: 'Phase 3: Leg Drive & Press',
-                action: 'Drive through heels, exhale, and press vertically to arms extended, locking out with chest flexed.'
+                title: 'Phase 3: Vertical Drive',
+                action: 'Drive through your legs and press bar upward to full arm extension, exhaling at the top.'
+            }
+        ]
+    },
+    incline_bench_press: {
+        pattern: 'Upper Chest & Shoulders',
+        primaryMuscles: ['Upper Chest (Clavicular)', 'Front Deltoids'],
+        secondaryMuscles: ['Triceps', 'Upper Traps'],
+        breathing: 'Inhale lowering dumbbells to chest. Exhale pressing up.',
+        tempo: '3 - 0 - 1 (3s negative, 1s drive)',
+        cues: [
+            'Sit on a 30° to 45° incline bench with dumbbells held at shoulder level.',
+            'Lower dumbbells in a smooth arc until level with your upper chest.',
+            'Press vertically upward toward the ceiling, contracting your upper chest at peak.'
+        ],
+        mistakes: [
+            'Avoid setting the bench angle too steep (>45°).',
+            'Do not bang the dumbbells together at the top of the rep.',
+            'Avoid lifting your hips off the seat during the press.'
+        ],
+        phases: [
+            {
+                title: 'Phase 1: Incline Seat Setup',
+                action: 'Sit back against the incline pad, plant heels flat, and hold dumbbells above upper chest.'
+            },
+            {
+                title: 'Phase 2: Controlled Stretch',
+                action: 'Inhale for 3 seconds while lowering weights, feeling a full stretch across the upper chest.'
+            },
+            {
+                title: 'Phase 3: Upward Lockout',
+                action: 'Exhale and drive dumbbells vertically to straight arms, flexing upper chest at peak.'
             }
         ]
     },
     pushup: {
-        pattern: 'Bodyweight Horizontal Press',
-        primaryMuscles: ['Pectoralis Major', 'Core / Transverse Abdominis'],
-        secondaryMuscles: ['Triceps Brachii', 'Anterior Deltoids'],
-        breathing: 'Inhale as chest nears the floor; Exhale strongly pressing back up.',
-        tempo: '2 - 0 - 1 (Controlled tempo)',
+        pattern: 'Upper Body & Core',
+        primaryMuscles: ['Chest', 'Triceps'],
+        secondaryMuscles: ['Core', 'Shoulders'],
+        breathing: 'Inhale lowering down. Exhale pressing back up.',
+        tempo: '2 - 0 - 1 (Controlled cadence)',
         cues: [
-            'Maintain a rigid straight hollow-body line from heels to crown.',
-            'Tuck elbows at 45 degrees rather than flaring sideways.',
-            'Squeeze glutes and abs to lock pelvic stability throughout.'
+            'Start in a high plank with hands shoulder-width and body in a rigid straight line.',
+            'Lower your chest until it hovers 1 inch above the floor, elbows tucked at 45°.',
+            'Press firmly through your palms to return to full arm extension.'
         ],
         mistakes: [
-            'Sagging lumbar spine or hips dropping before the chest.',
-            'Crane-necking forward to touch chin before chest.',
-            'Partial range of motion without full elbow lockout.'
+            'Do not let your hips sag toward the floor.',
+            'Avoid flaring your elbows wide to the sides.',
+            'Do not drop your head forward before your chest.'
         ],
         phases: [
             {
-                title: 'Phase 1: High Plank Setup',
-                action: 'Hands placed shoulder-width apart, fingers splayed, core braced, glutes squeezed tight in a straight plank.'
+                title: 'Phase 1: High Plank Base',
+                action: 'Squeeze glutes and abs tight, hands stacked directly under shoulders.'
             },
             {
-                title: 'Phase 2: Negative Descent',
-                action: 'Inhale and lower entire body as one unit until chest hovers 1 inch off the floor.'
+                title: 'Phase 2: Controlled Descent',
+                action: 'Inhale and lower entire body as one unit until chest hovers above the floor.'
             },
             {
-                title: 'Phase 3: Pushup Lockout',
-                action: 'Exhale and press floor away, extending elbows fully and pushing through palms.'
+                title: 'Phase 3: Floor Press',
+                action: 'Exhale and push through palms, locking out arms while maintaining a rigid core.'
             }
         ]
     },
     chest_fly: {
-        pattern: 'Pectoral Adduction Isolation',
-        primaryMuscles: ['Pectoralis Major (Sternal & Clavicular)'],
-        secondaryMuscles: ['Anterior Deltoids', 'Biceps Short Head'],
-        breathing: 'Inhale wide into the stretch; Exhale hugging arms back together.',
-        tempo: '3 - 1 - 1 (Slow stretch focus)',
+        pattern: 'Chest Isolation',
+        primaryMuscles: ['Pectorals (Inner & Outer)'],
+        secondaryMuscles: ['Front Shoulders', 'Biceps'],
+        breathing: 'Inhale opening arms wide. Exhale hugging weights together.',
+        tempo: '3 - 1 - 1 (Deep stretch cadence)',
         cues: [
-            'Maintain a slight, fixed bend in elbows (~15 degrees) throughout.',
-            'Open arms wide in a hugging arc until chest fibers stretch.',
-            'Squeeze inner pectorals together at the top without banging weights.'
+            'Maintain a slight, fixed bend in your elbows throughout the entire movement.',
+            'Open arms wide in a hugging arc until you feel a deep chest stretch.',
+            'Squeeze your chest muscles together at the peak without banging the weights.'
         ],
         mistakes: [
-            'Bending elbows excessively, turning the fly into a standard bench press.',
-            'Over-stretching below bench level, hyperextending shoulders.',
-            'Losing core engagement and arching excessively.'
+            'Avoid bending elbows excessively and turning the fly into a press.',
+            'Do not drop weights below bench level, which strains shoulders.',
+            'Avoid bouncing out of the stretched position.'
         ],
         phases: [
             {
                 title: 'Phase 1: Starting Arc',
-                action: 'Dumbbells held directly over chest with palms facing each other and elbows softly bent.'
+                action: 'Hold weights directly over chest with palms facing each other, elbows soft.'
             },
             {
                 title: 'Phase 2: Wide Lateral Arc',
-                action: 'Inhale and lower arms wide in a controlled hug arc until elbows reach chest depth.'
+                action: 'Inhale and lower arms outward in a wide hugging motion to full chest stretch.'
             },
             {
-                title: 'Phase 3: Peak Squeeze',
-                action: 'Exhale and squeeze chest to draw dumbbells back together in an arc, flexing at peak.'
-            }
-        ]
-    },
-    squat: {
-        pattern: 'Bilateral Knee-Dominant Compound',
-        primaryMuscles: ['Quadriceps Femoris', 'Gluteus Maximus'],
-        secondaryMuscles: ['Hamstrings', 'Adductors', 'Erector Spinae'],
-        breathing: 'Deep diaphragmatic inhale into core at top; Exhale driving out of hole.',
-        tempo: '3 - 1 - 1 (Controlled descent, explosive ascent)',
-        cues: [
-            'Initiate by breaking hips back and knees out in line with toes.',
-            'Hit at least parallel depth (hip crease below top of kneecap).',
-            'Keep chest proud and midfoot planted throughout the ascent.'
-        ],
-        mistakes: [
-            'Knee valgus (knees caving inward under concentric load).',
-            'Heels lifting off floor due to poor ankle dorsiflexion.',
-            'Excessive forward torso collapse (good-morning squat).'
-        ],
-        phases: [
-            {
-                title: 'Phase 1: Athletic Stance',
-                action: 'Feet shoulder-width apart, toes turned slightly out, barbell resting firmly across upper traps.'
-            },
-            {
-                title: 'Phase 2: Decent into Hole',
-                action: 'Inhale, brace 360° into abdomen, hinge hips and knees simultaneously to break parallel.'
-            },
-            {
-                title: 'Phase 3: Triple Extension',
-                action: 'Drive feet into floor, extend knees and hips together, exhaling forcefully to stand tall.'
+                title: 'Phase 3: Peak Contraction',
+                action: 'Exhale and squeeze chest to bring weights back together, holding 1s at top.'
             }
         ]
     },
     deadlift: {
-        pattern: 'Hip-Hinge Posterior Chain Compound',
-        primaryMuscles: ['Gluteus Maximus', 'Hamstrings', 'Erector Spinae'],
-        secondaryMuscles: ['Latissimus Dorsi', 'Trapezius', 'Forearm Flexors'],
-        breathing: 'Belly breath and brace core at floor; Exhale through pursed lips at lockout.',
-        tempo: '1 - 0 - 2 (Explosive pull, controlled return)',
+        pattern: 'Posterior Chain & Glutes',
+        primaryMuscles: ['Glutes', 'Hamstrings'],
+        secondaryMuscles: ['Lower Back', 'Lats', 'Traps'],
+        breathing: 'Inhale and brace core at bottom. Exhale at standing lockout.',
+        tempo: '1 - 0 - 2 (Strong pull, controlled return)',
         cues: [
-            'Keep barbell in direct vertical contact with shins and thighs.',
-            'Engage lats by "protecting armpits" to lock spine neutral.',
-            'Drive floor away with heels rather than pulling with arms.'
+            'Stand with midfoot directly under the barbell, feet hip-width apart.',
+            'Hinge at hips, keep your back flat, and grip the bar just outside your knees.',
+            'Push the floor away through your heels to stand tall, locking out your glutes.'
         ],
         mistakes: [
-            'Rounding the lumbar spine (cat back) when breaking off floor.',
-            'Hyperextending lower back at lockout instead of squeezing glutes.',
-            'Allowing bar to drift forward away from the body line.'
+            'Never round your lower back when pulling off the floor.',
+            'Avoid letting the barbell drift away from your shins.',
+            'Do not hyperextend your lower back backward at lockout.'
         ],
         phases: [
             {
-                title: 'Phase 1: Shin Contact Setup',
-                action: 'Bar over midfoot, shins touching bar, hips hinged back, chest open, lats tightly locked.'
+                title: 'Phase 1: Setup & Grip',
+                action: 'Shins touching the bar, chest proud, lats engaged to pull slack out of the bar.'
             },
             {
-                title: 'Phase 2: Leg Press Off Floor',
-                action: 'Inhale, push floor away with midfoot, keeping bar glued to legs until crossing knees.'
+                title: 'Phase 2: Leg Drive Off Floor',
+                action: 'Push the floor away with midfoot, keeping bar glued to legs until crossing knees.'
             },
             {
                 title: 'Phase 3: Glute Lockout',
-                action: 'Drive hips forward into bar, stand tall with shoulders packed, and exhale.'
+                action: 'Drive hips through to stand tall with shoulders packed, exhaling at the top.'
             }
         ]
     },
     lat_pulldown: {
-        pattern: 'Vertical Pulling Isolation',
-        primaryMuscles: ['Latissimus Dorsi', 'Teres Major'],
-        secondaryMuscles: ['Biceps Brachii', 'Brachialis', 'Rhomboids'],
-        breathing: 'Inhale as bar ascends; Exhale driving elbows down to ribcage.',
-        tempo: '2 - 1 - 2 (Pronounced contraction pause)',
+        pattern: 'Back Width & Lats',
+        primaryMuscles: ['Latissimus Dorsi (Back)'],
+        secondaryMuscles: ['Biceps', 'Rhomboids', 'Rear Shoulders'],
+        breathing: 'Exhale pulling bar down to chest. Inhale letting bar rise.',
+        tempo: '2 - 1 - 2 (Pause on squeeze)',
         cues: [
-            'Lead the pull with elbows driving down and back toward back pockets.',
-            'Pull bar to upper sternum while maintaining slight backward torso lean.',
-            'Allow full scapular elevation and lat stretch at top.'
+            'Grip the bar slightly wider than shoulders, thighs firmly anchored under pads.',
+            'Pull the bar smoothly down to your upper chest, leading with your elbows.',
+            'Control the bar back up over 2 seconds to feel a complete stretch in your back.'
         ],
         mistakes: [
-            'Swinging torso excessively to use momentum instead of back strength.',
-            'Pulling bar behind the neck, causing cervical and rotator strain.',
-            'Internally rotating shoulders and pulling with forearms.'
+            'Do not swing your torso backward to use momentum.',
+            'Never pull the bar behind your neck.',
+            'Avoid rolling shoulders forward at the bottom.'
         ],
         phases: [
             {
-                title: 'Phase 1: Grip & Thigh Anchor',
-                action: 'Grip bar slightly wider than shoulders, thighs firmly anchored under pads, arms fully stretched.'
+                title: 'Phase 1: Overhead Grip',
+                action: 'Thighs locked under pads, arms fully stretched overhead, torso upright with slight lean.'
             },
             {
-                title: 'Phase 2: Elbow Drive',
-                action: 'Exhale, pull shoulder blades down, and drive elbows down toward ribs until bar reaches chin.'
+                title: 'Phase 2: Elbow Drive Down',
+                action: 'Exhale, pull shoulder blades down, and drive elbows toward ribs until bar hits chest.'
             },
             {
-                title: 'Phase 3: Resisted Release',
-                action: 'Inhale and control bar upward over 2 seconds to allow full lat elongation.'
+                title: 'Phase 3: Controlled Ascent',
+                action: 'Inhale and allow bar to rise smoothly over 2 seconds, stretching lats fully.'
             }
         ]
     },
     bicep_curl: {
-        pattern: 'Elbow Flexion Isolation',
-        primaryMuscles: ['Biceps Brachii (Short & Long Heads)'],
-        secondaryMuscles: ['Brachialis', 'Brachioradialis'],
-        breathing: 'Exhale curling weight upward; Inhale on slow negative lowering.',
-        tempo: '2 - 1 - 3 (3-second negative eccentric)',
+        pattern: 'Bicep Peak Hypertrophy',
+        primaryMuscles: ['Biceps'],
+        secondaryMuscles: ['Forearms', 'Brachialis'],
+        breathing: 'Exhale curling weights up. Inhale lowering slowly.',
+        tempo: '2 - 1 - 3 (3-second negative)',
         cues: [
-            'Keep elbows pinned like hinges directly at your sides.',
-            'Supinate wrist (rotate pinky outward) at peak contraction.',
-            'Avoid swinging hips or leaning back to cheat the load.'
+            'Stand upright with dumbbells at your sides, elbows pinned to your ribs.',
+            'Curl forearms upward, rotating wrists so palms face up near the top.',
+            'Squeeze biceps firmly for 1 second, then lower slowly over 3 seconds.'
         ],
         mistakes: [
-            'Drifting elbows forward, recruiting front deltoids instead of biceps.',
-            'Dropping the weight quickly without controlling the eccentric phase.',
-            'Excessive body English or swinging torso.'
+            'Do not swing your body or use momentum to heave weights up.',
+            'Keep elbows pinned; do not drift them forward.',
+            'Do not drop weights rapidly without controlling the descent.'
         ],
         phases: [
             {
                 title: 'Phase 1: Starting Hang',
-                action: 'Arms hanging naturally at sides, dumbbells facing in, core tight and shoulders relaxed back.'
+                action: 'Arms hanging naturally at sides, shoulders relaxed back, core braced.'
             },
             {
-                title: 'Phase 2: Supination & Curl',
-                action: 'Exhale and curl forearms up, rotating wrists so palms face upward near the top.'
+                title: 'Phase 2: Supinating Curl',
+                action: 'Exhale and curl dumbbells upward, rotating wrists so palms face shoulders at top.'
             },
             {
-                title: 'Phase 3: Peak Contraction & Negative',
-                action: 'Squeeze bicep firmly for 1s, then take 3 seconds to lower smoothly back to start.'
+                title: 'Phase 3: 3-Second Negative',
+                action: 'Squeeze bicep at peak for 1 second, then take 3 full seconds to lower to start.'
             }
         ]
     },
     tricep_dip: {
-        pattern: 'Vertical Compound Press',
-        primaryMuscles: ['Triceps Brachii (Lateral & Medial Heads)'],
-        secondaryMuscles: ['Anterior Deltoids', 'Lower Pectorals'],
-        breathing: 'Inhale lowering body down; Exhale pressing back up to lockout.',
+        pattern: 'Triceps & Dip Power',
+        primaryMuscles: ['Triceps'],
+        secondaryMuscles: ['Lower Chest', 'Front Deltoids'],
+        breathing: 'Inhale lowering down. Exhale pressing to lockout.',
         tempo: '2 - 0 - 1 (Smooth cadence)',
         cues: [
-            'Keep torso upright for pure triceps bias; slight forward lean shifts to chest.',
-            'Lower until elbows reach roughly a 90-degree angle.',
-            'Press through palms and achieve full terminal elbow extension.'
+            'Grip parallel bars with arms locked and shoulders pressed down away from ears.',
+            'Lower your body under control until elbows form a 90-degree angle.',
+            'Press through your palms to return to full elbow extension.'
         ],
         mistakes: [
-            'Descending too deep (>90°), putting dangerous shear on shoulder capsules.',
-            'Flaring elbows out sideways instead of tracking backwards.',
-            'Shrugging shoulders into ears instead of depressing scapulae.'
+            'Do not drop below a 90° elbow bend, which stresses shoulder joints.',
+            'Avoid flaring your elbows out to the sides.',
+            'Do not shrug your shoulders into your neck.'
         ],
         phases: [
             {
-                title: 'Phase 1: Parallel Bar Support',
-                action: 'Arms locked out on parallel bars, shoulders pressed down away from ears, legs crossed.'
+                title: 'Phase 1: Top Lockout',
+                action: 'Arms straight on parallel bars, shoulders packed down, legs crossed behind.'
             },
             {
-                title: 'Phase 2: Controlled Dip',
-                action: 'Inhale and bend elbows backwards until forearms form a 90-degree angle.'
+                title: 'Phase 2: 90-Degree Dip',
+                action: 'Inhale and bend elbows backward until forearms form a clean 90° angle.'
             },
             {
-                title: 'Phase 3: Triceps Drive',
-                action: 'Exhale and press straight down through palms, locking out triceps at the top.'
+                title: 'Phase 3: Triceps Press',
+                action: 'Exhale and push firmly through palms to return to locked-out arms.'
             }
         ]
     },
     overhead_press: {
-        pattern: 'Vertical Overhead Press',
-        primaryMuscles: ['Anterior & Lateral Deltoids'],
-        secondaryMuscles: ['Triceps Brachii', 'Upper Traps', 'Core'],
-        breathing: 'Inhale and brace at collarbone; Exhale driving bar overhead to lockout.',
-        tempo: '2 - 0 - 1 (Strong vertical drive)',
+        pattern: 'Shoulder Strength & Deltoids',
+        primaryMuscles: ['Deltoids (Shoulders)'],
+        secondaryMuscles: ['Triceps', 'Upper Traps', 'Core'],
+        breathing: 'Inhale at collarbone. Exhale pressing overhead.',
+        tempo: '2 - 0 - 1 (Vertical drive)',
         cues: [
-            'Squeeze glutes and brace core to prevent lumbar hyperextension.',
-            'Move head slightly back as bar passes nose, then push head "through window".',
-            'Lock out bar directly over the crown of head and midfoot.'
+            'Stand tall with feet hip-width, barbell resting across your collarbone.',
+            'Press the bar straight up overhead, tilting your head back slightly to clear your chin.',
+            'Lock out arms directly over head and spine, keeping glutes and abs tight.'
         ],
         mistakes: [
-            'Arching lower back backward into an improvised standing incline press.',
-            'Pressing bar forward in an arc instead of a straight vertical line.',
-            'Bending knees to turn strict press into a push press.'
+            'Do not arch your lower back backward during the press.',
+            'Avoid pressing the bar forward in an arc instead of straight up.',
+            'Do not bend your knees to cheat the lift with a push press.'
         ],
         phases: [
             {
-                title: 'Phase 1: Front Rack Stance',
-                action: 'Bar resting on clavicles, elbows slightly in front of bar, feet hip-width, glutes clamped tight.'
+                title: 'Phase 1: Front Rack Setup',
+                action: 'Bar resting on upper chest, forearms vertical, glutes clamped tight.'
             },
             {
-                title: 'Phase 2: Vertical Trajectory',
-                action: 'Exhale and push bar vertically, tilting head back slightly to clear chin.'
+                title: 'Phase 2: Vertical Press',
+                action: 'Exhale and drive bar straight upward, clearing your face as you push.'
             },
             {
-                title: 'Phase 3: Overhead Window Lockout',
-                action: 'Push head forward through the arms, locking bar directly above spine and midfoot.'
+                title: 'Phase 3: Overhead Lockout',
+                action: 'Push head forward through the window of your arms, locking bar over crown.'
             }
         ]
     },
     lateral_raise: {
-        pattern: 'Lateral Deltoid Abduction',
-        primaryMuscles: ['Lateral Deltoids'],
-        secondaryMuscles: ['Anterior Deltoids', 'Supraspinatus', 'Traps'],
-        breathing: 'Exhale raising dumbbells out to sides; Inhale lowering with control.',
-        tempo: '2 - 1 - 2 (Deliberate tempo)',
+        pattern: 'Side Deltoid Capping',
+        primaryMuscles: ['Lateral Deltoids (Side Shoulders)'],
+        secondaryMuscles: ['Front Deltoids', 'Traps'],
+        breathing: 'Exhale raising arms to sides. Inhale lowering slowly.',
+        tempo: '2 - 1 - 2 (Smooth control)',
         cues: [
-            'Lead with elbows, pouring weight like water from a pitcher at top.',
-            'Raise arms only until parallel to floor (shoulder height).',
-            'Maintain a slight forward torso tilt and soft elbow bend.'
+            'Hold dumbbells at your sides with a slight forward torso lean and soft elbows.',
+            'Raise arms outward and upward leading with your elbows until parallel to the floor.',
+            'Lower weights under control over 2 seconds; avoid swinging.'
         ],
         mistakes: [
-            'Swinging torso or using momentum to toss dumbbells upward.',
-            'Raising weights higher than shoulder level, activating upper traps instead.',
-            'Straightening arms completely, stressing elbow tendons.'
+            'Do not use momentum or rock your hips to swing weights up.',
+            'Do not raise weights above shoulder level, which transfers load to traps.',
+            'Avoid locking elbows completely straight.'
         ],
         phases: [
             {
-                title: 'Phase 1: Side Thigh Position',
-                action: 'Dumbbells resting lightly at side of thighs with palms facing inwards, knees softly bent.'
+                title: 'Phase 1: Starting Hang',
+                action: 'Dumbbells at sides of thighs with palms facing inwards, knees softly bent.'
             },
             {
                 title: 'Phase 2: Lateral Sweep',
-                action: 'Exhale and sweep arms outward and upward leading with elbows until parallel to floor.'
+                action: 'Exhale and sweep arms out to the sides until parallel to the floor.'
             },
             {
-                title: 'Phase 3: Isometric Pause',
-                action: 'Hold side deltoids contracted for 1 second, then lower slowly over 2 seconds.'
+                title: 'Phase 3: Controlled Lowering',
+                action: 'Pause 1 second at shoulder height, then take 2 seconds to lower smoothly.'
             }
         ]
     },
     core: {
-        pattern: 'Anterior Core Anti-Extension',
-        primaryMuscles: ['Rectus Abdominis', 'Transverse Abdominis'],
-        secondaryMuscles: ['Internal & External Obliques', 'Lats'],
-        breathing: 'Inhale extending out; Forceful abdominal exhale pulling back to center.',
-        tempo: '3 - 1 - 2 (Maximum tension cadence)',
+        pattern: 'Core Stability & Abs',
+        primaryMuscles: ['Abdominals (Core)'],
+        secondaryMuscles: ['Obliques', 'Lower Back'],
+        breathing: 'Inhale extending outward. Exhale forcefully pulling back.',
+        tempo: '3 - 1 - 2 (Continuous tension)',
         cues: [
-            'Maintain a posterior pelvic tilt (tuck tailbone under).',
-            'Roll forward from hips while keeping core rock-solid like a steel bridge.',
-            'Pull back using abdominal contraction rather than hip flexors.'
+            'Start kneeling with hands on wheel or in plank position under shoulders.',
+            'Roll forward from hips while keeping your spine and core rock-solid.',
+            'Pull back by contracting your abdominal wall rather than using your hips.'
         ],
         mistakes: [
-            'Sagging lower back into hyperextension during extension.',
-            'Leading the return motion with hips instead of abs.',
-            'Extending beyond core capacity and collapsing onto floor.'
+            'Never let your lower back sag into an arch during extension.',
+            'Do not lead the return movement with your hips.',
+            'Do not extend further than your core strength can support.'
         ],
         phases: [
             {
-                title: 'Phase 1: Kneeling Plank Base',
-                action: 'Knees on mat, holding wheel directly under shoulders, pelvis tucked under.'
+                title: 'Phase 1: High Plank / Rollout Base',
+                action: 'Tuck pelvis under, brace abs like taking a punch, hands under shoulders.'
             },
             {
-                title: 'Phase 2: Outward Rollout',
-                action: 'Inhale and roll wheel forward in a controlled line, keeping abs braced tight.'
+                title: 'Phase 2: Extension',
+                action: 'Inhale and extend body forward in a controlled line, keeping abs rigid.'
             },
             {
-                title: 'Phase 3: Core Contraction Return',
-                action: 'Exhale forcefully and pull navel to spine, drawing wheel back under shoulders.'
+                title: 'Phase 3: Abdominal Crunch Return',
+                action: 'Exhale and pull navel toward spine, returning smoothly to starting position.'
             }
         ]
     },
     sprint: {
-        pattern: 'Cardiovascular High-Velocity Gait',
-        primaryMuscles: ['Gluteus Maximus', 'Quadriceps', 'Hamstrings', 'Calves'],
-        secondaryMuscles: ['Cardiovascular System', 'Core Stabilizers'],
-        breathing: 'Steady rhythmic 2-in, 2-out athletic breathing pattern.',
-        tempo: 'High frequency interval turnover',
+        pattern: 'Conditioning & Cardio',
+        primaryMuscles: ['Quads', 'Hamstrings', 'Calves'],
+        secondaryMuscles: ['Cardiovascular System', 'Core'],
+        breathing: 'Maintain steady, rhythmic athletic breathing.',
+        tempo: 'High-frequency cadence',
         cues: [
-            'Drive knees high with toes dorsiflexed upward.',
-            'Pump arms dynamically cheek-to-pocket with 90-degree elbow bend.',
-            'Land lightly on midfoot directly beneath center of mass.'
+            'Drive knees high with toes flexed upward toward your shins.',
+            'Pump arms rhythmically from cheek to hip pocket with 90° elbows.',
+            'Land lightly on the balls of your feet directly beneath your hips.'
         ],
         mistakes: [
-            'Overstriding with heel-striking out in front of hips.',
-            'Flailing arms across body midline instead of front-to-back.',
-            'Tensing neck and shoulders unnecessarily.'
+            'Do not overstride with your heels striking far out in front.',
+            'Avoid swinging arms across your chest midline.',
+            'Do not tense your shoulders or neck.'
         ],
         phases: [
             {
-                title: 'Phase 1: Knee Drive & Triple Flexion',
-                action: 'Lead knee punches high to hip level, ankle flexed up, opposite arm driving forward.'
+                title: 'Phase 1: High Knee Punch',
+                action: 'Drive lead knee to hip level with ankle flexed up, opposite arm forward.'
             },
             {
-                title: 'Phase 2: Midfoot Ground Contact',
-                action: 'Foot strikes ground directly below center of gravity, absorbing force elastically.'
+                title: 'Phase 2: Midfoot Strike',
+                action: 'Ball of foot strikes floor directly beneath center of mass.'
             },
             {
                 title: 'Phase 3: Explosive Push-Off',
-                action: 'Drive through ball of foot with hip extension to propel body into next stride cycle.'
+                action: 'Drive through foot to propel body forward into next turnover stride.'
             }
         ]
     }
 };
 
 /**
- * 2D Canvas Kinematics Canvas Engine (Leap Fitness Style)
+ * Procedural Vector Kinematics Engine for Leap Fitness Style Avatar
+ * Guarantees:
+ * 1. Barbells remain strictly HORIZONTAL (never tilted at weird angles).
+ * 2. Muscle glows sit directly ON the anatomical muscles (never on the floor).
+ * 3. Proportional, clean athletic silhouette with hands holding equipment.
+ */
+function drawExerciseKinematics(ctx, w, h, pattern, p, isConcentric) {
+    ctx.save();
+
+    const skin = '#E2E8F0'; // Sleek athletic mannequin silver/slate
+    const redGlow = '#FF1E28'; // Iron District Neon Crimson
+    const gymFloor = '#1c1c28';
+
+    // Helper: Draw Faceless Head with Sleek Athletic Visor
+    const drawHead = (x, y, r = 16, angle = 0) => {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.fillStyle = skin;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r, r * 1.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Sleek visor slit
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.roundRect(r * 0.2, -r * 0.35, r * 0.6, 5, 2);
+        ctx.fill();
+        ctx.restore();
+    };
+
+    // Helper: Smooth Anatomical Capsule Limb
+    const drawCapsule = (x1, y1, x2, y2, r1 = 12, r2 = 9) => {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.sqrt(dx * dx + dy * dy);
+        if (len < 1) return;
+
+        const angle = Math.atan2(dy, dx);
+        ctx.save();
+        ctx.translate(x1, y1);
+        ctx.rotate(angle);
+
+        ctx.beginPath();
+        ctx.moveTo(0, -r1);
+        ctx.lineTo(len, -r2);
+        ctx.arc(len, 0, r2, -Math.PI / 2, Math.PI / 2);
+        ctx.lineTo(0, r1);
+        ctx.arc(0, 0, r1, Math.PI / 2, -Math.PI / 2);
+        ctx.closePath();
+
+        ctx.fillStyle = skin;
+        ctx.fill();
+        ctx.restore();
+    };
+
+    // Helper: Target Muscle Radial Crimson Glow Overlay
+    const drawTargetGlow = (cx, cy, rx, ry, intensity = 0.8) => {
+        ctx.save();
+        ctx.shadowColor = redGlow;
+        ctx.shadowBlur = 20 * intensity;
+
+        const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, rx);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+        grad.addColorStop(0.35, redGlow);
+        grad.addColorStop(1, 'rgba(255, 30, 40, 0)');
+        ctx.fillStyle = grad;
+
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    };
+
+    // Helper: Level Horizontal Barbell (Always Stays Horizontal!)
+    const drawBarbell = (cx, cy, length = 200) => {
+        ctx.save();
+        // Chrome knurled steel bar
+        ctx.strokeStyle = '#94A3B8';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(cx - length / 2, cy);
+        ctx.lineTo(cx + length / 2, cy);
+        ctx.stroke();
+
+        // Knurling details
+        ctx.strokeStyle = '#CBD5E1';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx - 35, cy);
+        ctx.lineTo(cx + 35, cy);
+        ctx.stroke();
+
+        // Red Olympic Bumper Plates (Level on both ends)
+        ctx.fillStyle = '#DC2626';
+        ctx.shadowColor = redGlow;
+        ctx.shadowBlur = 8;
+        // Left plates
+        ctx.fillRect(cx - length / 2 + 10, cy - 24, 12, 48);
+        ctx.fillRect(cx - length / 2 + 24, cy - 20, 8, 40);
+        // Right plates
+        ctx.fillRect(cx + length / 2 - 22, cy - 24, 12, 48);
+        ctx.fillRect(cx + length / 2 - 32, cy - 20, 8, 40);
+        ctx.restore();
+    };
+
+    // Helper: Dumbbell
+    const drawDumbbell = (cx, cy, angle = 0) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+
+        // Handle
+        ctx.strokeStyle = '#E2E8F0';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(-12, 0);
+        ctx.lineTo(12, 0);
+        ctx.stroke();
+
+        // Hex heads
+        ctx.fillStyle = '#DC2626';
+        ctx.shadowColor = redGlow;
+        ctx.shadowBlur = 8;
+        ctx.fillRect(-18, -12, 6, 24);
+        ctx.fillRect(12, -12, 6, 24);
+        ctx.restore();
+    };
+
+    // Helper: Draw Gym Floor Line
+    const drawFloor = (floorY = 280) => {
+        ctx.strokeStyle = '#272738';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(40, floorY);
+        ctx.lineTo(520, floorY);
+        ctx.stroke();
+
+        // Mat strip
+        ctx.fillStyle = gymFloor;
+        ctx.fillRect(100, floorY, 360, 6);
+    };
+
+    // -----------------------------------------------------------------------------------
+    // KINEMATICS RENDERERS BY EXERCISE PATTERN
+    // -----------------------------------------------------------------------------------
+
+    if (pattern === 'squat') {
+        // -------------------------------------------------------------
+        // BARBELL BACK SQUAT (Textbook Biomechanics)
+        // -------------------------------------------------------------
+        const floorY = 275;
+        drawFloor(floorY);
+
+        // p: 0 = standing upright, 1 = deep parallel squat
+        const s = p;
+        const quadContraction = 0.4 + (1 - s) * 0.6; // Contracts as lifter drives up
+
+        // Heels glued firmly to floor at midfoot X = 280
+        const footX = 280;
+        const footY = floorY;
+
+        // Kinematics:
+        // Standing (s=0): Ankle(280, 268), Knee(275, 195), Hip(285, 125), Shoulder(280, 55), Head(278, 28)
+        // Parallel Squat (s=1): Knee tracks forward to (235, 218), Hips sink back to (330, 218) [parallel!],
+        // Torso has natural 28° forward lean: Shoulder(270, 142), Head(255, 118)
+        const kneeX = 275 - s * 40;
+        const kneeY = 195 + s * 23;
+
+        const hipX = 285 + s * 45;
+        const hipY = 125 + s * 93;
+
+        const shoulderX = 280 - s * 10;
+        const shoulderY = 55 + s * 87;
+
+        const headX = 278 - s * 20;
+        const headY = 28 + s * 87;
+
+        // Barbell stays 100% HORIZONTAL across traps!
+        const barY = shoulderY + 5;
+        const barX = shoulderX + 2;
+
+        // 1. Draw Feet & Shoes
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(footX - 45, footY - 8, 55, 10);
+
+        // 2. Draw Legs: Shin & Thigh
+        drawCapsule(footX - 10, footY - 8, kneeX, kneeY, 14, 18); // Shin
+        drawCapsule(kneeX, kneeY, hipX, hipY, 20, 24); // Thigh / Quad
+
+        // 3. TARGET MUSCLE GLOW: Quadriceps (Midpoint between Hip and Knee)
+        const quadMidX = (hipX + kneeX) / 2;
+        const quadMidY = (hipY + kneeY) / 2 - 4;
+        drawTargetGlow(quadMidX, quadMidY, 24, 16, quadContraction);
+
+        // Glute Glow at Hips
+        drawTargetGlow(hipX + 6, hipY - 6, 18, 18, quadContraction * 0.8);
+
+        // 4. Torso & Head
+        drawCapsule(hipX, hipY, shoulderX, shoulderY, 24, 22); // Torso spine
+        drawHead(headX, headY, 16, -s * 0.25);
+
+        // 5. Hands Gripping Barbell
+        drawCapsule(shoulderX, shoulderY, barX - 18, barY + 14, 13, 10); // Upper arm
+        drawCapsule(barX - 18, barY + 14, barX - 12, barY, 11, 9); // Forearm to hand
+
+        // 6. BARBELL (Strictly Level & Horizontal!)
+        drawBarbell(barX, barY, 210);
+
+    } else if (pattern === 'bench_press') {
+        // -------------------------------------------------------------
+        // FLAT BARBELL BENCH PRESS
+        // -------------------------------------------------------------
+        const floorY = 275;
+        drawFloor(floorY);
+
+        // Bench Pad & Supports
+        ctx.fillStyle = '#1e1e2d';
+        ctx.strokeStyle = '#38384f';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(140, 195, 270, 16, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#14141e';
+        ctx.fillRect(200, 211, 16, 64);
+        ctx.fillRect(350, 211, 16, 64);
+
+        // Lifter lying flat
+        const headX = 175;
+        const headY = 182;
+        const shoulderX = 215;
+        const shoulderY = 185;
+        const hipX = 330;
+        const hipY = 185;
+
+        // Legs on floor
+        drawCapsule(hipX, hipY, 370, 225, 20, 16);
+        drawCapsule(370, 225, 375, floorY, 16, 12);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(370, floorY - 8, 35, 10);
+
+        // Torso
+        drawCapsule(shoulderX, shoulderY, hipX, hipY, 24, 22);
+        drawHead(headX, headY, 15, -Math.PI / 2);
+
+        // Pectoral Muscle Glow
+        const chestContraction = 0.4 + (1 - p) * 0.6;
+        drawTargetGlow(245, 178, 26, 16, chestContraction);
+
+        // Vertical Barbell Motion (Level Horizontal)
+        // p=1: bar touching chest (y=155); p=0: locked out (y=85)
+        const barY = 85 + p * 70;
+        const barX = 245;
+
+        // Arms Pressing
+        const elbowY = 160 + p * 25;
+        drawCapsule(shoulderX, shoulderY, shoulderX - 10, elbowY, 16, 13);
+        drawCapsule(shoulderX - 10, elbowY, barX - 15, barY, 13, 10);
+
+        // Barbell
+        drawBarbell(barX, barY, 190);
+
+    } else if (pattern === 'incline_bench_press') {
+        // -------------------------------------------------------------
+        // TRUE 35° INCLINE DUMBBELL BENCH PRESS
+        // -------------------------------------------------------------
+        const floorY = 275;
+        drawFloor(floorY);
+
+        // Bench Frame on Floor
+        ctx.fillStyle = '#14141e';
+        ctx.fillRect(160, 267, 240, 8);
+        ctx.fillRect(305, 225, 14, 45); // Post under seat
+
+        // Incline Strut under backrest
+        ctx.strokeStyle = '#1e1e2c';
+        ctx.lineWidth = 12;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(200, 270);
+        ctx.lineTo(250, 190);
+        ctx.stroke();
+
+        // Horizontal Seat Pad
+        ctx.fillStyle = '#1c1c28';
+        ctx.strokeStyle = '#38384f';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(290, 218, 55, 14, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // 35° Incline Backrest Pad
+        ctx.save();
+        ctx.translate(290, 222);
+        ctx.rotate(-0.62); // 35.5 degrees UPWARD
+        ctx.fillStyle = '#1c1c28';
+        ctx.strokeStyle = '#E50914';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(0, -6, 160, 14, 4);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        // Lifter on Incline
+        const hipX = 295;
+        const hipY = 215;
+        const shoulderX = 210;
+        const shoulderY = 155;
+        const headX = 185;
+        const headY = 135;
+
+        // Legs on floor
+        drawCapsule(hipX, hipY, 345, 225, 20, 16);
+        drawCapsule(345, 225, 350, floorY, 16, 12);
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(345, floorY - 8, 35, 10);
+
+        // Torso & Head
+        drawCapsule(hipX, hipY, shoulderX, shoulderY, 26, 22);
+        drawHead(headX, headY, 16, -0.4);
+
+        // Clavicular Upper Chest Glow
+        const chestContraction = 0.4 + (1 - p) * 0.6;
+        drawTargetGlow(235, 170, 22, 16, chestContraction);
+
+        // Vertical Dumbbell Drive (p=1: handY=145, p=0: handY=70)
+        const handY = 70 + p * 75;
+        const handX = 235;
+        const elbowX = 210 - p * 8;
+        const elbowY = 160 + p * 20;
+
+        drawCapsule(shoulderX, shoulderY, elbowX, elbowY, 15, 12);
+        drawCapsule(elbowX, elbowY, handX, handY, 13, 10);
+
+        // Red Hex Dumbbells
+        drawDumbbell(handX, handY, -0.2);
+
+    } else if (pattern === 'pushup') {
+        // -------------------------------------------------------------
+        // PUSHUP (Straight Body Plank)
+        // -------------------------------------------------------------
+        const floorY = 275;
+        drawFloor(floorY);
+
+        const bodyY = 215 + p * 45; // Descends smoothly
+        const chestContraction = 0.4 + (1 - p) * 0.6;
+
+        // Feet on floor
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(135, floorY - 8, 25, 10);
+
+        // Straight Body Line from heels to crown
+        drawCapsule(150, floorY - 8, 235, bodyY + 15, 18, 16); // Legs
+        drawCapsule(235, bodyY + 15, 335, bodyY - 10, 24, 20); // Torso
+        drawHead(365, bodyY - 20, 16, 0.2);
+
+        // Chest & Core Glow
+        drawTargetGlow(310, bodyY, 24, 16, chestContraction);
+
+        // Arms pushing against floor
+        const elbowX = 330 + p * 20;
+        const elbowY = bodyY + 15 + p * 15;
+        drawCapsule(330, bodyY - 5, elbowX, elbowY, 15, 13);
+        drawCapsule(elbowX, elbowY, 340, floorY - 4, 13, 10);
+
+    } else if (pattern === 'lat_pulldown') {
+        // -------------------------------------------------------------
+        // WIDE-GRIP LAT PULLDOWN
+        // -------------------------------------------------------------
+        drawFloor(275);
+
+        // Machine Frame & Top Pulley
+        ctx.fillStyle = '#1e1e2d';
+        ctx.fillRect(250, 195, 60, 14); // Seat
+        ctx.fillRect(274, 30, 12, 180); // Center beam
+        ctx.fillRect(220, 30, 120, 12); // Top beam
+
+        const latContraction = 0.3 + p * 0.7;
+        const barY = 55 + p * 85; // Moves from 55 down to 140
+
+        // Seated Athlete
+        drawCapsule(280, 210, 280, 120, 24, 20); // Torso
+        drawHead(280, 92, 16, 0);
+
+        // Lat Wings Glow
+        drawTargetGlow(258, 145, 18, 30, latContraction);
+        drawTargetGlow(302, 145, 18, 30, latContraction);
+
+        // Legs under pad
+        drawCapsule(270, 210, 250, 275, 18, 14);
+        drawCapsule(290, 210, 310, 275, 18, 14);
+
+        // Arms Pulling Bar
+        const leftElbowX = 230 - (1 - p) * 15;
+        const leftElbowY = 110 + p * 35;
+        drawCapsule(265, 115, leftElbowX, leftElbowY, 14, 12);
+        drawCapsule(leftElbowX, leftElbowY, 200, barY, 12, 10);
+
+        const rightElbowX = 330 + (1 - p) * 15;
+        const rightElbowY = 110 + p * 35;
+        drawCapsule(295, 115, rightElbowX, rightElbowY, 14, 12);
+        drawCapsule(rightElbowX, rightElbowY, 360, barY, 12, 10);
+
+        // Cable Line
+        ctx.strokeStyle = '#64748B';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(280, 42);
+        ctx.lineTo(280, barY);
+        ctx.stroke();
+
+        // Wide Pulldown Bar (Level Horizontal)
+        drawBarbell(280, barY, 210);
+
+    } else if (pattern === 'deadlift') {
+        // -------------------------------------------------------------
+        // BARBELL DEADLIFT / RDL (Strict Vertical Bar Path)
+        // -------------------------------------------------------------
+        const floorY = 275;
+        drawFloor(floorY);
+
+        const s = p;
+        const gluteContraction = 0.4 + (1 - s) * 0.6;
+
+        // Feet flat on floor
+        const footX = 295;
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(footX - 45, floorY - 8, 55, 10);
+
+        // Lockout (s=0): Hips(295, 140), Shoulders(290, 70), Bar(270, 150)
+        // Bottom Hinge (s=1): Hips push back to (340, 155), Shoulders forward to (255, 130), Bar at shins (255, 235)
+        const kneeX = 290 - s * 10;
+        const kneeY = 210 + s * 10;
+
+        const hipX = 295 + s * 45;
+        const hipY = 140 + s * 15;
+
+        const shoulderX = 290 - s * 35;
+        const shoulderY = 70 + s * 60;
+
+        const headX = 290 - s * 45;
+        const headY = 42 + s * 60;
+
+        const barX = 265;
+        const barY = 150 + s * 85; // Strict vertical bar path!
+
+        // Legs
+        drawCapsule(footX - 15, floorY - 8, kneeX, kneeY, 14, 16);
+        drawCapsule(kneeX, kneeY, hipX, hipY, 20, 24);
+
+        // Hamstring & Glute Glow
+        drawTargetGlow(hipX + 5, hipY - 5, 20, 24, gluteContraction);
+        drawTargetGlow((hipX + kneeX) / 2 + 5, (hipY + kneeY) / 2, 16, 22, gluteContraction * 0.8);
+
+        // Torso & Head
+        drawCapsule(hipX, hipY, shoulderX, shoulderY, 24, 22);
+        drawHead(headX, headY, 16, -s * 0.4);
+
+        // Arms hanging straight down to barbell
+        drawCapsule(shoulderX, shoulderY, barX, barY, 14, 10);
+
+        // Barbell (Level Horizontal)
+        drawBarbell(barX, barY, 190);
+
+    } else if (pattern === 'bicep_curl') {
+        // -------------------------------------------------------------
+        // STANDING BICEP CURL
+        // -------------------------------------------------------------
+        drawFloor(275);
+
+        // Standing Legs & Torso
+        drawCapsule(260, 275, 260, 145, 20, 16);
+        drawCapsule(260, 145, 260, 75, 24, 20);
+        drawHead(260, 48, 16, 0);
+
+        // Elbow pinned strictly at side
+        const elbowX = 290;
+        const elbowY = 145;
+
+        // Forearm curls up (p: 0 = down at 215, 1 = curled at 105)
+        const armAngle = Math.PI / 2 - p * (Math.PI * 0.72);
+        const handX = elbowX + Math.cos(armAngle) * 55;
+        const handY = elbowY + Math.sin(armAngle) * 55;
+
+        const bicepContraction = 0.3 + p * 0.7;
+
+        // Left idle arm
+        drawCapsule(230, 85, 225, 175, 14, 10);
+
+        // Right active curling arm
+        drawCapsule(275, 85, elbowX, elbowY, 16, 14);
+        drawCapsule(elbowX, elbowY, handX, handY, 14, 10);
+
+        // Bicep Muscle Glow Swell
+        drawTargetGlow(elbowX - 4, elbowY - 20, 16, 20, bicepContraction);
+
+        // Dumbbell
+        drawDumbbell(handX, handY, armAngle);
+
+    } else if (pattern === 'tricep_dip') {
+        // -------------------------------------------------------------
+        // TRICEP DIP
+        // -------------------------------------------------------------
+        // Parallel Bars
+        ctx.fillStyle = '#1e1e2d';
+        ctx.strokeStyle = '#38384f';
+        ctx.lineWidth = 3;
+        ctx.fillRect(210, 160, 140, 8);
+        ctx.fillRect(230, 160, 12, 115);
+        ctx.fillRect(320, 160, 12, 115);
+
+        const torsoY = 85 + p * 50; // Descends smoothly
+        const tricepContraction = 0.4 + (1 - p) * 0.6;
+
+        // Torso & Head
+        drawHead(280, torsoY - 25, 16, 0);
+        drawCapsule(280, torsoY + 65, 280, torsoY, 24, 20);
+
+        // Crossed Legs
+        drawCapsule(280, torsoY + 65, 265, torsoY + 125, 18, 14);
+        drawCapsule(265, torsoY + 125, 290, torsoY + 140, 14, 10);
+
+        // Triceps Glow
+        drawTargetGlow(252, torsoY + 18, 14, 22, tricepContraction);
+        drawTargetGlow(308, torsoY + 18, 14, 22, tricepContraction);
+
+        // Arms holding bars
+        const elbowX = 310 + p * 15;
+        const elbowY = torsoY + 10 + p * 25;
+        drawCapsule(295, torsoY, elbowX, elbowY, 15, 13);
+        drawCapsule(elbowX, elbowY, 320, 164, 13, 11);
+
+    } else if (pattern === 'overhead_press') {
+        // -------------------------------------------------------------
+        // STANDING OVERHEAD PRESS (Strict Vertical Bar Path)
+        // -------------------------------------------------------------
+        drawFloor(275);
+
+        // Standing Body
+        drawCapsule(270, 275, 270, 145, 20, 16);
+        drawCapsule(270, 145, 270, 75, 24, 20);
+        drawHead(270, 48, 16, 0);
+
+        const deltoidContraction = 0.4 + (1 - p) * 0.6;
+
+        // Shoulder Glows
+        drawTargetGlow(245, 78, 16, 16, deltoidContraction);
+        drawTargetGlow(295, 78, 16, 16, deltoidContraction);
+
+        // Barbell presses vertically from chin (y=75) overhead to (y=20)
+        const barY = 20 + p * 55;
+        const barX = 270;
+
+        const elbowY = barY + 35;
+        drawCapsule(250, 75, 240, elbowY, 14, 12);
+        drawCapsule(240, elbowY, barX - 25, barY, 12, 10);
+
+        drawCapsule(290, 75, 300, elbowY, 14, 12);
+        drawCapsule(300, elbowY, barX + 25, barY, 12, 10);
+
+        // Barbell (Level Horizontal)
+        drawBarbell(barX, barY, 190);
+
+    } else if (pattern === 'lateral_raise') {
+        // -------------------------------------------------------------
+        // LATERAL DELTOID RAISE
+        // -------------------------------------------------------------
+        drawFloor(275);
+
+        drawCapsule(270, 275, 270, 145, 20, 16);
+        drawCapsule(270, 145, 270, 75, 24, 20);
+        drawHead(270, 48, 16, 0);
+
+        const deltContraction = 0.3 + p * 0.7;
+        drawTargetGlow(245, 78, 16, 16, deltContraction);
+        drawTargetGlow(295, 78, 16, 16, deltContraction);
+
+        // Arms raise out to sides
+        const armAngle = (1 - p) * 1.35;
+        const leftHandX = 250 - Math.sin(armAngle) * 75;
+        const leftHandY = 75 + Math.cos(armAngle) * 75;
+        const rightHandX = 290 + Math.sin(armAngle) * 75;
+        const rightHandY = 75 + Math.cos(armAngle) * 75;
+
+        drawCapsule(250, 75, leftHandX, leftHandY, 14, 10);
+        drawCapsule(290, 75, rightHandX, rightHandY, 14, 10);
+
+        drawDumbbell(leftHandX, leftHandY, -0.2);
+        drawDumbbell(rightHandX, rightHandY, 0.2);
+
+    } else if (pattern === 'chest_fly') {
+        // -------------------------------------------------------------
+        // CHEST FLY
+        // -------------------------------------------------------------
+        drawFloor(275);
+
+        // Bench
+        ctx.fillStyle = '#1e1e2d';
+        ctx.fillRect(160, 205, 240, 16);
+
+        drawCapsule(230, 195, 340, 195, 24, 20);
+        drawHead(195, 190, 16, -Math.PI / 2);
+
+        const chestContraction = 0.4 + (1 - p) * 0.6;
+        drawTargetGlow(265, 188, 26, 16, chestContraction);
+
+        // Dumbbells open and close in arc
+        const flyAngle = p * 1.1;
+        const hand1X = 265 - Math.sin(flyAngle) * 65;
+        const hand1Y = 165 - Math.cos(flyAngle) * 35;
+        const hand2X = 265 + Math.sin(flyAngle) * 65;
+        const hand2Y = 165 - Math.cos(flyAngle) * 35;
+
+        drawCapsule(250, 195, hand1X, hand1Y, 14, 10);
+        drawCapsule(280, 195, hand2X, hand2Y, 14, 10);
+
+        drawDumbbell(hand1X, hand1Y, -flyAngle);
+        drawDumbbell(hand2X, hand2Y, flyAngle);
+
+    } else if (pattern === 'core') {
+        // -------------------------------------------------------------
+        // CORE PLANK & ROLLOUT
+        // -------------------------------------------------------------
+        const floorY = 275;
+        drawFloor(floorY);
+
+        const rolloutDist = p * 60;
+        const hipX = 200 + rolloutDist * 0.5;
+        const hipY = 225 - p * 10;
+        const shoulderX = hipX + 80 + rolloutDist * 0.5;
+        const shoulderY = hipY - 15;
+        const wheelX = shoulderX + 45;
+
+        // Kneeling on mat
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(140, floorY - 6, 40, 8);
+
+        drawCapsule(150, floorY - 6, hipX, hipY, 18, 14);
+        drawCapsule(hipX, hipY, shoulderX, shoulderY, 22, 18);
+        drawHead(shoulderX + 15, shoulderY - 10, 15, 0.2);
+
+        // Core Abdominal Glow
+        const coreContraction = 0.5 + (1 - p) * 0.5;
+        drawTargetGlow((hipX + shoulderX) / 2, (hipY + shoulderY) / 2 + 5, 26, 14, coreContraction);
+
+        drawCapsule(shoulderX, shoulderY, wheelX, floorY - 16, 13, 10);
+
+        // Wheel
+        ctx.fillStyle = '#DC2626';
+        ctx.beginPath();
+        ctx.arc(wheelX, floorY - 16, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+    } else if (pattern === 'sprint') {
+        // -------------------------------------------------------------
+        // HIGH VELOCITY ATHLETIC RUNNER
+        // -------------------------------------------------------------
+        drawFloor(275);
+
+        const cycle = p * Math.PI * 2;
+        const hipX = 270;
+        const hipY = 175 + Math.sin(cycle * 2) * 6; // Bouncing stride
+
+        // Forward inclined running posture
+        drawCapsule(hipX, hipY, hipX + 15, hipY - 80, 24, 20);
+        drawHead(hipX + 25, hipY - 105, 16, 0.3);
+
+        // Legs alternating
+        const leg1KneeX = hipX + Math.sin(cycle) * 45;
+        const leg1KneeY = hipY + 45 + Math.cos(cycle) * 25;
+        const leg1FootX = leg1KneeX + Math.sin(cycle + 0.4) * 40;
+        const leg1FootY = Math.min(275, leg1KneeY + 35);
+
+        const leg2KneeX = hipX - Math.sin(cycle) * 45;
+        const leg2KneeY = hipY + 45 - Math.cos(cycle) * 25;
+        const leg2FootX = leg2KneeX - Math.sin(cycle + 0.4) * 40;
+        const leg2FootY = Math.min(275, leg2KneeY + 35);
+
+        drawCapsule(hipX, hipY, leg1KneeX, leg1KneeY, 18, 14);
+        drawCapsule(leg1KneeX, leg1KneeY, leg1FootX, leg1FootY, 14, 10);
+
+        drawCapsule(hipX, hipY, leg2KneeX, leg2KneeY, 18, 14);
+        drawCapsule(leg2KneeX, leg2KneeY, leg2FootX, leg2FootY, 14, 10);
+
+        // Quads & Glutes Glow
+        drawTargetGlow(hipX, hipY, 20, 24, 0.7);
+
+        // Arms driving cheek-to-pocket
+        const arm1HandX = hipX + 15 + Math.cos(cycle) * 35;
+        const arm1HandY = hipY - 45 + Math.sin(cycle) * 30;
+        drawCapsule(hipX + 15, hipY - 75, arm1HandX, arm1HandY, 13, 9);
+    }
+
+    ctx.restore();
+}
+
+/**
+ * 2D Canvas Kinematics Canvas Engine
  */
 const FacelessMannequinCanvas = ({ pattern = 'bench_press', speed = 1, isPlaying = true, onPhaseUpdate }) => {
     const canvasRef = useRef(null);
@@ -503,7 +1208,7 @@ const FacelessMannequinCanvas = ({ pattern = 'bench_press', speed = 1, isPlaying
             }
 
             // Draw Gym Equipment and Mannequin according to pattern
-            drawExerciseKinematics(ctx, width, height, pattern, rawPhase, phaseDerivative);
+            drawExerciseKinematics(ctx, width, height, pattern, rawPhase, isConcentric);
 
             animationFrameId.current = requestAnimationFrame(render);
         };
@@ -521,602 +1226,14 @@ const FacelessMannequinCanvas = ({ pattern = 'bench_press', speed = 1, isPlaying
         <canvas
             ref={canvasRef}
             width={560}
-            height={340}
+            height={320}
             className="w-full h-auto rounded-2xl border border-[#2a2a3c] shadow-[0_0_30px_rgba(0,0,0,0.8)] bg-[#0b0c10]"
         />
     );
 };
 
 /**
- * Procedural Kinematic Engine for Leap Fitness Style Avatar
- */
-function drawExerciseKinematics(ctx, w, h, pattern, p, pDeriv) {
-    ctx.save();
-
-    const mannequinSkin = '#E2E8F0'; // Sleek athletic silver/slate silhouette
-    const muscleGlowColor = '#FF1E28'; // Iron District Neon Crimson
-    const barColor = '#94A3B8';
-    const plateColor = '#DC2626';
-
-    const drawHead = (x, y, r = 18, angle = 0) => {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle);
-
-        ctx.fillStyle = mannequinSkin;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, r, r * 1.25, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Sleek cyber visor slit
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath();
-        ctx.roundRect(r * 0.25, -r * 0.4, r * 0.55, 6, 2);
-        ctx.fill();
-
-        ctx.restore();
-    };
-
-    const drawLimb = (x1, y1, x2, y2, r1 = 14, r2 = 10, isGlow = false, glowIntensity = 0.5) => {
-        ctx.save();
-
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const len = Math.sqrt(dx * dx + dy * dy);
-        if (len < 1) {
-            ctx.restore();
-            return;
-        }
-
-        const angle = Math.atan2(dy, dx);
-        ctx.translate(x1, y1);
-        ctx.rotate(angle);
-
-        ctx.beginPath();
-        ctx.moveTo(0, -r1);
-        ctx.lineTo(len, -r2);
-        ctx.arc(len, 0, r2, -Math.PI / 2, Math.PI / 2);
-        ctx.lineTo(0, r1);
-        ctx.arc(0, 0, r1, Math.PI / 2, -Math.PI / 2);
-        ctx.closePath();
-
-        ctx.fillStyle = mannequinSkin;
-        ctx.fill();
-
-        if (isGlow) {
-            ctx.shadowColor = muscleGlowColor;
-            ctx.shadowBlur = 18 * glowIntensity;
-            ctx.fillStyle = `rgba(239, 68, 68, ${0.4 * glowIntensity})`;
-            ctx.fill();
-            ctx.strokeStyle = '#FF1E28';
-            ctx.lineWidth = 1.2;
-            ctx.stroke();
-        }
-
-        ctx.restore();
-    };
-
-    const drawMuscleGlow = (cx, cy, rx, ry, intensity = 0.8, color = muscleGlowColor) => {
-        ctx.save();
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 24 * intensity;
-
-        const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, rx);
-        grad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-        grad.addColorStop(0.4, color);
-        grad.addColorStop(1, 'rgba(255, 30, 40, 0)');
-        ctx.fillStyle = grad;
-
-        ctx.beginPath();
-        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    };
-
-    const drawBarbell = (x, y, length = 180, isVertical = false) => {
-        ctx.save();
-        ctx.strokeStyle = barColor;
-        ctx.lineWidth = 5;
-        ctx.lineCap = 'round';
-
-        if (isVertical) {
-            ctx.beginPath();
-            ctx.moveTo(x, y - length / 2);
-            ctx.lineTo(x, y + length / 2);
-            ctx.stroke();
-
-            ctx.fillStyle = plateColor;
-            ctx.fillRect(x - 8, y - length / 2, 16, 12);
-            ctx.fillRect(x - 8, y + length / 2 - 12, 16, 12);
-        } else {
-            ctx.beginPath();
-            ctx.moveTo(x - length / 2, y);
-            ctx.lineTo(x + length / 2, y);
-            ctx.stroke();
-
-            ctx.strokeStyle = '#CBD5E1';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(x - 30, y);
-            ctx.lineTo(x + 30, y);
-            ctx.stroke();
-
-            ctx.fillStyle = plateColor;
-            ctx.fillRect(x - length / 2 + 10, y - 22, 12, 44);
-            ctx.fillRect(x - length / 2 + 24, y - 18, 8, 36);
-            ctx.fillRect(x + length / 2 - 22, y - 22, 12, 44);
-            ctx.fillRect(x + length / 2 - 32, y - 18, 8, 36);
-        }
-
-        ctx.restore();
-    };
-
-    const drawDumbbell = (x, y, angle = 0) => {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle);
-
-        ctx.strokeStyle = '#E2E8F0';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(-12, 0);
-        ctx.lineTo(12, 0);
-        ctx.stroke();
-
-        ctx.fillStyle = '#DC2626';
-        ctx.shadowColor = '#FF1E28';
-        ctx.shadowBlur = 8;
-        ctx.fillRect(-18, -12, 6, 24);
-        ctx.fillRect(12, -12, 6, 24);
-
-        ctx.restore();
-    };
-
-    // -----------------------------------------------------------------------------------
-    // KINEMATICS RENDERERS BY PATTERN
-    // -----------------------------------------------------------------------------------
-
-    if (pattern === 'incline_bench_press') {
-        // -------------------------------------------------------------
-        // TRUE 35° INCLINE DUMBBELL BENCH PRESS
-        // -------------------------------------------------------------
-        ctx.translate(w / 2 - 10, h / 2 + 15);
-
-        // Gym Floor Line
-        ctx.strokeStyle = '#272738';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        ctx.moveTo(-180, 115);
-        ctx.lineTo(180, 115);
-        ctx.stroke();
-
-        // Heavy Floor Base
-        ctx.fillStyle = '#14141e';
-        ctx.fillRect(-120, 108, 240, 8);
-
-        // Vertical Support Post under seat
-        ctx.fillStyle = '#1e1e2c';
-        ctx.fillRect(25, 45, 14, 65);
-
-        // Angular Structural Strut under backrest
-        ctx.strokeStyle = '#1e1e2c';
-        ctx.lineWidth = 12;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(-70, 110);
-        ctx.lineTo(-30, 20);
-        ctx.stroke();
-
-        // Horizontal / Slightly Tilted Seat Pad
-        ctx.fillStyle = '#1c1c28';
-        ctx.strokeStyle = '#38384f';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(10, 36, 55, 14, 4);
-        ctx.fill();
-        ctx.stroke();
-
-        // 35° Incline Backrest Pad (Angled UPWARDS to the top-left)
-        ctx.save();
-        ctx.translate(12, 36);
-        const inclineAngle = -0.62; // ~-35.5 degrees UPWARD
-        ctx.rotate(inclineAngle);
-
-        ctx.fillStyle = '#1c1c28';
-        ctx.strokeStyle = '#E50914';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.roundRect(0, -6, 150, 14, 4);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-
-        // Athlete Pelvis firmly in seat
-        const hipX = 18;
-        const hipY = 32;
-
-        // Legs planted firmly on the gym floor
-        drawLimb(hipX, hipY, 68, 42, 22, 18); // Thigh
-        drawLimb(68, 42, 72, 108, 18, 14); // Shin down to floor
-        ctx.fillStyle = '#64748B';
-        ctx.fillRect(65, 104, 34, 10); // Athletic Shoe on floor
-
-        // Torso supported along 35° incline backrest (Hips (18, 32) -> Shoulders (-68, -25))
-        const shoulderX = -68;
-        const shoulderY = -25;
-        const chestContraction = 1 - p;
-
-        drawLimb(hipX, hipY, shoulderX, shoulderY, 26, 22, true, chestContraction);
-
-        // Head resting high on the elevated headrest
-        drawHead(-92, -42, 18, -0.4);
-
-        // CLAVICULAR UPPER CHEST Radial Glow
-        const clavicleX = -42;
-        const clavicleY = -12;
-        drawMuscleGlow(clavicleX, clavicleY, 26, 18, 0.4 + chestContraction * 0.7, '#FF1E28');
-
-        // Vertical Incline Dumbbell Pressing Motion
-        // Bottom (p=1): Hands near upper chest. Top (p=0): Arms drive vertically up to ceiling!
-        const handX = -42 + (1 - p) * 6;
-        const handY = -12 - (1 - p) * 75;
-
-        const elbowX = -58 + p * 12;
-        const elbowY = -8 + p * 28;
-
-        drawLimb(shoulderX, shoulderY, elbowX, elbowY, 17, 14, true, chestContraction);
-        drawLimb(elbowX, elbowY, handX, handY, 14, 11, true, chestContraction * 0.8);
-
-        // Red Hex Dumbbells
-        drawDumbbell(handX, handY, -0.2);
-
-    } else if (pattern === 'bench_press' || pattern === 'chest_fly') {
-        const isFly = pattern === 'chest_fly';
-        ctx.translate(w / 2 - 20, h / 2 + 30);
-
-        // Flat Horizontal Bench Pad
-        ctx.fillStyle = '#1e1e2d';
-        ctx.strokeStyle = '#38384f';
-        ctx.lineWidth = 2;
-        ctx.roundRect(-160, 20, 260, 16, 6);
-        ctx.fill();
-        ctx.stroke();
-
-        // Bench Stand
-        ctx.fillStyle = '#14141e';
-        ctx.fillRect(-80, 36, 16, 120);
-        ctx.fillRect(60, 36, 16, 120);
-
-        // Head
-        drawHead(-120, -10, 18, -Math.PI / 2);
-
-        // Torso / Sternal Arch
-        ctx.save();
-        const chestContraction = 1 - p;
-        ctx.fillStyle = mannequinSkin;
-        ctx.beginPath();
-        ctx.moveTo(-100, 20);
-        ctx.quadraticCurveTo(-50, -10, 0, 20);
-        ctx.lineTo(0, 20);
-        ctx.lineTo(-100, 20);
-        ctx.fill();
-
-        // Pectoral Muscle Glow
-        drawMuscleGlow(-50, 4, 32, 18, 0.4 + chestContraction * 0.6, muscleGlowColor);
-        ctx.restore();
-
-        // Legs on floor
-        drawLimb(0, 20, 45, 60, 18, 14);
-        drawLimb(45, 60, 50, 110, 14, 10);
-        ctx.fillStyle = '#64748B';
-        ctx.fillRect(45, 105, 30, 10);
-
-        // Arm Kinematics
-        const barY = -75 + p * 60;
-        const elbowX = -50 - (1 - p) * 10;
-        const elbowY = -10 + p * 30;
-        const handX = -50;
-        const handY = barY;
-
-        drawLimb(-70, 0, elbowX, elbowY, 16, 14, true, chestContraction);
-        drawLimb(elbowX, elbowY, handX, handY, 14, 10, true, chestContraction * 0.8);
-
-        if (isFly) {
-            drawDumbbell(handX, handY, 0);
-        } else {
-            drawBarbell(handX, handY, 150);
-        }
-
-    } else if (pattern === 'pushup') {
-        ctx.translate(w / 2 - 20, h / 2 + 50);
-
-        ctx.fillStyle = '#1c1c28';
-        ctx.fillRect(-170, 60, 340, 8);
-
-        const chestContraction = 1 - p;
-        const bodyY = -15 + p * 45;
-
-        ctx.fillStyle = '#64748B';
-        ctx.fillRect(-145, 50, 15, 12);
-
-        drawLimb(-135, 50, -60, bodyY + 15, 18, 16);
-        drawLimb(-60, bodyY + 15, 30, bodyY - 10, 24, 20, true, chestContraction);
-
-        drawMuscleGlow(10, bodyY, 26, 16, 0.4 + chestContraction * 0.6, muscleGlowColor);
-        drawHead(55, bodyY - 20, 18, 0.2);
-
-        const elbowX = 35 + p * 20;
-        const elbowY = bodyY + 15 + p * 15;
-        drawLimb(25, bodyY - 5, elbowX, elbowY, 16, 14, true, chestContraction);
-        drawLimb(elbowX, elbowY, 30, 58, 14, 12);
-
-    } else if (pattern === 'squat') {
-        ctx.translate(w / 2, h / 2 - 20);
-
-        ctx.strokeStyle = '#272738';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(-160, 160);
-        ctx.lineTo(160, 160);
-        ctx.stroke();
-
-        const hipY = 20 + p * 75;
-        const hipX = -p * 35;
-        const kneeY = 90 + p * 30;
-        const kneeX = 25 + p * 20;
-        const footX = 20;
-        const footY = 160;
-
-        const torsoAngle = p * 0.45;
-        const quadContraction = 1 - p * 0.4;
-
-        drawLimb(hipX, hipY, kneeX, kneeY, 24, 18, true, quadContraction);
-        drawLimb(kneeX, kneeY, footX, footY, 18, 12);
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(footX - 15, footY - 8, 45, 12);
-
-        ctx.save();
-        ctx.translate(hipX, hipY);
-        ctx.rotate(-torsoAngle);
-
-        drawMuscleGlow(hipX + 5, hipY + 15, 24, 20, 0.4 + quadContraction * 0.6, muscleGlowColor);
-        drawLimb(0, 0, -10, -90, 24, 20);
-        drawHead(-15, -115, 18, -torsoAngle * 0.5);
-        drawBarbell(-12, -90, 180);
-        drawLimb(-15, -80, 10, -85, 12, 10);
-        drawLimb(10, -85, -10, -90, 10, 8);
-        ctx.restore();
-
-    } else if (pattern === 'lat_pulldown') {
-        ctx.translate(w / 2, h / 2 - 30);
-
-        ctx.fillStyle = '#1e1e2d';
-        ctx.fillRect(-30, 90, 60, 14);
-        ctx.fillRect(-6, -140, 12, 240);
-        ctx.fillRect(-60, -140, 120, 12);
-
-        const latContraction = p;
-        const barY = -120 + p * 85;
-
-        drawLimb(0, 90, 0, 0, 24, 22, true, latContraction * 0.8);
-        drawHead(0, -25, 18, 0);
-
-        drawMuscleGlow(-25, 25, 20, 35, 0.3 + latContraction * 0.7, muscleGlowColor);
-        drawMuscleGlow(25, 25, 20, 35, 0.3 + latContraction * 0.7, muscleGlowColor);
-
-        drawLimb(-15, 90, -35, 140, 18, 14);
-        drawLimb(15, 90, 35, 140, 18, 14);
-
-        const leftElbowX = -55 - (1 - p) * 15;
-        const leftElbowY = -10 + p * 40;
-        drawLimb(-15, -5, leftElbowX, leftElbowY, 14, 12, true, latContraction);
-        drawLimb(leftElbowX, leftElbowY, -80, barY, 12, 10);
-
-        const rightElbowX = 55 + (1 - p) * 15;
-        const rightElbowY = -10 + p * 40;
-        drawLimb(15, -5, rightElbowX, rightElbowY, 14, 12, true, latContraction);
-        drawLimb(rightElbowX, rightElbowY, 80, barY, 12, 10);
-
-        ctx.strokeStyle = '#64748B';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(0, -130);
-        ctx.lineTo(0, barY);
-        ctx.stroke();
-
-        drawBarbell(0, barY, 190);
-
-    } else if (pattern === 'bicep_curl') {
-        ctx.translate(w / 2, h / 2 - 10);
-
-        ctx.strokeStyle = '#272738';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(-140, 150);
-        ctx.lineTo(140, 150);
-        ctx.stroke();
-
-        drawLimb(-15, 50, -20, 150, 20, 14);
-        drawLimb(15, 50, 20, 150, 20, 14);
-
-        drawLimb(0, 50, 0, -50, 24, 20);
-        drawHead(0, -75, 18, 0);
-
-        const bicepContraction = p;
-        const elbowX = 25;
-        const elbowY = -35;
-        const armAngle = Math.PI / 2 - p * (Math.PI * 0.7);
-        const handX = elbowX + Math.cos(armAngle) * 55;
-        const handY = elbowY + Math.sin(armAngle) * 55;
-
-        drawMuscleGlow(elbowX - 2, elbowY + 8, 16, 20, 0.3 + bicepContraction * 0.7, muscleGlowColor);
-        drawLimb(-20, -45, -24, 20, 14, 10);
-        drawLimb(15, -45, elbowX, elbowY, 16, 14);
-        drawLimb(elbowX, elbowY, handX, handY, 14, 10, true, bicepContraction);
-
-        drawDumbbell(handX, handY, armAngle);
-
-    } else if (pattern === 'tricep_dip') {
-        ctx.translate(w / 2, h / 2 - 10);
-
-        ctx.fillStyle = '#1e1e2d';
-        ctx.strokeStyle = '#38384f';
-        ctx.lineWidth = 3;
-        ctx.fillRect(-65, -10, 130, 8);
-        ctx.fillRect(-50, -10, 12, 160);
-        ctx.fillRect(40, -10, 12, 160);
-
-        const tricepContraction = 1 - p;
-        const torsoY = -25 + p * 50;
-
-        drawHead(0, torsoY - 55, 18, 0);
-        drawLimb(0, torsoY + 45, 0, torsoY - 30, 24, 20);
-        drawLimb(-10, torsoY + 45, -20, torsoY + 110, 18, 14);
-        drawLimb(-20, torsoY + 110, 10, torsoY + 130, 14, 10);
-
-        drawMuscleGlow(-28, torsoY - 10, 14, 24, 0.3 + tricepContraction * 0.7, muscleGlowColor);
-        drawMuscleGlow(28, torsoY - 10, 14, 24, 0.3 + tricepContraction * 0.7, muscleGlowColor);
-
-        const elbowX = 35 + p * 15;
-        const elbowY = torsoY - 20 + p * 30;
-        drawLimb(15, torsoY - 30, elbowX, elbowY, 16, 14, true, tricepContraction);
-        drawLimb(elbowX, elbowY, 40, -6, 14, 12);
-
-    } else if (pattern === 'deadlift') {
-        ctx.translate(w / 2, h / 2 - 15);
-
-        ctx.strokeStyle = '#272738';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(-160, 150);
-        ctx.lineTo(160, 150);
-        ctx.stroke();
-
-        const hingeAngle = p * 1.1;
-        const hipX = -p * 45;
-        const hipY = 30 + p * 15;
-        const barY = 30 + p * 105;
-        const posteriorContraction = 1 - p * 0.3;
-
-        drawLimb(hipX, hipY, 15, 95, 22, 16, true, posteriorContraction);
-        drawLimb(15, 95, 15, 150, 18, 14);
-
-        drawMuscleGlow(hipX - 5, hipY + 15, 22, 28, 0.3 + posteriorContraction * 0.7, muscleGlowColor);
-
-        ctx.save();
-        ctx.translate(hipX, hipY);
-        ctx.rotate(-hingeAngle);
-
-        drawLimb(0, 0, 0, -85, 24, 20, true, posteriorContraction * 0.8);
-        drawHead(0, -110, 18, 0);
-        ctx.restore();
-
-        drawLimb(hipX + Math.sin(hingeAngle) * 70, hipY - Math.cos(hingeAngle) * 70, 20, barY, 14, 10);
-        drawBarbell(20, barY, 170);
-
-    } else if (pattern === 'overhead_press' || pattern === 'lateral_raise') {
-        const isLateral = pattern === 'lateral_raise';
-        ctx.translate(w / 2, h / 2 - 15);
-
-        ctx.strokeStyle = '#272738';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(-140, 150);
-        ctx.lineTo(140, 150);
-        ctx.stroke();
-
-        drawLimb(-15, 50, -20, 150, 20, 14);
-        drawLimb(15, 50, 20, 150, 20, 14);
-
-        drawLimb(0, 50, 0, -50, 24, 20);
-        drawHead(0, -75, 18, 0);
-
-        const deltoidContraction = p;
-
-        drawMuscleGlow(-26, -45, 16, 16, 0.4 + deltoidContraction * 0.6, muscleGlowColor);
-        drawMuscleGlow(26, -45, 16, 16, 0.4 + deltoidContraction * 0.6, muscleGlowColor);
-
-        if (isLateral) {
-            const armAngle = (1 - p) * 1.35;
-            const leftHandX = -20 - Math.sin(armAngle) * 75;
-            const leftHandY = -45 + Math.cos(armAngle) * 75;
-            const rightHandX = 20 + Math.sin(armAngle) * 75;
-            const rightHandY = -45 + Math.cos(armAngle) * 75;
-
-            drawLimb(-20, -45, leftHandX, leftHandY, 14, 10, true, deltoidContraction);
-            drawLimb(20, -45, rightHandX, rightHandY, 14, 10, true, deltoidContraction);
-
-            drawDumbbell(leftHandX, leftHandY, -0.2);
-            drawDumbbell(rightHandX, rightHandY, 0.2);
-        } else {
-            const barY = -45 - p * 75;
-            const elbowX = 35 - p * 15;
-            const elbowY = -25 - p * 30;
-
-            drawLimb(20, -45, elbowX, elbowY, 14, 12, true, deltoidContraction);
-            drawLimb(elbowX, elbowY, 20, barY, 12, 10);
-
-            drawLimb(-20, -45, -elbowX, elbowY, 14, 12, true, deltoidContraction);
-            drawLimb(-elbowX, elbowY, -20, barY, 12, 10);
-
-            drawBarbell(0, barY, 170);
-        }
-
-    } else if (pattern === 'core') {
-        ctx.translate(w / 2 - 20, h / 2 + 30);
-
-        ctx.fillStyle = '#1c1c28';
-        ctx.fillRect(-170, 60, 320, 8);
-
-        const coreContraction = 1 - p * 0.5;
-        const wheelX = 30 + p * 80;
-
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(-120, 50, 40, 10);
-
-        drawLimb(-110, 50, -150, 50, 16, 12);
-        drawLimb(-100, 50, -70 + p * 40, 35 - p * 15, 20, 16);
-
-        const hipX = -70 + p * 40;
-        const hipY = 35 - p * 15;
-        const shoulderX = hipX + 70;
-        const shoulderY = hipY - (1 - p) * 20;
-
-        drawMuscleGlow(hipX + 35, hipY - 5, 28, 16, 0.4 + coreContraction * 0.6, muscleGlowColor);
-
-        drawLimb(hipX, hipY, shoulderX, shoulderY, 22, 18, true, coreContraction);
-        drawHead(shoulderX + 15, shoulderY - 12, 16, 0.3);
-
-        drawLimb(shoulderX, shoulderY, wheelX, 48, 14, 10);
-
-        ctx.fillStyle = '#DC2626';
-        ctx.beginPath();
-        ctx.arc(wheelX, 48, 14, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-    } else if (pattern === 'sprint') {
-        ctx.translate(w / 2, h / 2 - 10);
-
-        ctx.strokeStyle = '#EF4444';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(-160, 140);
-        ctx.lineTo(160, 140);
-        ctx.stroke();
-
-        drawHead(10, -80, 18, 0.2);
-        drawLimb(0, 40, 10, -55, 24, 20, true, 0.8);
-        drawMuscleGlow(5, -10, 22, 35, 0.7, muscleGlowColor);
-    }
-
-    ctx.restore();
-}
-
-/**
- * Exercise Demo Modal (Leap Fitness Animated Mannequin + Open-Source Biomechanical Phases)
+ * Exercise Demo Modal (Leap Fitness Style 2D Animated Mannequin + Open-Source Biomechanical Guides)
  */
 const ExerciseDemoModal = ({
     isOpen = false,
@@ -1182,7 +1299,7 @@ const ExerciseDemoModal = ({
             onClick={onClose}
         >
             <div 
-                className="relative w-full max-w-4xl max-h-[88vh] bg-[#0f0f17] border border-[#272738] rounded-2xl sm:rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.95)] flex flex-col text-white overflow-hidden"
+                className="relative w-full max-w-4xl max-h-[88vh] bg-[#0f0f17] border border-[#262638] rounded-2xl sm:rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.95)] flex flex-col text-white overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header Bar */}
@@ -1224,7 +1341,7 @@ const ExerciseDemoModal = ({
                             <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-2 px-2.5 py-1 rounded-xl bg-black/65 backdrop-blur-md border border-[#303044] text-[10px] font-bold">
                                 <span className="w-2 h-2 rounded-full bg-[#FF1E28] animate-ping"></span>
                                 <span className="text-zinc-300">Active Focus:</span>
-                                <span className="text-[#FF1E28] font-extrabold">{metadata.primaryMuscles[0].split('(')[0]}</span>
+                                <span className="text-[#FF1E28] font-extrabold">{metadata.primaryMuscles[0]}</span>
                             </div>
 
                             {/* Canvas */}
@@ -1268,7 +1385,7 @@ const ExerciseDemoModal = ({
                                             ? 'bg-red-950/40 border-red-500/40 text-[#FF1E28]' 
                                             : 'bg-cyan-950/40 border-cyan-500/40 text-cyan-400'
                                     }`}>
-                                        {phaseData.isConcentric ? 'CONCENTRIC' : 'ECCENTRIC'}
+                                        {phaseData.isConcentric ? 'CONCENTRIC (Push)' : 'ECCENTRIC (Lower)'}
                                     </span>
 
                                     {/* Tempo Speeds */}
@@ -1316,11 +1433,11 @@ const ExerciseDemoModal = ({
                                         }`}
                                     >
                                         <i className={`bi ${phaseData.isConcentric ? 'bi-arrow-up-circle-fill text-[#FF1E28]' : 'bi-arrow-down-circle-fill text-cyan-400'} text-base`}></i>
-                                        <span className="text-[9px] font-black text-white mt-0.5 tracking-tight">
+                                        <span className="text-[9px] font-black text-white mt-0.5 tracking-tight whitespace-nowrap">
                                             {phaseData.breathState}
                                         </span>
                                     </div>
-                                    <p className="text-[11px] text-zinc-300 font-medium leading-snug">
+                                    <p className="text-[11px] text-zinc-300 font-medium leading-relaxed">
                                         {metadata.breathing}
                                     </p>
                                 </div>
