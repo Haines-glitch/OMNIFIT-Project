@@ -13,6 +13,7 @@ import ReportModule from '../components/Modules/ReportModule';
 import FeedbackModule from '../components/Modules/FeedbackModule';
 import WorkoutProofModal from '../components/Workouts/WorkoutProofModal';
 import WorkoutProofViewerModal from '../components/Workouts/WorkoutProofViewerModal';
+import ExerciseDemoModal from '../components/Workouts/ExerciseDemoModal';
 import { getMemberDashboardData, toggleExerciseStatus as apiToggleExerciseStatus, uploadExerciseVideoProof } from '../services/dashboardService';
 import LoginService from '../components/Login/LoginService';
 import { DEFAULT_AVATAR } from '../utils/defaultAvatar';
@@ -32,6 +33,16 @@ const MemberDashboard = () => {
     const [isViewerModalOpen, setIsViewerModalOpen] = useState(false);
     const [isUploadingProof, setIsUploadingProof] = useState(false);
     const [proofSuccessMsg, setProofSuccessMsg] = useState(null);
+
+    // Leap Fitness Style 2D Animated Demo Modal State
+    const [activeDemoExercise, setActiveDemoExercise] = useState(null);
+    const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
+    const handleOpenDemoModal = (exercise) => {
+        if (!exercise) return;
+        setActiveDemoExercise(exercise);
+        setIsDemoModalOpen(true);
+    };
 
     const [notifications, setNotifications] = useState([
         {
@@ -335,7 +346,7 @@ const MemberDashboard = () => {
 
                                     {/* Main Title & Iron District Subtext */}
                                     <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                                        Good morning, {memberInfo.name.split(' ')[0]} 👋
+                                        Good morning, {memberInfo.name.split(' ')[0]}
                                     </h1>
                                     <p className="text-xs text-zinc-300 font-medium leading-relaxed">
                                         <span className="text-white font-extrabold uppercase tracking-wide">Discipline Today. Dominate Tomorrow.</span> • Personalized progressive overload & macro matrix synchronized.
@@ -807,6 +818,16 @@ const MemberDashboard = () => {
                                                                 </td>
                                                                 <td className="py-2.5 px-3 text-right">
                                                                     <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleOpenDemoModal(row)}
+                                                                            className="px-2.5 py-1 rounded-xl bg-[#181820] hover:bg-[#222230] border border-[#2a2a3e] text-zinc-300 hover:text-white text-xs font-bold flex items-center gap-1 cursor-pointer transition-all shadow-sm"
+                                                                            title="Watch 2D animated mannequin exercise demo"
+                                                                        >
+                                                                            <i className="bi bi-play-circle text-[#FF1E28] text-xs"></i>
+                                                                            <span>Demo</span>
+                                                                        </button>
+
                                                                         {hasVideo && (
                                                                             <button
                                                                                 type="button"
@@ -994,6 +1015,13 @@ const MemberDashboard = () => {
                 exercise={activeViewerExercise?.exercise}
                 athleteName={activeViewerExercise?.athleteName || 'Athlete'}
                 isTrainer={false}
+            />
+
+            {/* Leap Fitness Style 2D Animated Faceless Man Exercise Demo Modal */}
+            <ExerciseDemoModal
+                isOpen={isDemoModalOpen}
+                onClose={() => setIsDemoModalOpen(false)}
+                exercise={activeDemoExercise}
             />
         </div>
     );

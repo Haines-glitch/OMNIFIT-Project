@@ -11,6 +11,8 @@ import {
 import LoginService from '../Login/LoginService';
 import WorkoutProofModal from '../Workouts/WorkoutProofModal';
 import WorkoutProofViewerModal from '../Workouts/WorkoutProofViewerModal';
+import ExerciseDemoModal from '../Workouts/ExerciseDemoModal';
+import CreateBlueprintModal from '../Workouts/CreateBlueprintModal';
 import { PREBUILT_ROUTINES, PREBUILT_CATEGORIES } from '../../data/routineBlueprints';
 
 const WorkoutModule = ({ 
@@ -32,11 +34,44 @@ const WorkoutModule = ({
     // Active sub-tab for trainers: 'prescribe' vs 'review_proofs'
     const [trainerTab, setTrainerTab] = useState('prescribe');
 
-    // Pre-built routine HUD states
+    // Pre-built & Custom routine blueprints library (persisted across sessions)
+    const [blueprints, setBlueprints] = useState(() => {
+        try {
+            const saved = localStorage.getItem('omnifit_routine_blueprints');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch (e) {
+            console.warn('Failed to parse saved blueprints:', e);
+        }
+        return PREBUILT_ROUTINES;
+    });
+
+    const saveBlueprints = (updated) => {
+        setBlueprints(updated);
+        try {
+            localStorage.setItem('omnifit_routine_blueprints', JSON.stringify(updated));
+        } catch (e) {
+            console.warn('Failed to persist blueprints:', e);
+        }
+    };
+
     const [selectedBlueprintCategory, setSelectedBlueprintCategory] = useState('All Blueprints');
     const [selectedPresetId, setSelectedPresetId] = useState('chest-triceps');
     const [showLibraryPicker, setShowLibraryPicker] = useState(false);
     const [catalogSearch, setCatalogSearch] = useState('');
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+    // Leap Fitness Style 2D Animated Demo Modal State
+    const [activeDemoExercise, setActiveDemoExercise] = useState(null);
+    const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
+    const handleOpenDemoModal = (exercise) => {
+        if (!exercise) return;
+        setActiveDemoExercise(exercise);
+        setIsDemoModalOpen(true);
+    };
 
     // Member assigned workout state
     const [memberRoutine, setMemberRoutine] = useState(activeRoutine || null);
@@ -60,7 +95,7 @@ const WorkoutModule = ({
     // Assigned athletes list for trainers
     const [assignedAthletes, setAssignedAthletes] = useState([]);
     const [selectedAthleteEmail, setSelectedAthleteEmail] = useState(initialMemberEmail || '');
-    const [routineTitle, setRoutineTitle] = useState('🔥 Chest & Triceps Hypertrophy');
+    const [routineTitle, setRoutineTitle] = useState('Chest & Triceps Hypertrophy');
     const [routineDifficulty, setRoutineDifficulty] = useState('Intermediate');
 
     // Exercise items to prescribe - default to Chest & Triceps blueprint
@@ -305,9 +340,50 @@ const WorkoutModule = ({
         setPrescribeExercises(cloned);
         setFormFeedback({
             type: 'success',
-            message: `✓ Blueprint "${blueprint.title}" loaded with ${cloned.length} coupled exercises! You can freely edit any exercise, modify loads/reps, or add/delete movements below before assigning.`
+            message: `Blueprint "${blueprint.title}" loaded with ${cloned.length} coupled exercises! You can freely edit any exercise, modify loads/reps, or add/delete movements below before assigning.`
         });
         setTimeout(() => setFormFeedback(null), 6000);
+    };
+
+    const handleSaveNewBlueprint = (newBlueprint) => {
+        const updated = [newBlueprint, ...blueprints];
+        saveBlueprints(updated);
+        setSelectedPresetId(newBlueprint.id);
+        setFormFeedback({
+            type: 'success',
+            message: `Routine blueprint "${newBlueprint.title}" successfully created and saved to library!`
+        });
+        setTimeout(() => setFormFeedback(null), 5000);
+    };
+
+    const handleDeleteBlueprint = (blueprintId, e) => {
+        if (e) e.stopPropagation();
+        const bp = blueprints.find(b => b.id === blueprintId);
+        if (!bp) return;
+        const confirmDelete = window.confirm(`Are you sure you want to delete routine blueprint "${bp.title}"?`);
+        if (!confirmDelete) return;
+
+        const updated = blueprints.filter(b => b.id !== blueprintId);
+        saveBlueprints(updated);
+        if (selectedPresetId === blueprintId) {
+            setSelectedPresetId(null);
+        }
+        setFormFeedback({
+            type: 'warning',
+            message: `Routine blueprint "${bp.title}" removed from library.`
+        });
+        setTimeout(() => setFormFeedback(null), 4000);
+    };
+
+    const handleResetToFactoryBlueprints = () => {
+        const confirmReset = window.confirm('Reset all routine blueprints back to default factory templates?');
+        if (!confirmReset) return;
+        saveBlueprints(PREBUILT_ROUTINES);
+        setFormFeedback({
+            type: 'success',
+            message: 'All routine blueprints restored to default factory templates!'
+        });
+        setTimeout(() => setFormFeedback(null), 4000);
     };
 
     const insertMovementFromCatalog = (movement) => {
@@ -433,7 +509,7 @@ const WorkoutModule = ({
     });
 
     const blueprintQuery = (searchQuery || '').toLowerCase().trim();
-    const filteredBlueprints = PREBUILT_ROUTINES.filter(bp => {
+    const filteredBlueprints = blueprints.filter(bp => {
         const matchesCat = selectedBlueprintCategory === 'All Blueprints' || bp.category === selectedBlueprintCategory;
         const matchesQuery = !blueprintQuery ||
             bp.title.toLowerCase().includes(blueprintQuery) ||
@@ -721,6 +797,16 @@ const WorkoutModule = ({
                                                     </div>
 
                                                     <div className="flex items-center gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleOpenDemoModal(ex)}
+                                                            className="px-2.5 py-1.5 rounded-lg bg-[#181820] hover:bg-[#222230] border border-[#2a2a3e] text-zinc-300 hover:text-white text-xs font-bold flex items-center gap-1 cursor-pointer transition-all shadow-sm"
+                                                            title="Watch 2D animated mannequin exercise demo"
+                                                        >
+                                                            <i className="bi bi-play-circle text-[#FF1E28] text-xs"></i>
+                                                            <span>Demo</span>
+                                                        </button>
+
                                                         {ex.video_proof_url && (
                                                             <button
                                                                 type="button"
@@ -1068,33 +1154,54 @@ const WorkoutModule = ({
                                 </div>
                                 <div>
                                     <h5 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                                        ⚡ PRE-BUILT ROUTINE BLUEPRINTS HUD
+                                        PRE-BUILT ROUTINE BLUEPRINTS HUD
                                         <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-600/20 text-[#FF1E28] border border-red-500/40">
                                             1-Click Load & Edit
                                         </span>
                                     </h5>
                                     <p className="text-xs text-zinc-400 font-medium">
-                                        Select any routine to automatically populate all coupled exercises into the builder. You can freely edit any field before assigning.
+                                        Select any routine to populate all coupled exercises into builder, or create your own custom routine blueprints.
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Blueprint Category Filter Pills */}
-                            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-                                {PREBUILT_CATEGORIES.map(cat => (
-                                    <button
-                                        key={cat}
-                                        type="button"
-                                        onClick={() => setSelectedBlueprintCategory(cat)}
-                                        className={`px-3 py-1 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                                            selectedBlueprintCategory === cat
-                                                ? 'bg-[#E50914] text-white shadow-[0_0_10px_rgba(229,9,20,0.4)]'
-                                                : 'bg-[#181824] text-zinc-400 hover:text-white border border-[#2a2a3c]'
-                                        }`}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
+                            {/* Blueprint Actions: Create New Blueprint & Category Pills */}
+                            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCreateModalOpen(true)}
+                                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#E50914] to-[#B80710] hover:from-[#FF1E28] hover:to-[#E50914] text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_0_12px_rgba(229,9,20,0.35)] shrink-0"
+                                >
+                                    <i className="bi bi-plus-circle-fill text-xs"></i>
+                                    <span>Create Routine Blueprint</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleResetToFactoryBlueprints}
+                                    className="p-1.5 rounded-xl bg-[#181824] hover:bg-[#222232] text-zinc-400 hover:text-white border border-[#2a2a3c] text-xs transition-all cursor-pointer shrink-0"
+                                    title="Reset blueprints back to factory standard"
+                                >
+                                    <i className="bi bi-arrow-counterclockwise"></i>
+                                </button>
+
+                                {/* Blueprint Category Filter Pills */}
+                                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                                    {PREBUILT_CATEGORIES.map(cat => (
+                                        <button
+                                            key={cat}
+                                            type="button"
+                                            onClick={() => setSelectedBlueprintCategory(cat)}
+                                            className={`px-3 py-1 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                                                selectedBlueprintCategory === cat
+                                                    ? 'bg-[#E50914] text-white shadow-[0_0_10px_rgba(229,9,20,0.4)]'
+                                                    : 'bg-[#181824] text-zinc-400 hover:text-white border border-[#2a2a3c]'
+                                            }`}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -1114,9 +1221,18 @@ const WorkoutModule = ({
                                     >
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between gap-2">
-                                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-600/15 text-[#FF1E28] border border-red-500/30">
-                                                    {bp.category}
-                                                </span>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-600/15 text-[#FF1E28] border border-red-500/30 flex items-center gap-1">
+                                                        <i className={`bi ${bp.icon || 'bi-fire'} text-[10px]`}></i>
+                                                        <span>{bp.category}</span>
+                                                    </span>
+                                                    {bp.isCustom && (
+                                                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                                                            Trainer Custom
+                                                        </span>
+                                                    )}
+                                                </div>
+
                                                 <div className="flex items-center gap-1.5">
                                                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#1d1d2b] text-zinc-300 border border-[#2a2a3e]">
                                                         {bp.difficulty}
@@ -1126,6 +1242,15 @@ const WorkoutModule = ({
                                                             <i className="bi bi-check-circle-fill"></i> Loaded
                                                         </span>
                                                     )}
+                                                    {/* Delete Blueprint Button */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => handleDeleteBlueprint(bp.id, e)}
+                                                        className="w-6 h-6 rounded-lg bg-[#20181d] hover:bg-rose-950 text-zinc-400 hover:text-rose-400 border border-[#2f2229] hover:border-rose-500/50 flex items-center justify-center transition-all cursor-pointer"
+                                                        title={`Delete routine blueprint "${bp.title}"`}
+                                                    >
+                                                        <i className="bi bi-trash3 text-[10px]"></i>
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -1161,21 +1286,38 @@ const WorkoutModule = ({
                                                 <i className="bi bi-clock me-1 text-zinc-500"></i>{bp.estimatedDuration} • <i className="bi bi-fire text-amber-400 me-0.5"></i>{bp.calorieBurn}
                                             </span>
 
-                                            <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    loadBlueprint(bp);
-                                                }}
-                                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
-                                                    isLoaded
-                                                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                                                        : 'bg-[#1f1f2e] group-hover:bg-[#E50914] text-zinc-300 group-hover:text-white border border-[#2e2e42] group-hover:border-[#E50914]'
-                                                }`}
-                                            >
-                                                <i className={`bi ${isLoaded ? 'bi-check-lg' : 'bi-lightning-charge-fill text-[#FF1E28] group-hover:text-white'}`}></i>
-                                                <span>{isLoaded ? 'Loaded into Form' : 'Load Blueprint'}</span>
-                                            </button>
+                                            <div className="flex items-center gap-1.5">
+                                                {bp.exercises.length > 0 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleOpenDemoModal(bp.exercises[0]);
+                                                        }}
+                                                        className="px-2 py-1.5 rounded-xl bg-[#1d1d2c] hover:bg-[#28283c] text-zinc-300 hover:text-white border border-[#2e2e42] text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                                                        title="Watch 2D animated demo"
+                                                    >
+                                                        <i className="bi bi-play-circle text-[#FF1E28] text-xs"></i>
+                                                        <span>Demo</span>
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        loadBlueprint(bp);
+                                                    }}
+                                                    className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                                                        isLoaded
+                                                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                                            : 'bg-[#1f1f2e] group-hover:bg-[#E50914] text-zinc-300 group-hover:text-white border border-[#2e2e42] group-hover:border-[#E50914]'
+                                                    }`}
+                                                >
+                                                    <i className={`bi ${isLoaded ? 'bi-check-lg' : 'bi-lightning-charge-fill text-[#FF1E28] group-hover:text-white'}`}></i>
+                                                    <span>{isLoaded ? 'Loaded into Form' : 'Load Blueprint'}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 );
@@ -1316,7 +1458,7 @@ const WorkoutModule = ({
                                     </span>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
                                     <button
                                         type="button"
                                         onClick={addExerciseRow}
@@ -1332,6 +1474,15 @@ const WorkoutModule = ({
                                     >
                                         <i className="bi bi-collection text-blue-400"></i>
                                         <span>From Library</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsCreateModalOpen(true)}
+                                        className="px-3 py-1.5 rounded-xl bg-[#1e1e2d] hover:bg-[#26263a] border border-[#2e2e42] text-zinc-200 hover:text-white font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                                        title="Save current routine build as reusable blueprint template"
+                                    >
+                                        <i className="bi bi-bookmark-plus text-xs text-[#FF1E28]"></i>
+                                        <span>Save as Blueprint</span>
                                     </button>
                                     <button
                                         type="button"
@@ -1427,8 +1578,16 @@ const WorkoutModule = ({
                                             />
                                         </div>
 
-                                        {/* Row Action Buttons: Duplicate & Delete */}
+                                        {/* Row Action Buttons: Demo, Duplicate & Delete */}
                                         <div className="md:col-span-2 flex items-center justify-end gap-1.5 pt-3 md:pt-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleOpenDemoModal(ex)}
+                                                className="w-8 h-8 rounded-lg bg-[#181824] hover:bg-[#222232] text-zinc-400 hover:text-[#FF1E28] flex items-center justify-center transition-all cursor-pointer border border-[#28283a]"
+                                                title="View 2D animated demo"
+                                            >
+                                                <i className="bi bi-play-circle text-xs"></i>
+                                            </button>
                                             <button
                                                 type="button"
                                                 onClick={() => duplicateExerciseRow(ex.id)}
@@ -1555,20 +1714,32 @@ const WorkoutModule = ({
                                         <span><i className="bi bi-fire text-amber-400 me-1"></i>{w.calories} kcal</span>
                                     </div>
 
-                                    {isTrainerOrAdmin ? (
-                                        <button 
+                                    <div className="flex items-center gap-2">
+                                        <button
                                             type="button"
-                                            onClick={() => insertMovementFromCatalog(w)}
-                                            className="w-full py-2 rounded-xl bg-[#181820] hover:bg-[#E50914] border border-[#2c2c3d] hover:border-[#E50914] text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            onClick={() => handleOpenDemoModal(w)}
+                                            className="px-3 py-2 rounded-xl bg-[#181820] hover:bg-[#222230] border border-[#2c2c3d] text-zinc-300 hover:text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                                            title="View 2D animated demo"
                                         >
-                                            <i className="bi bi-plus-circle text-xs"></i>
-                                            <span>Add to Routine Builder</span>
+                                            <i className="bi bi-play-circle text-[#FF1E28] text-xs"></i>
+                                            <span>Demo</span>
                                         </button>
-                                    ) : (
-                                        <button className="w-full py-2 rounded-xl bg-[#181820] hover:bg-[#20202d] border border-[#2c2c3d] hover:border-[#E50914]/50 text-white font-bold text-xs transition-all cursor-pointer">
-                                            Start Supplementary Set
-                                        </button>
-                                    )}
+
+                                        {isTrainerOrAdmin ? (
+                                            <button 
+                                                type="button"
+                                                onClick={() => insertMovementFromCatalog(w)}
+                                                className="flex-1 py-2 rounded-xl bg-[#181820] hover:bg-[#E50914] border border-[#2c2c3d] hover:border-[#E50914] text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                            >
+                                                <i className="bi bi-plus-circle text-xs"></i>
+                                                <span>Add to Builder</span>
+                                            </button>
+                                        ) : (
+                                            <button className="flex-1 py-2 rounded-xl bg-[#181820] hover:bg-[#20202d] border border-[#2c2c3d] hover:border-[#E50914]/50 text-white font-bold text-xs transition-all cursor-pointer">
+                                                Start Set
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -1596,6 +1767,21 @@ const WorkoutModule = ({
                     setProofSuccessMsg(`Biomechanical coaching feedback "${cue}" sent to athlete!`);
                     setTimeout(() => setProofSuccessMsg(null), 5000);
                 }}
+            />
+
+            {/* Leap Fitness Style 2D Animated Faceless Man Exercise Demo Modal */}
+            <ExerciseDemoModal
+                isOpen={isDemoModalOpen}
+                onClose={() => setIsDemoModalOpen(false)}
+                exercise={activeDemoExercise}
+            />
+
+            {/* Create Routine Blueprint Modal */}
+            <CreateBlueprintModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSave={handleSaveNewBlueprint}
+                initialExercises={prescribeExercises}
             />
         </div>
     );

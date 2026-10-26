@@ -2,7 +2,7 @@ export const PREBUILT_ROUTINES = [
     {
         id: 'chest-triceps',
         category: 'Chest Day',
-        title: '🔥 Chest & Triceps Hypertrophy',
+        title: 'Chest & Triceps Hypertrophy',
         shortTitle: 'Chest & Triceps',
         badge: 'Push Protocol',
         difficulty: 'Intermediate',
@@ -23,7 +23,7 @@ export const PREBUILT_ROUTINES = [
     {
         id: 'back-biceps',
         category: 'Back Day',
-        title: '⚡ Back & Biceps Overload',
+        title: 'Back & Biceps Overload',
         shortTitle: 'Back & Biceps',
         badge: 'Pull Protocol',
         difficulty: 'Intermediate',
@@ -44,7 +44,7 @@ export const PREBUILT_ROUTINES = [
     {
         id: 'legs-power',
         category: 'Leg Day',
-        title: '🦵 Quads, Hamstrings & Calves Power',
+        title: 'Quads, Hamstrings & Calves Power',
         shortTitle: 'Leg Day Power',
         badge: 'Lower Body',
         difficulty: 'Advanced',
@@ -65,7 +65,7 @@ export const PREBUILT_ROUTINES = [
     {
         id: 'shoulders-traps',
         category: 'Shoulder Day',
-        title: '🛡 Shoulders & Traps Boulder Builder',
+        title: 'Shoulders & Traps Boulder Builder',
         shortTitle: 'Shoulders & Traps',
         badge: 'Deltoid Focus',
         difficulty: 'Intermediate',
@@ -86,7 +86,7 @@ export const PREBUILT_ROUTINES = [
     {
         id: 'fullbody-athletic',
         category: 'Full Body',
-        title: '💥 Athletic Conditioning & Power Endurance',
+        title: 'Athletic Conditioning & Power Endurance',
         shortTitle: 'Full Body Athletic',
         badge: 'Conditioning',
         difficulty: 'Advanced',
@@ -107,7 +107,7 @@ export const PREBUILT_ROUTINES = [
     {
         id: 'hiit-metcon',
         category: 'HIIT',
-        title: '⏱ High-Intensity MetCon & VO2 Max Burn',
+        title: 'High-Intensity MetCon & VO2 Max Burn',
         shortTitle: 'HIIT Shred',
         badge: 'Aerobic & Anaerobic',
         difficulty: 'Intermediate',
@@ -128,7 +128,7 @@ export const PREBUILT_ROUTINES = [
     {
         id: 'core-mobility',
         category: 'Core',
-        title: '🧘 Core Fortification & Spinal Mobility',
+        title: 'Core Fortification & Spinal Mobility',
         shortTitle: 'Core & Mobility',
         badge: 'Postural Reset',
         difficulty: 'Beginner',
