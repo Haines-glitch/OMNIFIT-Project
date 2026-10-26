@@ -59,7 +59,7 @@ const savePendingMember = (memberData) => {
             status: 'Pending Approval',
             join_date: new Date().toISOString().split('T')[0],
             created_at: new Date().toLocaleString(),
-            assigned_trainer: memberData.assigned_trainer || 'Marcus Vance'
+            assigned_trainer: memberData.assigned_trainer || 'Unassigned'
         };
         if (existingIdx >= 0) {
             list[existingIdx] = { ...list[existingIdx], ...entry };
@@ -203,7 +203,7 @@ export const LoginService = {
             if (!detectedRole) {
                 if (userEmail.includes('admin')) {
                     detectedRole = 'admin';
-                } else if (userEmail.includes('trainer') || userEmail.includes('vikram') || userEmail.includes('rathore') || userEmail.includes('marcus')) {
+                } else if (userEmail.includes('trainer') || userEmail.includes('anandhu')) {
                     detectedRole = 'trainer';
                 } else {
                     detectedRole = 'member';
@@ -228,8 +228,8 @@ export const LoginService = {
             if (!displayName) {
                 if (credentials.email === 'member@omnifit.com') {
                     displayName = 'Alex Mercer';
-                } else if (credentials.email === 'trainer@omnifit.com') {
-                    displayName = 'Marcus Vance';
+                } else if (credentials.email === 'anandhu@omnifit.com' || credentials.email === 'trainer@omnifit.com') {
+                    displayName = 'Anandhu pradeep';
                 } else if (credentials.email === 'admin@omnifit.com') {
                     displayName = 'Sarah Jenkins';
                 } else if (credentials.email) {
@@ -237,7 +237,7 @@ export const LoginService = {
                     const parts = raw.replace(/[\._-]/g, ' ').trim().split(/\s+/);
                     displayName = parts.map(p => p.length <= 2 ? p.toUpperCase() : (p.charAt(0).toUpperCase() + p.slice(1))).join(' ');
                 } else {
-                    displayName = role === 'trainer' ? 'Marcus Vance' : (role === 'admin' ? 'Sarah Jenkins' : 'Alex Mercer');
+                    displayName = role === 'trainer' ? 'Anandhu pradeep' : (role === 'admin' ? 'Sarah Jenkins' : 'Alex Mercer');
                 }
             }
 
@@ -289,7 +289,7 @@ export const LoginService = {
         if (!role) {
             if (email.includes('admin')) {
                 role = 'admin';
-            } else if (email.includes('trainer') || email.includes('vikram') || email.includes('marcus')) {
+            } else if (email.includes('trainer') || email.includes('anandhu')) {
                 role = 'trainer';
             } else {
                 role = 'member';
@@ -507,7 +507,7 @@ export const LoginService = {
     /**
      * Trainer approves athlete account
      */
-    async approveMember(memberData, trainerName = 'Marcus Vance') {
+    async approveMember(memberData, trainerName = 'Anandhu pradeep') {
         const email = (typeof memberData === 'string' ? memberData : memberData.email || '').toLowerCase().trim();
         const userId = typeof memberData === 'object' ? (memberData.user_id || memberData.id) : null;
         const name = typeof memberData === 'object' ? (memberData.name || memberData.full_name || email.split('@')[0]) : email.split('@')[0];
@@ -516,7 +516,7 @@ export const LoginService = {
         let serverSuccess = false;
         let responseMsg = '';
         try {
-            const res = await api.post('/trainers/approve-member/', {
+            const res = await api.post('trainers/approve-member/', {
                 email: email,
                 user_id: userId,
                 trainer_name: trainerName

@@ -70,7 +70,7 @@ class LoginView(TokenObtainPairView):
         user_in_db = User.objects.filter(email__iexact=raw_email).first()
         if user_in_db and user_in_db.status in ['Pending', 'Pending Approval']:
             import os
-            auto_approve = os.environ.get('AUTO_APPROVE_MEMBERS', 'True').lower() in ('true', '1')
+            auto_approve = os.environ.get('AUTO_APPROVE_MEMBERS', 'False').lower() in ('true', '1')
             if auto_approve:
                 user_in_db.status = 'Active'
                 user_in_db.is_active = True
@@ -172,7 +172,7 @@ class RegisterView(generics.CreateAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         import os
-        auto_approve = os.environ.get('AUTO_APPROVE_MEMBERS', 'True').lower() in ('true', '1')
+        auto_approve = os.environ.get('AUTO_APPROVE_MEMBERS', 'False').lower() in ('true', '1')
 
         user = serializer.save()
         user.role = 'member'
@@ -185,9 +185,13 @@ class RegisterView(generics.CreateAPIView):
         member.status = 'Active' if auto_approve else 'Pending'
         member.is_active = True
 
-        default_trainer = User.objects.filter(role='trainer').first()
-        if default_trainer:
-            member.assigned_trainer = default_trainer
+        # When auto-approval is disabled, athlete starts UNASSIGNED until trainer reviews and approves them
+        if auto_approve:
+            default_trainer = User.objects.filter(role='trainer').first()
+            if default_trainer:
+                member.assigned_trainer = default_trainer
+        else:
+            member.assigned_trainer = None
 
         # Safely parse date_of_birth (avoid invalid date string crash)
         raw_dob = request.data.get('date_of_birth')
@@ -247,17 +251,31 @@ class RegisterView(generics.CreateAPIView):
         # Send Welcome email asynchronously (non-blocking)
         try:
             athlete_name = user.full_name or user.email.split('@')[0]
-            send_async_email(
-                subject="Welcome to OMNIFIT Ecosystem!",
-                message=(
+            if auto_approve:
+                email_sub = "Welcome to OMNIFIT Ecosystem!"
+                email_body = (
                     f"Hello {athlete_name},\n\n"
                     f"Welcome to the OMNIFIT High-Performance Health Club Ecosystem!\n\n"
                     f"Your athlete account is ACTIVE. You can now log into your Athlete Command Center:\n"
-                    f"https://omnifit-nine.vercel.app/login\n\n"
+                    f"https://omnifit.hainesjosepaulson.dev/login\n\n"
                     f"Account Email: {user.email}\n\n"
                     f"Best regards,\n"
                     f"The OMNIFIT Coaching Team"
-                ),
+                )
+            else:
+                email_sub = "Welcome to OMNIFIT — Registration Received"
+                email_body = (
+                    f"Hello {athlete_name},\n\n"
+                    f"Welcome to the OMNIFIT High-Performance Health Club Ecosystem!\n\n"
+                    f"Your registration has been received and is currently AWAITING TRAINER APPROVAL.\n"
+                    f"Once our certified trainer verifies and approves your account, you will receive an approval confirmation email and full access will be unlocked.\n\n"
+                    f"Account Email: {user.email}\n\n"
+                    f"Best regards,\n"
+                    f"The OMNIFIT Coaching Staff"
+                )
+            send_async_email(
+                subject=email_sub,
+                message=email_body,
                 recipient_list=[user.email]
             )
         except Exception as e:
@@ -271,18 +289,20 @@ class RegisterView(generics.CreateAPIView):
             message=f"Welcome {user.full_name or user.email}! Your athlete account is active and ready for training." if auto_approve else f"Welcome {user.full_name or user.email}! Your registration has been received and is awaiting review by your trainer."
         )
 
-        # Create notification for assigned trainer
-        if default_trainer:
+        # Create notification for trainer(s)
+        trainers = User.objects.filter(role='trainer')
+        for t in trainers:
             Notification.objects.create(
-                user=default_trainer,
+                user=t,
                 notification_type="Member Registration",
-                title=f"New Athlete: {user.full_name or user.email}",
-                message=f"Athlete {user.full_name or user.email} has registered with OMNIFIT."
+                title=f"New Athlete Awaiting Approval: {user.full_name or user.email}",
+                message=f"Athlete {user.full_name or user.email} has registered and is awaiting your review and approval."
             )
 
         return Response({
             "message": "Member registration successful. You can now log in!" if auto_approve else "Member registration successful. Awaiting trainer approval.",
             "status": "ACTIVE" if auto_approve else "PENDING_APPROVAL",
+            "is_pending_approval": not auto_approve,
             "success": True,
             "user": {
                 "id": user.id,
@@ -965,7 +985,7 @@ class AdminDashboardView(APIView):
         for u in member_users:
             if not hasattr(u, 'member_profile'):
                 try:
-                    Member.objects.create(user=u, status='Active', is_active=True)
+                    Member.objects.create(user=u, status=u.status or 'Pending', is_active=True)
                 except Exception:
                     pass
 

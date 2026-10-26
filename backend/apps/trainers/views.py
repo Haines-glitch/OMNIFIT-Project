@@ -242,7 +242,7 @@ class PendingMembersView(APIView):
 
         serialized = []
         for m in pending_members:
-            trainer_name = m.assigned_trainer.full_name if m.assigned_trainer else 'Marcus Vance'
+            trainer_name = m.assigned_trainer.full_name if m.assigned_trainer else 'Unassigned'
             serialized.append({
                 'id': m.id,
                 'user_id': m.user.id,
@@ -276,7 +276,7 @@ class ApproveMemberView(APIView):
         user_id = request.data.get('user_id')
         member_id = request.data.get('member_id')
         email = request.data.get('email')
-        trainer_name = request.data.get('trainer_name', 'Marcus Vance')
+        trainer_name = request.data.get('trainer_name') or 'Anandhu pradeep'
 
         member = None
         if member_id:
@@ -305,10 +305,14 @@ class ApproveMemberView(APIView):
 
         # 1. Update user & member status to Active and assign trainer
         trainer_user = None
-        if trainer_name:
-            trainer_user = User.objects.filter(full_name__icontains=trainer_name).first()
+        if trainer_name and trainer_name != 'Unassigned':
+            trainer_user = User.objects.filter(role='trainer', full_name__icontains=trainer_name).first()
+        if not trainer_user and request.user and getattr(request.user, 'role', '') == 'trainer':
+            trainer_user = request.user
         if not trainer_user:
             trainer_user = User.objects.filter(role='trainer').first()
+
+        effective_trainer_name = trainer_user.full_name if trainer_user else trainer_name
 
         user.status = 'Active'
         user.is_active = True
@@ -320,25 +324,18 @@ class ApproveMemberView(APIView):
             member.assigned_trainer = trainer_user
         member.save()
 
-        # 2. Send official verification approval email
+        # 2. Send official verification approval email asynchronously
         athlete_name = user.full_name or user.email.split('@')[0]
         email_subject = "Welcome to OMNIFIT — Your Athlete Account Has Been Approved!"
         email_body = (
             f"Hello {athlete_name},\n\n"
-            f"Great news! Your OMNIFIT athlete membership has been verified and APPROVED by Trainer {trainer_name}.\n\n"
-            f"Your athlete account is now ACTIVE. You can log into the performance zone at http://localhost:3000/login\n\n"
-            f"What awaits you in your Athlete Command Center:\n"
-            f"- AI Hypertrophy & Endurance Training Matrix\n"
-            f"- Personalized Macro & Diet Plans\n"
-            f"- Real-time Biometric & Attendance Telemetry\n"
-            f"- 1-on-1 Coaching Session Scheduling\n\n"
+            f"Great news! Your OMNIFIT athlete membership has been verified and APPROVED by Trainer {effective_trainer_name}.\n\n"
+            f"Your athlete account is now ACTIVE. You can log into your dashboard at https://omnifit.hainesjosepaulson.dev/login\n\n"
             f"Welcome to the team!\n"
             f"Best regards,\n"
-            f"The OMNIFIT High-Performance Coaching Staff\n"
-            f"support@omnifit.com\n"
+            f"The OMNIFIT Coaching Staff\n"
         )
 
-        # Dispatch approval email asynchronously
         def _send_approval():
             try:
                 from_email = getattr(settings, 'EMAIL_HOST_USER', None) or getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'hainesjosepaulson123@gmail.com'
@@ -360,14 +357,10 @@ class ApproveMemberView(APIView):
             user=user,
             notification_type="Account Approved",
             title="Account Verified by Trainer!",
-            message=f"Trainer {trainer_name} has approved your athlete account. You now have full access to OMNIFIT."
+            message=f"Trainer {effective_trainer_name} has approved your athlete account. You now have full access to OMNIFIT."
         )
 
-        msg = f"Athlete {athlete_name} approved successfully."
-        if email_sent:
-            msg += f" Official verification email sent via SMTP to {user.email}."
-        else:
-            msg += f" Note: SMTP email delivery error: {email_error}."
+        msg = f"Athlete {athlete_name} approved successfully by Trainer {effective_trainer_name}."
 
         return standard_response(
             success=True,
@@ -378,10 +371,7 @@ class ApproveMemberView(APIView):
                 "email": user.email,
                 "name": athlete_name,
                 "status": "Active",
-                "email_sent": email_sent,
-                "email_error": email_error,
-                "email_subject": email_subject,
-                "email_recipient": user.email
+                "assigned_trainer": effective_trainer_name
             }
         )
 

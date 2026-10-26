@@ -54,7 +54,7 @@ const Login = () => {
                 setPendingApprovalData({
                     email: regEmail,
                     name: regEmail.split('@')[0] || 'Athlete',
-                    trainer: 'Marcus Vance'
+                    trainer: 'Anandhu pradeep'
                 });
                 setToast({
                     show: true,
@@ -126,7 +126,7 @@ const Login = () => {
                 setPendingApprovalData({
                     email: result.email || email,
                     name: result.name || (email ? email.split('@')[0] : 'Athlete'),
-                    trainer: 'Marcus Vance'
+                    trainer: 'Anandhu pradeep'
                 });
                 setToast({
                     show: true,
@@ -174,7 +174,7 @@ const Login = () => {
             } else {
                 setToast({
                     show: true,
-                    message: '⏳ Account is still under review by Coach Marcus Vance. Please check back shortly.',
+                    message: '⏳ Account is still under review by Coach Anandhu pradeep. Please check back shortly.',
                     type: 'warning'
                 });
             }
@@ -249,7 +249,7 @@ const Login = () => {
                 setPendingApprovalData({
                     email: userEmail,
                     name: res.name || userName,
-                    trainer: 'Marcus Vance'
+                    trainer: 'Anandhu pradeep'
                 });
                 setToast({
                     show: true,
@@ -379,7 +379,7 @@ const Login = () => {
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
                                     <span className="text-slate-400 font-semibold">Assigned Trainer:</span>
-                                    <span className="text-[#00F29D] font-bold">Marcus Vance</span>
+                                    <span className="text-[#00F29D] font-bold">{pendingApprovalData.trainer || 'Anandhu pradeep'}</span>
                                 </div>
                                 <div className="flex items-center justify-between text-xs">
                                     <span className="text-slate-400 font-semibold">Clearance Status:</span>

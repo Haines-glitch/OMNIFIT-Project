@@ -58,8 +58,8 @@ const TrainerDashboard = () => {
     const trainerInfo = {
         ...(data?.trainer || {}),
         ...currentUser,
-        name: currentUser?.name || currentUser?.full_name || data?.trainer?.name || 'Marcus Vance',
-        email: currentUser?.email || data?.trainer?.email || 'marcus.vance@omnifit.com',
+        name: currentUser?.name || currentUser?.full_name || data?.trainer?.name || 'Anandhu pradeep',
+        email: currentUser?.email || data?.trainer?.email || 'anandhu@omnifit.com',
         phone: currentUser?.phone || data?.trainer?.phone || '+91 98765 43210',
         gender: currentUser?.gender || 'Male',
         dob: currentUser?.dob || '1992-06-15',
