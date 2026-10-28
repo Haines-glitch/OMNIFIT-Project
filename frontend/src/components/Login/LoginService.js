@@ -282,7 +282,11 @@ export const LoginService = {
      * Performs Google OAuth / One-Click Google Sign-in
      */
     async loginWithGoogle(googleUserData = {}) {
-        const email = (googleUserData.email || 'jagan@gmail.com').toLowerCase().trim();
+        const email = (googleUserData.email || '').toLowerCase().trim();
+        if (!email) {
+            return { success: false, error: 'No email address provided for Google authentication.' };
+        }
+
         const persisted = getPersistedProfile(email) || {};
 
         let role = (googleUserData.role || persisted.role || '').toLowerCase();
@@ -299,38 +303,87 @@ export const LoginService = {
         const targetRedirect = role === 'admin' ? '/admin-dashboard' : role === 'trainer' ? '/trainer-dashboard' : '/member-dashboard';
         const rawName = googleUserData.name || (email.split('@')[0]);
         const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-        
-        // Check backend database approval status
-        try {
-            const statusCheck = await this.checkApprovalStatus(email);
-            if (statusCheck && statusCheck.isPendingApproval) {
+
+        // Security Guard: Athletes (members) must be verified and approved by their trainer!
+        if (role === 'member') {
+            let isApproved = false;
+            let statusName = displayName;
+            let userFoundInDb = false;
+
+            try {
+                const statusRes = await api.get(`auth/approval-status/?email=${encodeURIComponent(email)}`, { baseURL: `${API_ROOT}/` });
+                if (statusRes.data?.data) {
+                    userFoundInDb = true;
+                    const data = statusRes.data.data;
+                    statusName = data.name || displayName;
+                    if (data.is_approved === true || data.status === 'Active' || data.status === 'ACTIVE') {
+                        isApproved = true;
+                    }
+                }
+            } catch (statusErr) {
+                // If 404, user is brand new and not yet registered on backend
+                console.log('Google athlete approval status check:', statusErr?.response?.status || statusErr?.message);
+            }
+
+            // Also check local persisted profile status
+            if (persisted.status === 'Pending Approval' || persisted.status === 'Pending' || persisted.isPendingApproval) {
+                isApproved = false;
+            }
+
+            // If the athlete has not been approved yet:
+            if (!isApproved) {
+                // Ensure the athlete is registered in the Django database so the trainer sees them
+                if (!userFoundInDb) {
+                    try {
+                        await this.register({
+                            full_name: displayName,
+                            email: email,
+                            phone: '+91 98765 43210',
+                            fitness_goal: 'Hypertrophy & Fat Loss',
+                            password: 'GoogleOAuthUser@123'
+                        });
+                    } catch (regErr) {
+                        console.log('Google athlete registration notice:', regErr);
+                    }
+                }
+
+                // Persist pending profile so UI and trainer pending list display them
+                const pendingProfile = {
+                    ...persisted,
+                    email: email,
+                    name: statusName || displayName,
+                    full_name: statusName || displayName,
+                    role: 'MEMBER',
+                    status: 'Pending Approval',
+                    isPendingApproval: true,
+                    join_date: persisted.join_date || new Date().toISOString().split('T')[0]
+                };
+                savePersistedProfile(email, pendingProfile);
+                savePendingMember(pendingProfile);
+
+                // Clear any cached credentials to prevent unapproved entry
+                this.logout();
+
                 return {
                     success: false,
                     isPendingApproval: true,
                     email: email,
-                    name: statusCheck.user?.name || displayName,
+                    name: statusName || displayName,
+                    trainer: 'Anandhu pradeep',
                     error: 'Your Google-linked athlete account is awaiting verification and approval by your assigned trainer.'
                 };
             }
-        } catch (e) {}
-
-        // If user registered with pending status, prevent login until approved
-        if (persisted.status === 'Pending Approval' || persisted.status === 'Pending' || persisted.isPendingApproval) {
-            return {
-                success: false,
-                isPendingApproval: true,
-                email: email,
-                name: persisted.name || displayName,
-                error: 'Your Google-linked athlete account is awaiting verification and approval by your assigned trainer.'
-            };
         }
 
+        // Only approved members (or trainers/admins) proceed to log in:
         const googleUser = {
             id: persisted.id || Math.floor(Math.random() * 8000) + 1000,
             name: persisted.name || displayName,
             full_name: persisted.full_name || displayName,
             email: email,
             role: role.toUpperCase(),
+            status: 'Active',
+            isPendingApproval: false,
             redirect_url: targetRedirect,
             phone: persisted.phone || '+91 98765 43210',
             gender: persisted.gender || 'Male',
@@ -347,6 +400,7 @@ export const LoginService = {
         };
 
         savePersistedProfile(email, googleUser);
+        removePendingMember(email);
         const token = 'google_oauth_token_' + Date.now();
         localStorage.setItem('access_token', token);
         localStorage.setItem('refresh_token', 'google_refresh_token_' + Date.now());
@@ -606,7 +660,8 @@ export const LoginService = {
             const res = await api.get(`auth/approval-status/?email=${encodeURIComponent(cleanEmail)}`, { baseURL: `${API_ROOT}/` });
             if (res.data?.data) {
                 const data = res.data.data;
-                if (data.is_approved) {
+                const isApproved = !!data.is_approved || data.status === 'Active' || data.status === 'ACTIVE';
+                if (isApproved) {
                     const currentProfile = getPersistedProfile(cleanEmail) || {};
                     savePersistedProfile(cleanEmail, {
                         ...currentProfile,
@@ -615,7 +670,11 @@ export const LoginService = {
                     });
                     removePendingMember(cleanEmail);
                 }
-                return data;
+                return {
+                    ...data,
+                    is_approved: isApproved,
+                    isPendingApproval: !isApproved
+                };
             }
         } catch (e) {
             console.warn('Status check network note:', e);
@@ -627,6 +686,7 @@ export const LoginService = {
         return {
             email: cleanEmail,
             is_approved: isApproved,
+            isPendingApproval: !isApproved,
             status: local?.status || (isApproved ? 'Active' : 'Pending Approval')
         };
     },
