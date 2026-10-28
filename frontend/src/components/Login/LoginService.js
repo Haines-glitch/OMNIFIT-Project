@@ -536,26 +536,34 @@ export const LoginService = {
      */
     async getPendingMembers() {
         let serverList = [];
+        let serverSuccess = false;
         try {
             const res = await api.get('trainers/pending-members/', { baseURL: `${API_ROOT}/` });
             if (res.data?.data) {
                 serverList = res.data.data;
+                serverSuccess = true;
             }
         } catch (e) {
             console.warn('Could not fetch server pending members, using local registry:', e);
         }
 
-        // Merge with local pending members
-        const localPending = getPendingMembersList();
-        const mergedMap = new Map();
-        serverList.forEach(m => mergedMap.set((m.email || '').toLowerCase().trim(), m));
-        localPending.forEach(m => {
-            const emailKey = (m.email || '').toLowerCase().trim();
-            if (!mergedMap.has(emailKey)) {
-                mergedMap.set(emailKey, m);
-            }
-        });
-        return Array.from(mergedMap.values());
+        if (serverSuccess) {
+            return serverList;
+        }
+
+        return getPendingMembersList();
+    },
+
+    /**
+     * Clear all locally persisted member caches
+     */
+    clearAllLocalMembers() {
+        try {
+            localStorage.removeItem(PENDING_MEMBERS_KEY);
+            localStorage.removeItem(PROFILES_STORAGE_KEY);
+        } catch (e) {
+            console.warn('Could not clear local member cache:', e);
+        }
     },
 
     /**
